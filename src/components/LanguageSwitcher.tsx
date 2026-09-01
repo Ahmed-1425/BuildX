@@ -4,54 +4,88 @@ import { useLanguage } from "@/context/LanguageContext";
 import { motion } from "framer-motion";
 
 export default function LanguageSwitcher() {
-  const { locale, toggleLocale } = useLanguage();
+  const { locale, setLocale, dir } = useLanguage();
 
   return (
-    <button
-      onClick={toggleLocale}
-      className="relative flex items-center h-9 rounded-none border-2 border-primary/60 bg-dark-secondary/30 overflow-hidden cursor-pointer group focus-visible:outline-2 focus-visible:outline-lime"
-      aria-label={locale === "ar" ? "Switch to English" : "التبديل إلى العربية"}
-      role="switch"
-      aria-checked={locale === "en"}
+    <div
+      className="language-switch"
+      role="group"
+      aria-label={locale === "ar" ? "تغيير اللغة" : "Switch Language"}
+      style={{
+        position: "relative",
+        display: "inline-grid",
+        gridTemplateColumns: "1fr 1fr",
+        width: "112px",
+        height: "46px",
+        padding: "4px",
+        backgroundColor: "#0c1018",
+        border: "2px solid #823419",
+        boxShadow: "4px 4px 0 #34155f",
+        overflow: "hidden",
+        direction: "ltr", // keep LTR for consistent internal pill sliding
+      }}
     >
-      {/* Sliding indicator */}
+      {/* Sliding background indicator */}
       <motion.div
-        className="absolute top-0 h-full w-1/2 bg-primary/60"
-        animate={{
-          x: locale === "ar" ? 0 : "100%",
+        className="language-indicator"
+        layout
+        transition={{ type: "spring", stiffness: 500, damping: 35 }}
+        style={{
+          position: "absolute",
+          top: "4px",
+          bottom: "4px",
+          left: locale === "ar" ? "4px" : "calc(50% + 2px)",
+          width: "calc(50% - 6px)",
+          backgroundColor: "#c3f937",
+          zIndex: 0,
         }}
-        transition={{ type: "spring", stiffness: 500, damping: 30 }}
-        style={{ [locale === "ar" ? "left" : "left"]: 0 }}
       />
 
-      {/* Arabic label */}
-      <span
-        className={`relative z-10 px-3 text-sm font-bold transition-colors duration-200 ${
-          locale === "ar" ? "text-lime" : "text-light/50"
-        }`}
-        style={{ fontFamily: "var(--font-janna-bold)" }}
+      <button
+        type="button"
+        onClick={() => setLocale("ar")}
+        className={`language-option ${locale === "ar" ? "active" : ""}`}
+        aria-pressed={locale === "ar"}
+        style={{
+          position: "relative",
+          zIndex: 1,
+          display: "grid",
+          placeItems: "center",
+          border: 0,
+          background: "transparent",
+          color: locale === "ar" ? "#0c1018" : "#e7edfd",
+          fontSize: "15px",
+          fontWeight: 800,
+          cursor: "pointer",
+          transition: "color 150ms ease",
+          fontFamily: "var(--font-janna-bold), sans-serif",
+        }}
       >
-        العربية
-      </span>
+        ع
+      </button>
 
-      {/* Divider */}
-      <div className="relative z-10 w-px h-5 bg-primary/40" />
-
-      {/* English label */}
-      <span
-        className={`relative z-10 px-3 text-sm font-bold transition-colors duration-200 ${
-          locale === "en" ? "text-lime" : "text-light/50"
-        }`}
-        style={{ fontFamily: "var(--font-bauhaus)" }}
+      <button
+        type="button"
+        onClick={() => setLocale("en")}
+        className={`language-option ${locale === "en" ? "active" : ""}`}
+        aria-pressed={locale === "en"}
+        style={{
+          position: "relative",
+          zIndex: 1,
+          display: "grid",
+          placeItems: "center",
+          border: 0,
+          background: "transparent",
+          color: locale === "en" ? "#0c1018" : "#e7edfd",
+          fontSize: "14px",
+          fontWeight: 800,
+          cursor: "pointer",
+          transition: "color 150ms ease",
+          fontFamily: "var(--font-bauhaus), sans-serif",
+        }}
       >
         EN
-      </span>
-
-      {/* Pixel corner accents */}
-      <div className="absolute top-0 left-0 w-1 h-1 bg-lime/40" />
-      <div className="absolute top-0 right-0 w-1 h-1 bg-lime/40" />
-      <div className="absolute bottom-0 left-0 w-1 h-1 bg-lime/40" />
-      <div className="absolute bottom-0 right-0 w-1 h-1 bg-lime/40" />
-    </button>
+      </button>
+    </div>
   );
 }

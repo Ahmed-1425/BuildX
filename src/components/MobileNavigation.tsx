@@ -7,12 +7,11 @@ import Link from "next/link";
 import LanguageSwitcher from "./LanguageSwitcher";
 
 export default function MobileHeader() {
-  const { t } = useLanguage();
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
+      setScrolled(window.scrollY > 30);
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
@@ -20,23 +19,39 @@ export default function MobileHeader() {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 md:hidden transition-all duration-300 ${
+      className={`mobile-header fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "bg-dark/95 backdrop-blur-sm pixel-border-b"
-          : "bg-transparent"
+          ? "bg-[#0c1018]/95 backdrop-blur-md border-b border-[#c3f937]/20"
+          : "bg-[#0c1018]/60 backdrop-blur-sm"
       }`}
+      style={{
+        height: "64px",
+        alignItems: "center",
+        justifyContent: "space-between",
+        paddingInline: "16px",
+      }}
     >
-      <div className="flex items-center justify-between px-4 h-14">
-        <Link href="/">
-          <Image
-            src="/assets/logos/logo-white-glow.png"
-            alt="BUILDx"
-            width={80}
-            height={28}
-            className="object-contain"
-            priority
-          />
-        </Link>
+      <Link
+        href="/"
+        onClick={(e) => {
+          if (window.location.pathname === "/") {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }
+        }}
+        className="flex items-center"
+      >
+        <Image
+          src="/assets/logos/logo-white-glow.png"
+          alt="BUILDx"
+          width={130}
+          height={38}
+          className="object-contain"
+          priority
+        />
+      </Link>
+
+      <div className="flex items-center">
         <LanguageSwitcher />
       </div>
     </header>
@@ -44,11 +59,10 @@ export default function MobileHeader() {
 }
 
 export function MobileBottomNavigation() {
-  const { t, locale } = useLanguage();
+  const { t } = useLanguage();
   const [visible, setVisible] = useState(true);
   const [activeSection, setActiveSection] = useState("home");
   const lastScrollY = useRef(0);
-  const [nearBottom, setNearBottom] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -56,8 +70,6 @@ export function MobileBottomNavigation() {
       const docHeight =
         document.documentElement.scrollHeight - window.innerHeight;
       const atNearBottom = currentScrollY > docHeight - 200;
-
-      setNearBottom(atNearBottom);
 
       if (atNearBottom) {
         setVisible(true);
@@ -78,8 +90,8 @@ export function MobileBottomNavigation() {
         const el = document.getElementById(sections[i]);
         if (el) {
           const rect = el.getBoundingClientRect();
-          if (rect.top <= 200) {
-            setActiveSection(sections[i] === "about" ? "about" : sections[i]);
+          if (rect.top <= 250) {
+            setActiveSection(sections[i]);
             found = true;
             break;
           }
@@ -152,14 +164,14 @@ export function MobileBottomNavigation() {
 
   return (
     <nav
-      className={`fixed bottom-0 left-0 right-0 z-50 md:hidden transition-transform duration-300 safe-area-bottom ${
+      className={`mobile-bottom-navigation fixed bottom-0 left-0 right-0 z-50 transition-transform duration-300 safe-area-bottom ${
         visible ? "translate-y-0" : "translate-y-full"
       }`}
       role="navigation"
       aria-label="Mobile navigation"
     >
-      <div className="bg-dark/95 backdrop-blur-sm border-t-3 border-primary/40">
-        <div className="flex items-center justify-around py-2 px-2">
+      <div className="bg-[#0c1018]/95 backdrop-blur-md border-t-2 border-[#823419]">
+        <div className="flex items-center justify-around py-2 px-2 max-w-md mx-auto">
           {items.map((item) => {
             const isActive = activeSection === item.key;
             const isReg = item.isRegister;
@@ -167,34 +179,35 @@ export function MobileBottomNavigation() {
             return (
               <button
                 key={item.key}
+                type="button"
                 onClick={() =>
                   isReg
                     ? (window.location.href = "/register")
                     : scrollTo(item.key)
                 }
-                className={`flex flex-col items-center justify-center py-1 px-3 min-w-[60px] transition-colors cursor-pointer ${
+                className={`flex flex-col items-center justify-center py-1 px-3 min-w-[64px] transition-colors cursor-pointer ${
                   isReg
                     ? "text-dark"
                     : isActive
-                    ? "text-lime"
-                    : "text-light/50"
+                    ? "text-[#c3f937]"
+                    : "text-[#e7edfd]/50"
                 }`}
                 aria-current={isActive ? "page" : undefined}
               >
                 <div
                   className={`p-1.5 rounded-none ${
                     isReg
-                      ? "bg-lime border-2 border-lime shadow-[2px_2px_0px_0px_rgba(52,21,95,0.8)]"
+                      ? "bg-[#c3f937] border-2 border-[#c3f937] shadow-[2px_2px_0px_0px_#823419]"
                       : ""
                   }`}
                 >
                   {item.icon}
                 </div>
                 <span
-                  className={`text-[10px] mt-0.5 ${
-                    isReg ? "text-lime font-bold" : ""
+                  className={`text-[11px] mt-1 font-bold ${
+                    isReg ? "text-[#c3f937]" : ""
                   }`}
-                  style={{ fontFamily: "var(--font-janna-bold)" }}
+                  style={{ fontFamily: "var(--font-janna-bold), sans-serif" }}
                 >
                   {item.label}
                 </span>

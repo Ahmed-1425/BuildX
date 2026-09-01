@@ -1,0 +1,263 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #823419;
+  --color-primary-dark: #34155f;
+  --color-lime: #c3f937;
+  --color-pink: #fb50c3;
+  --color-dark: #0c1018;
+  --color-dark-secondary: #34155f;
+  --color-light: #e7edfd;
+}
+
+@font-face {
+  font-family: "JannaLT";
+  src: url("/assets/fonts/janna-lt-regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "JannaLTBold";
+  src: url("/assets/fonts/janna-lt-bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "BNewsAlmstqbl";
+  src: url("/assets/fonts/b-news-almstqbl.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Arapix";
+  src: url("/assets/fonts/arapix.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Bauhaus93";
+  src: url("/assets/fonts/bauhaus93.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --font-janna: "JannaLT", Tahoma, Arial, sans-serif;
+  --font-janna-bold: "JannaLTBold", Tahoma, Arial, sans-serif;
+  --font-news-almstqbl: "BNewsAlmstqbl", "JannaLTBold", Tahoma, sans-serif;
+  --font-arapix: "Arapix", "JannaLT", monospace;
+  --font-bauhaus: "Bauhaus93", Impact, sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: #0c1018;
+}
+
+body {
+  font-family: var(--font-janna);
+  background-color: #0c1018;
+  color: #e7edfd;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Pixel Button Styles */
+.pixel-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 32px;
+  font-family: var(--font-janna-bold);
+  font-size: 1rem;
+  font-weight: 700;
+  border: 3px solid currentColor;
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  image-rendering: pixelated;
+}
+
+.pixel-btn-primary {
+  background-color: #c3f937;
+  color: #0c1018;
+  border-color: #c3f937;
+  box-shadow: 4px 4px 0px 0px rgba(52, 21, 95, 0.8);
+}
+
+.pixel-btn-primary:hover {
+  box-shadow: 6px 6px 0px 0px rgba(52, 21, 95, 0.9);
+  transform: translate(-2px, -2px);
+}
+
+.pixel-btn-primary:active {
+  box-shadow: 2px 2px 0px 0px rgba(52, 21, 95, 0.8);
+  transform: translate(2px, 2px);
+}
+
+.pixel-btn-secondary {
+  background-color: transparent;
+  color: #e7edfd;
+  border-color: #e7edfd;
+  box-shadow: 4px 4px 0px 0px rgba(130, 52, 25, 0.5);
+}
+
+.pixel-btn-secondary:hover {
+  background-color: rgba(130, 52, 25, 0.2);
+  box-shadow: 6px 6px 0px 0px rgba(130, 52, 25, 0.6);
+  transform: translate(-2px, -2px);
+}
+
+.pixel-btn-secondary:active {
+  box-shadow: 2px 2px 0px 0px rgba(130, 52, 25, 0.5);
+  transform: translate(2px, 2px);
+}
+
+/* Pixel Card */
+.pixel-card {
+  border: 3px solid rgba(130, 52, 25, 0.4);
+  background: linear-gradient(
+    135deg,
+    rgba(52, 21, 95, 0.3) 0%,
+    rgba(12, 16, 24, 0.8) 100%
+  );
+  box-shadow: 4px 4px 0px 0px rgba(130, 52, 25, 0.3);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pixel-card:hover {
+  box-shadow: 6px 6px 0px 0px rgba(130, 52, 25, 0.4);
+  transform: translate(-2px, -2px);
+}
+
+/* Grid Background Pattern */
+.grid-bg {
+  background-image: linear-gradient(
+      rgba(130, 52, 25, 0.06) 1px,
+      transparent 1px
+    ),
+    linear-gradient(90deg, rgba(130, 52, 25, 0.06) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* Pixel Border */
+.pixel-border-b {
+  border-bottom: 3px solid rgba(130, 52, 25, 0.3);
+  box-shadow: 0 3px 0 0 rgba(52, 21, 95, 0.2);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0c1018;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #823419;
+  border: 2px solid #0c1018;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #c3f937;
+}
+
+/* Progress bar at top of page */
+.page-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #c3f937, #fb50c3);
+  z-index: 9999;
+  transition: width 0.1s ease;
+}
+
+/* Selection */
+::selection {
+  background-color: rgba(195, 249, 55, 0.3);
+  color: #e7edfd;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Safe area for iPhone */
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Pixel text shadow */
+.pixel-text-shadow {
+  text-shadow: 2px 2px 0px rgba(52, 21, 95, 0.6);
+}
+
+/* Glow effects */
+.glow-lime {
+  box-shadow: 0 0 20px rgba(195, 249, 55, 0.15);
+}
+
+.glow-purple {
+  box-shadow: 0 0 20px rgba(130, 52, 25, 0.2);
+}
+
+/* Section divider */
+.section-divider {
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(130, 52, 25, 0.4),
+    rgba(195, 249, 55, 0.2),
+    rgba(130, 52, 25, 0.4),
+    transparent
+  );
+}
+
+/* Pixel font for numbers */
+.pixel-number {
+  font-family: var(--font-arapix);
+  letter-spacing: 0.05em;
+}
+
+/* Focus styles for accessibility */
+:focus-visible {
+  outline: 2px solid #c3f937;
+  outline-offset: 2px;
+}
+
+/* Hide scrollbar for horizontal scroll areas */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

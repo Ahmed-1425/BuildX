@@ -73,37 +73,39 @@ export default function TrainerSection() {
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
           >
-            <motion.div
-              className="trainer-portrait-wrapper"
-              initial={{ opacity: 0, y: 25 }}
-              animate={hasBeenInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            >
+            <div className="trainer-portrait-sticky">
               <motion.div
-                animate={{
-                  rotateX: tilt.rotateX,
-                  rotateY: tilt.rotateY,
-                  y: tilt.translateY,
-                }}
-                transition={{
-                  type: "spring",
-                  stiffness: 140,
-                  damping: 18,
-                  mass: 0.6,
-                }}
-                className="w-full h-full"
+                className="trainer-portrait-wrapper"
+                initial={{ opacity: 0, y: 25 }}
+                animate={hasBeenInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
               >
-                <Image
-                  src="/assets/trainer/ahmed-alrasheed-portrait.png"
-                  alt={t.trainer.name}
-                  width={2580}
-                  height={3692}
-                  priority
-                  className="trainer-portrait"
-                  sizes="(max-width: 768px) 88vw, (max-width: 1200px) 45vw, 540px"
-                />
+                <motion.div
+                  animate={{
+                    rotateX: tilt.rotateX,
+                    rotateY: tilt.rotateY,
+                    y: tilt.translateY,
+                  }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 140,
+                    damping: 18,
+                    mass: 0.6,
+                  }}
+                  className="w-full h-full flex items-start justify-center"
+                >
+                  <Image
+                    src="/assets/trainer/ahmed-alrasheed-portrait.png"
+                    alt={t.trainer.name}
+                    width={2580}
+                    height={3692}
+                    priority
+                    className="trainer-portrait"
+                    sizes="(max-width: 768px) 88vw, (max-width: 1200px) 45vw, 540px"
+                  />
+                </motion.div>
               </motion.div>
-            </motion.div>
+            </div>
           </div>
 
           {/* CONTENT COLUMN */}
@@ -143,11 +145,20 @@ export default function TrainerSection() {
               </p>
             </div>
 
-            {/* Five Stats: +32 | +26 | 12 | 2 | Top 50 */}
+            {/* Five Stats: +32 | +26 | 13 | 2 | Top 50 */}
             <div className="trainer-stats">
               {t.trainer.stats.map((stat, idx) => (
                 <div key={idx} className="trainer-stat">
-                  <span className="trainer-stat-number">{stat.number}</span>
+                  <span className="trainer-stat-number">
+                    {stat.number === "13" ? (
+                      <span className="inline-flex items-center justify-center gap-1.5 font-arapix">
+                        <span>1</span>
+                        <span>3</span>
+                      </span>
+                    ) : (
+                      stat.number
+                    )}
+                  </span>
                   <span
                     className="trainer-stat-label"
                     style={{ fontFamily: isRTL ? "var(--font-janna)" : "sans-serif" }}
@@ -158,7 +169,7 @@ export default function TrainerSection() {
               ))}
             </div>
 
-            {/* 12 Achievements Breakdown Panel */}
+            {/* 13 Achievements Breakdown Panel */}
             <div
               id="achievements-breakdown"
               className={`achievement-breakdown-wrapper scroll-mt-28 transition-all duration-500 ${
@@ -177,19 +188,29 @@ export default function TrainerSection() {
                 </div>
               </div>
 
-              {/* Visual Equation: 8 + 3 + 1 = 12 (always LTR) */}
+              {/* Visual Equation: 8 + 3 + 2 = 13 (always LTR) */}
               <div
                 className="achievement-equation"
                 dir="ltr"
-                aria-label={isRTL ? "ثمانية زائد ثلاثة زائد واحد يساوي اثني عشر" : "Eight plus three plus one equals twelve"}
+                aria-label={
+                  isRTL
+                    ? "ثمانية زائد ثلاثة زائد اثنين يساوي ثلاثة عشر"
+                    : "Eight plus three plus two equals thirteen"
+                }
               >
-                <span>8</span>
+                <span>{t.trainer.breakdownParts.hackathons.number}</span>
                 <span className="operator">+</span>
-                <span>3</span>
+                <span>{t.trainer.breakdownParts.entrepreneurship.number}</span>
                 <span className="operator">+</span>
-                <span>1</span>
+                <span>{t.trainer.breakdownParts.international.number}</span>
                 <span className="operator">=</span>
-                <strong>12</strong>
+                <strong
+                  className="achievement-equation__result"
+                  aria-label="13"
+                >
+                  <span className="equation-digit">1</span>
+                  <span className="equation-digit">3</span>
+                </strong>
               </div>
 
               {/* Three Breakdown Parts */}
@@ -269,13 +290,23 @@ export default function TrainerSection() {
                     <div className="flex flex-col gap-1">
                       {t.trainer.breakdownParts.international.awards.map((award, idx) => (
                         <div key={idx} className="flex items-center gap-2">
-                          <Image
-                            src={idx === 0 ? "/assets/icons/trophy-light.png" : "/assets/icons/star-light.png"}
-                            alt=""
-                            width={16}
-                            height={16}
-                            className="w-4 h-4 object-contain opacity-80"
-                          />
+                          {idx === 0 ? (
+                            <Image
+                              src="/assets/icons/trophy-light.png"
+                              alt=""
+                              width={16}
+                              height={16}
+                              className="w-4 h-4 object-contain opacity-80"
+                            />
+                          ) : (
+                            <span
+                              className="inline-flex items-center justify-center text-sm leading-none select-none w-4 h-4"
+                              role="img"
+                              aria-label={isRTL ? "الميدالية الذهبية" : "Gold Medal"}
+                            >
+                              🥇
+                            </span>
+                          )}
                           <span
                             className="text-sm text-light/90 font-semibold"
                             style={{ fontFamily: isRTL ? "var(--font-janna)" : "sans-serif" }}

@@ -95,7 +95,7 @@ body {
   font-family: var(--font-janna);
   background-color: #0c1018;
   color: #e7edfd;
-  overflow-x: hidden;
+  overflow-x: clip;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -1205,17 +1205,23 @@ section {
 
 /* Swipe Hint for Mobile (Audience Section) */
 .audience-swipe-hint {
-  margin-top: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 10px 22px;
-  background: rgba(251, 80, 195, 0.08);
-  border: 1px solid rgba(251, 80, 195, 0.25);
-  border-radius: 999px;
-  width: fit-content;
-  margin-inline: auto;
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .audience-swipe-hint {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 22px;
+    background: rgba(251, 80, 195, 0.08);
+    border: 1px solid rgba(251, 80, 195, 0.25);
+    border-radius: 999px;
+    width: fit-content;
+    margin-inline: auto;
+  }
 }
 
 .audience-swipe-hint__hand {
@@ -1398,7 +1404,7 @@ section {
   position: relative;
   width: 100%;
   padding-block: clamp(110px, 10vw, 165px);
-  overflow: hidden;
+  overflow: clip;
   background-color: #0c1018;
 }
 
@@ -1431,7 +1437,7 @@ section {
 .trainer-section {
   position: relative;
   width: 100%;
-  overflow: hidden;
+  overflow: clip;
   padding-block: clamp(90px, 8vw, 140px);
   background-color: #0c1018;
 }
@@ -1477,7 +1483,7 @@ section {
   margin-inline: auto;
   margin-top: clamp(48px, 5vw, 76px);
   display: grid;
-  align-items: start;
+  align-items: stretch;
   gap: clamp(58px, 7vw, 110px);
 }
 
@@ -1493,8 +1499,8 @@ section {
   }
 }
 
-.trainer-content,
-.trainer-portrait-column {
+.trainer-content {
+  grid-area: content;
   align-self: start;
 }
 
@@ -1503,15 +1509,34 @@ section {
   grid-area: portrait;
   position: relative;
   width: 100%;
-  height: min(72vh, 760px);
-  min-height: 580px;
+  height: 100%;
+  min-height: 100%;
+  align-self: stretch;
   margin-top: -28px;
+}
+
+.trainer-portrait-sticky {
+  position: relative;
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .trainer-portrait-sticky {
+    position: sticky;
+    top: clamp(96px, 11vh, 120px);
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+  }
 }
 
 .trainer-portrait-wrapper {
   position: relative;
   width: 100%;
-  height: 100%;
+  height: min(72vh, 760px);
+  min-height: 520px;
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -1531,11 +1556,11 @@ section {
   transform-style: preserve-3d;
 }
 
-.trainer-portrait-column::after {
+.trainer-portrait-wrapper::after {
   content: "";
   position: absolute;
   right: 18%;
-  bottom: 3%;
+  bottom: 2%;
   left: 18%;
   height: 24px;
   background: rgba(0, 0, 0, 0.34);
@@ -1693,10 +1718,9 @@ section {
   white-space: nowrap;
 }
 
-.achievement-equation span,
-.achievement-equation strong {
+.achievement-equation span {
   font-family: var(--font-arapix);
-  font-size: clamp(38px, 3.5vw, 58px);
+  font-size: clamp(34px, 3.2vw, 50px);
   line-height: 1;
   color: #c3f937;
 }
@@ -1706,8 +1730,27 @@ section {
   color: rgba(231, 237, 253, 0.55);
 }
 
-.achievement-equation strong {
+.achievement-equation strong,
+.achievement-equation .achievement-equation__result {
+  font-family: var(--font-arapix);
+  font-size: clamp(48px, 4.4vw, 70px);
+  line-height: 1;
   color: #fb50c3;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(8px, 0.8vw, 14px);
+  text-shadow:
+    0 0 16px rgba(251, 80, 195, 0.75),
+    0 0 32px rgba(251, 80, 195, 0.45);
+  transform: translateY(-2px);
+}
+
+.achievement-equation .equation-digit {
+  font-family: var(--font-arapix);
+  color: #fb50c3;
+  line-height: 1;
+  display: inline-block;
 }
 
 /* Breakdown 3-column grid */
@@ -1948,13 +1991,22 @@ section {
     margin-block: 24px 30px;
   }
 
-  .achievement-equation span,
-  .achievement-equation strong {
-    font-size: clamp(31px, 9vw, 44px);
+  .achievement-equation span {
+    font-size: clamp(26px, 7.5vw, 36px);
+  }
+
+  .achievement-equation strong,
+  .achievement-equation .achievement-equation__result {
+    font-size: clamp(36px, 10.5vw, 50px);
+    gap: 7px;
+    text-shadow:
+      0 0 14px rgba(251, 80, 195, 0.8),
+      0 0 28px rgba(251, 80, 195, 0.5);
+    transform: translateY(-1px);
   }
 
   .achievement-equation .operator {
-    font-size: 22px;
+    font-size: 20px;
   }
 
   .achievement-breakdown {
@@ -2063,6 +2115,99 @@ section {
     #c3f937,
     #fb50c3
   );
+}
+
+/* ==========================================================================
+   JOURNEY HORIZONTAL TABS SYSTEM
+   ========================================================================== */
+.journey-tabs-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: clamp(32px, 4vw, 52px);
+  margin-bottom: clamp(20px, 2.5vw, 32px);
+  position: relative;
+  z-index: 10;
+}
+
+.journey-tabs-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 100%;
+  padding: 6px;
+  background: rgba(12, 16, 24, 0.75);
+  border: 1px solid rgba(231, 237, 253, 0.12);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 8px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+}
+
+.journey-tabs-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.journey-tab-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 22px;
+  min-height: 48px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: rgba(231, 237, 253, 0.55);
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+  user-select: none;
+  border-radius: 6px;
+}
+
+.journey-tab-btn:hover {
+  color: #e7edfd;
+  background: rgba(231, 237, 253, 0.05);
+  border-color: rgba(231, 237, 253, 0.1);
+}
+
+.journey-tab-btn.is-active {
+  color: #ffffff;
+  background: rgba(231, 237, 253, 0.08);
+  border-color: rgba(231, 237, 253, 0.18);
+}
+
+.journey-tab-btn__name {
+  font-size: clamp(14px, 1.1vw, 16px);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.journey-tab-btn__badge {
+  flex-shrink: 0;
+  min-width: 32px;
+  height: 24px;
+  padding: 0 8px;
+  font-size: 11px;
+}
+
+.journey-tab-indicator {
+  position: absolute;
+  bottom: -1px;
+  left: 12px;
+  right: 12px;
+  height: 3px;
+  border-radius: 9999px;
+  pointer-events: none;
+}
+
+.journey-tab-panel-wrap {
+  position: relative;
+  width: 100%;
 }
 
 .journey-phase {
@@ -2617,6 +2762,44 @@ section {
   .journey-container {
     width: 100%;
     padding-inline: 18px;
+  }
+
+  .journey-tabs-wrapper {
+    justify-content: flex-start;
+    padding-inline: 4px;
+    margin-top: 24px;
+    margin-bottom: 14px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .journey-tabs-wrapper::-webkit-scrollbar {
+    display: none;
+  }
+
+  .journey-tabs-nav {
+    display: inline-flex;
+    min-width: max-content;
+    padding: 4px;
+    gap: 6px;
+  }
+
+  .journey-tab-btn {
+    padding: 9px 14px;
+    min-height: 44px;
+    gap: 8px;
+  }
+
+  .journey-tab-btn__name {
+    font-size: 13.5px;
+  }
+
+  .journey-tab-btn__badge {
+    min-width: 28px;
+    height: 22px;
+    padding: 0 6px;
+    font-size: 10.5px;
   }
 
   .journey-phase {

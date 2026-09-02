@@ -159,15 +159,15 @@ export const en = {
       "Public Speaker & Trainer",
     ],
     bioP1: "An AI and Software Engineer, entrepreneur, and innovator specializing in digital products and AI-powered solutions. Ahmed has built more than 32 technical projects and participated in more than 26 hackathons and innovation competitions, combining technical expertise, product development, and leadership.",
-    bioP2: "He has achieved 12 competitive accomplishments locally and internationally and received two international awards—the Grand Prize and a Gold Medal—while representing Saudi Arabia at Malaysia Technology Expo 2026. He was also selected among the top 50 candidates from more than 18,000 applicants for Qimam Fellowship '26.",
+    bioP2: "He has achieved 13 competitive accomplishments locally and internationally and received two international awards—the Grand Prize and a Gold Medal—while representing Saudi Arabia at Malaysia Technology Expo 2026. He was also selected among the top 50 candidates from more than 18,000 applicants for Qimam Fellowship '26.",
     stats: [
       { number: "32+", label: "Technical Projects" },
       { number: "26+", label: "Hackathons & Competitions" },
-      { number: "12", label: "Competitive Achievements" },
+      { number: "13", label: "Competitive Achievements" },
       { number: "2", label: "International Awards" },
       { number: "Top 50", label: "From 18,000+ Applicants" },
     ],
-    breakdownTitle: "The 12 Achievements Breakdown",
+    breakdownTitle: "The 13 Achievements Breakdown",
     breakdownParts: {
       hackathons: {
         number: "8",
@@ -180,8 +180,8 @@ export const en = {
         sub: "Two First-Place Awards and One Third-Place Award.",
       },
       international: {
-        number: "1",
-        label: "International Achievement",
+        number: "2",
+        label: "International Awards",
         event: "Malaysia Technology Expo 2026",
         sub: "Recognized with Two International Awards:",
         awardsCount: "2",

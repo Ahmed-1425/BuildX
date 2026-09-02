@@ -1,311 +1,344 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 import { useInView } from "@/hooks/useInView";
-import CharacterState, { CharacterType } from "./CharacterState";
-import PixelDecoration from "./PixelDecoration";
-
-const DAY_CHARACTERS: CharacterType[] = [
-  "ready",
-  "thinking",
-  "building",
-  "building",
-  "success",
-  "loading",
-  "ready",
-  "building",
-  "success",
-];
-
-const DAY_PHASES: ("training" | "break" | "hackathon" | "closing")[] = [
-  "training",
-  "training",
-  "training",
-  "training",
-  "training",
-  "break",
-  "hackathon",
-  "hackathon",
-  "closing",
-];
-
-const PHASE_COLORS = {
-  training: "border-lime/50 bg-lime/5",
-  break: "border-light/20 bg-light/5",
-  hackathon: "border-pink/50 bg-pink/5",
-  closing: "border-lime/60 bg-lime/8",
-};
-
-const PHASE_DOT_COLORS = {
-  training: "bg-lime",
-  break: "bg-light/40",
-  hackathon: "bg-pink",
-  closing: "bg-lime",
-};
+import Image from "next/image";
 
 export default function CampTimeline() {
   const { t, locale } = useLanguage();
   const { ref, hasBeenInView } = useInView();
-  const [activeDay, setActiveDay] = useState<number | null>(null);
+  const [hoveredEvent, setHoveredEvent] = useState<string | null>(null);
+  const isRTL = locale === "ar";
+
+  const { phases } = t.timeline;
 
   return (
-    <section id="journey" className="relative py-20 overflow-hidden">
-      <div className="absolute inset-0 grid-bg opacity-10" />
+    <section id="journey" className="journey-section scroll-mt-24">
+      {/* Background ambient lighting */}
+      <div className="absolute top-1/4 left-1/3 -translate-x-1/2 w-[46rem] h-[24rem] bg-primary/10 rounded-full blur-[170px] pointer-events-none" />
+      <div className="absolute bottom-16 right-1/4 w-[36rem] h-[22rem] bg-lime/10 rounded-full blur-[160px] pointer-events-none" />
+      <div className="absolute inset-0 grid-bg opacity-10 pointer-events-none" />
 
-      <div ref={ref} className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6">
-        {/* Title */}
-        <motion.h2
-          initial={{ opacity: 0, y: 20 }}
-          animate={hasBeenInView ? { opacity: 1, y: 0 } : {}}
-          className="text-3xl sm:text-4xl text-center text-light mb-6"
-          style={{ fontFamily: locale === "ar" ? "var(--font-news-almstqbl)" : "var(--font-bauhaus)" }}
-        >
-          {t.timeline.title}
-        </motion.h2>
+      {/* Ghost Watermark */}
+      <div className="absolute top-20 right-10 w-80 h-80 opacity-[0.03] pointer-events-none select-none">
+        <Image
+          src="/assets/characters/hollow-purple.png"
+          alt=""
+          width={320}
+          height={320}
+          className="object-contain"
+        />
+      </div>
 
-        {/* Phase indicators */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={hasBeenInView ? { opacity: 1 } : {}}
-          transition={{ delay: 0.2 }}
-          className="flex flex-wrap justify-center gap-4 sm:gap-6 mb-12"
-        >
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-lime" />
-            <span className="text-sm text-light/70" style={{ fontFamily: "var(--font-janna)" }}>
-              {t.timeline.trainingPhase} ({t.timeline.trainingDates})
-            </span>
+      <div ref={ref} className="journey-container relative z-10 w-full">
+        {/* ======================================================== */}
+        {/* Section Heading & Centered Location Badge                */}
+        {/* ======================================================== */}
+        <div className="journey-heading flex flex-col items-center justify-center text-center px-4">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-lime/10 border border-lime/30 text-lime text-xs font-bold mb-3 font-arapix tracking-wider">
+            <span className="w-1.5 h-1.5 bg-lime inline-block animate-pulse" />
+            <span>{isRTL ? "خريطة المراحل" : "LEVEL MAP"}</span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-pink" />
-            <span className="text-sm text-light/70" style={{ fontFamily: "var(--font-janna)" }}>
-              {t.timeline.hackathonPhase} ({t.timeline.hackathonDates})
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-lime border border-lime" />
-            <span className="text-sm text-light/70" style={{ fontFamily: "var(--font-janna)" }}>
-              {t.timeline.closingPhase} ({t.timeline.closingDate})
-            </span>
-          </div>
-        </motion.div>
 
-        {/* Desktop Timeline - zigzag path */}
-        <div className="hidden lg:block">
-          <div className="relative">
-            {t.timeline.days.map((day, i) => {
-              const isEven = i % 2 === 0;
-              const phase = DAY_PHASES[i];
-              const isActive = activeDay === i;
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            animate={hasBeenInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.55 }}
+            className="section-title text-center w-full"
+            style={{ fontFamily: isRTL ? "var(--font-news-almstqbl)" : "var(--font-bauhaus)" }}
+          >
+            {t.timeline.title}
+          </motion.h2>
 
-              return (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={hasBeenInView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ delay: 0.1 + i * 0.08, duration: 0.5 }}
-                  className={`relative flex items-start mb-4 ${
-                    isEven ? "justify-start" : "justify-end"
+          <p
+            className="text-base sm:text-lg lg:text-xl text-light/75 max-w-2xl mx-auto mt-3 leading-relaxed text-center"
+            style={{ fontFamily: "var(--font-janna)", textAlign: "center" }}
+          >
+            {t.timeline.subtitle}
+          </p>
+
+          {/* Prominent Location Badge centered under heading */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={hasBeenInView ? { opacity: 1, scale: 1 } : {}}
+            transition={{ duration: 0.45, delay: 0.2 }}
+            className="mt-5"
+          >
+            <div className="location-badge">
+              <Image
+                src="/assets/icons/location-white.png"
+                alt=""
+                width={16}
+                height={16}
+                className="w-4 h-4 object-contain shrink-0"
+              />
+              <span className="font-arapix text-xs sm:text-sm tracking-wide font-medium whitespace-nowrap">
+                {t.timeline.location}
+              </span>
+            </div>
+          </motion.div>
+
+          {/* Decorative accent line */}
+          <div className="journey-heading-accent" />
+        </div>
+
+        {/* ======================================================== */}
+        {/* Game Map Phases Container                                */}
+        {/* ======================================================== */}
+        <div className="journey-phases-flow mt-10 sm:mt-14">
+
+          {/* ------------------------------------------------------ */}
+          {/* PHASE 01: Registration & Acceptance                    */}
+          {/* ------------------------------------------------------ */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={hasBeenInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="journey-phase journey-phase--reg"
+          >
+            <div className="journey-phase__header">
+              <div className="journey-phase__title-wrap">
+                <span className="journey-phase__badge journey-phase__badge--wine">
+                  {phases.reg.num}
+                </span>
+                <h3 className="journey-phase__name">
+                  {phases.reg.name}
+                </h3>
+              </div>
+              <span className="journey-phase__range font-arapix">
+                17 ── 23 {isRTL ? "سبتمبر" : "Sep"}
+              </span>
+            </div>
+
+            <div
+              className="journey-events"
+              style={{ "--event-count": 4 } as React.CSSProperties}
+            >
+              {phases.reg.events.map((evt, idx) => (
+                <div
+                  key={`reg-${idx}`}
+                  onMouseEnter={() => setHoveredEvent(`reg-${idx}`)}
+                  onMouseLeave={() => setHoveredEvent(null)}
+                  className={`journey-node group ${
+                    hoveredEvent === `reg-${idx}` ? "is-hovered" : ""
                   }`}
                 >
-                  {/* Connecting line */}
-                  {i < t.timeline.days.length - 1 && (
-                    <div
-                      className={`absolute top-12 ${
-                        isEven ? "left-[50%]" : "right-[50%]"
-                      } w-px h-16 bg-gradient-to-b ${
-                        phase === "hackathon"
-                          ? "from-pink/40 to-pink/20"
-                          : "from-lime/40 to-lime/20"
-                      }`}
-                    />
-                  )}
-
-                  {/* Card */}
-                  <button
-                    onClick={() => setActiveDay(isActive ? null : i)}
-                    className={`w-[48%] cursor-pointer text-start ${
-                      locale === "ar" ? "text-right" : "text-left"
-                    }`}
-                    aria-expanded={isActive}
-                  >
-                    <div
-                      className={`pixel-card p-5 transition-all duration-300 ${
-                        PHASE_COLORS[phase]
-                      } ${isActive ? "border-lime" : ""}`}
-                    >
-                      <div className="flex items-center gap-3 mb-2">
-                        {/* Level dot */}
-                        <div
-                          className={`w-4 h-4 ${PHASE_DOT_COLORS[phase]} ${
-                            isActive ? "animate-pulse" : ""
-                          }`}
-                        />
-                        <span
-                          className="text-xs text-light/50"
-                          style={{ fontFamily: "var(--font-arapix)" }}
-                        >
-                          {day.date}
-                        </span>
-                        <span
-                          className="text-xs text-light/40 border border-primary/30 px-2 py-0.5"
-                          style={{ fontFamily: "var(--font-arapix)" }}
-                        >
-                          {day.label}
-                        </span>
-                      </div>
-
-                      <h4
-                        className="text-base text-light mb-1"
-                        style={{ fontFamily: "var(--font-janna-bold)" }}
-                      >
-                        {day.title}
-                      </h4>
-
-                      <AnimatePresence>
-                        {isActive && (
-                          <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: "auto", opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            transition={{ duration: 0.3 }}
-                            className="overflow-hidden"
-                          >
-                            <div className="flex items-start gap-3 pt-3 border-t border-primary/20 mt-3">
-                              <CharacterState
-                                state={DAY_CHARACTERS[i]}
-                                size={48}
-                                animate={false}
-                              />
-                              <p
-                                className="text-sm text-light/65 leading-relaxed"
-                                style={{ fontFamily: "var(--font-janna)" }}
-                              >
-                                {day.description}
-                              </p>
-                            </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
-                  </button>
-                </motion.div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Mobile Timeline - vertical */}
-        <div className="lg:hidden">
-          <div className="relative">
-            {/* Vertical line */}
-            <div
-              className={`absolute top-0 bottom-0 w-0.5 bg-gradient-to-b from-lime/40 via-primary/30 to-pink/40 ${
-                locale === "ar" ? "right-4" : "left-4"
-              }`}
-            />
-
-            <div className="space-y-4">
-              {t.timeline.days.map((day, i) => {
-                const phase = DAY_PHASES[i];
-                const isActive = activeDay === i;
-
-                return (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, x: locale === "ar" ? 20 : -20 }}
-                    animate={hasBeenInView ? { opacity: 1, x: 0 } : {}}
-                    transition={{ delay: 0.1 + i * 0.06, duration: 0.4 }}
-                    className={`relative ${
-                      locale === "ar" ? "pr-10" : "pl-10"
-                    }`}
-                  >
-                    {/* Dot on line */}
-                    <div
-                      className={`absolute top-4 ${
-                        locale === "ar" ? "right-2.5" : "left-2.5"
-                      } w-3 h-3 ${PHASE_DOT_COLORS[phase]} border-2 border-dark z-10`}
-                    />
-
-                    <button
-                      onClick={() => setActiveDay(isActive ? null : i)}
-                      className={`w-full cursor-pointer text-start ${
-                        locale === "ar" ? "text-right" : "text-left"
-                      }`}
-                      aria-expanded={isActive}
-                    >
-                      <div
-                        className={`pixel-card p-4 transition-all duration-200 ${
-                          PHASE_COLORS[phase]
-                        } ${isActive ? "border-lime" : ""}`}
-                      >
-                        <div className="flex items-center gap-2 mb-1">
-                          <span
-                            className="text-[10px] text-light/50"
-                            style={{ fontFamily: "var(--font-arapix)" }}
-                          >
-                            {day.date}
-                          </span>
-                          <span
-                            className="text-[10px] text-light/40 border border-primary/30 px-1.5 py-0.5"
-                            style={{ fontFamily: "var(--font-arapix)" }}
-                          >
-                            {day.label}
-                          </span>
-                        </div>
-
-                        <h4
-                          className="text-sm text-light"
-                          style={{ fontFamily: "var(--font-janna-bold)" }}
-                        >
-                          {day.title}
-                        </h4>
-
-                        <AnimatePresence>
-                          {isActive && (
-                            <motion.div
-                              initial={{ height: 0, opacity: 0 }}
-                              animate={{ height: "auto", opacity: 1 }}
-                              exit={{ height: 0, opacity: 0 }}
-                              transition={{ duration: 0.25 }}
-                              className="overflow-hidden"
-                            >
-                              <div className="pt-3 border-t border-primary/20 mt-2">
-                                <div className="flex items-start gap-2">
-                                  <CharacterState
-                                    state={DAY_CHARACTERS[i]}
-                                    size={36}
-                                    animate={false}
-                                  />
-                                  <p
-                                    className="text-xs text-light/60 leading-relaxed"
-                                    style={{ fontFamily: "var(--font-janna)" }}
-                                  >
-                                    {day.description}
-                                  </p>
-                                </div>
-                              </div>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </div>
-                    </button>
-                  </motion.div>
-                );
-              })}
+                  <div className="journey-node__top">
+                    <span className="journey-node__date">{evt.date}</span>
+                    <span className="journey-node__dot journey-node__dot--wine" />
+                  </div>
+                  <h4 className="journey-node__title">{evt.title}</h4>
+                  <p className="journey-node__desc">{evt.desc}</p>
+                </div>
+              ))}
             </div>
-          </div>
-        </div>
-      </div>
+          </motion.div>
 
-      {/* Pixel decorations */}
-      <div className="absolute top-20 left-6 hidden lg:block">
-        <PixelDecoration variant="3" color="volt" size={28} opacity={0.12} animate />
-      </div>
-      <div className="absolute bottom-20 right-6 hidden lg:block">
-        <PixelDecoration variant="1" color="pink" size={24} opacity={0.1} />
+          {/* Phase Flow Connector 1 -> 2 */}
+          <div className="journey-connector" aria-hidden="true">
+            <span className="journey-connector__line" />
+            <span className="journey-connector__arrow">▼</span>
+          </div>
+
+          {/* ------------------------------------------------------ */}
+          {/* PHASE 02: Training Camp (حضوريًا في الرياض)             */}
+          {/* ------------------------------------------------------ */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={hasBeenInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="journey-phase journey-phase--camp"
+          >
+            <div className="journey-phase__header">
+              <div className="journey-phase__title-wrap">
+                <span className="journey-phase__badge journey-phase__badge--lime">
+                  {phases.camp.num}
+                </span>
+                <h3 className="journey-phase__name">
+                  {phases.camp.name}
+                </h3>
+                {/* Location Badge inside Phase 2 */}
+                <div className="location-badge location-badge--compact">
+                  <Image
+                    src="/assets/icons/location-white.png"
+                    alt=""
+                    width={14}
+                    height={14}
+                    className="w-3.5 h-3.5 object-contain shrink-0"
+                  />
+                  <span className="font-arapix text-xs tracking-wider font-medium">
+                    {phases.camp.badge}
+                  </span>
+                </div>
+              </div>
+              <span className="journey-phase__range font-arapix">
+                27 {isRTL ? "سبتمبر" : "Sep"} ── 1 {isRTL ? "أكتوبر" : "Oct"}
+              </span>
+            </div>
+
+            {/* 5 Daily Camp Events */}
+            <div
+              className="journey-events"
+              style={{ "--event-count": 5 } as React.CSSProperties}
+            >
+              {phases.camp.events.map((evt, idx) => (
+                <div
+                  key={`camp-${idx}`}
+                  onMouseEnter={() => setHoveredEvent(`camp-${idx}`)}
+                  onMouseLeave={() => setHoveredEvent(null)}
+                  className={`journey-node group ${
+                    hoveredEvent === `camp-${idx}` ? "is-hovered" : ""
+                  }`}
+                >
+                  <div className="journey-node__top">
+                    <span className="journey-node__date">{evt.date}</span>
+                    <span className="journey-node__dot journey-node__dot--lime" />
+                  </div>
+                  <span className="journey-node__subtag font-arapix">{evt.dayNum}</span>
+                  <h4 className="journey-node__title">{evt.title}</h4>
+                  <p className="journey-node__desc">{evt.desc}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Preparation / Recharge Break Node */}
+            <div className="journey-break-node mt-4">
+              <div className="journey-break-node__inner">
+                <div className="flex items-center gap-3">
+                  <span className="w-2.5 h-2.5 bg-light/80 rotate-45 shrink-0" />
+                  <span className="font-bold text-light text-sm sm:text-base font-arapix">
+                    {phases.camp.breakEvent.date} — {phases.camp.breakEvent.title}
+                  </span>
+                </div>
+                <p className="text-xs sm:text-sm text-light/70 mt-1 sm:mt-0 font-janna">
+                  {phases.camp.breakEvent.desc}
+                </p>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Phase Flow Connector 2 -> 3 */}
+          <div className="journey-connector" aria-hidden="true">
+            <span className="journey-connector__line" />
+            <span className="journey-connector__arrow">▼</span>
+          </div>
+
+          {/* ------------------------------------------------------ */}
+          {/* PHASE 03: Collaborative Hackathon                      */}
+          {/* ------------------------------------------------------ */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={hasBeenInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            className="journey-phase journey-phase--hackathon"
+          >
+            <div className="journey-phase__header">
+              <div className="journey-phase__title-wrap">
+                <span className="journey-phase__badge journey-phase__badge--pink">
+                  {phases.hackathon.num}
+                </span>
+                <h3 className="journey-phase__name">
+                  {phases.hackathon.name}
+                </h3>
+              </div>
+              <span className="journey-phase__range font-arapix">
+                4 ── 5 {isRTL ? "أكتوبر" : "Oct"}
+              </span>
+            </div>
+
+            <div
+              className="journey-events"
+              style={{ "--event-count": 2 } as React.CSSProperties}
+            >
+              {phases.hackathon.events.map((evt, idx) => (
+                <div
+                  key={`hack-${idx}`}
+                  onMouseEnter={() => setHoveredEvent(`hack-${idx}`)}
+                  onMouseLeave={() => setHoveredEvent(null)}
+                  className={`journey-node journey-node--featured group ${
+                    hoveredEvent === `hack-${idx}` ? "is-hovered" : ""
+                  }`}
+                >
+                  <div className="journey-node__top">
+                    <span className="journey-node__date">{evt.date}</span>
+                    <span className="journey-node__dot journey-node__dot--pink" />
+                  </div>
+                  <span className="journey-node__subtag font-arapix">{evt.dayNum}</span>
+                  <h4 className="journey-node__title text-pink">{evt.title}</h4>
+                  <p className="journey-node__desc">{evt.desc}</p>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Phase Flow Connector 3 -> 4 */}
+          <div className="journey-connector" aria-hidden="true">
+            <span className="journey-connector__line" />
+            <span className="journey-connector__arrow">▼</span>
+          </div>
+
+          {/* ------------------------------------------------------ */}
+          {/* PHASE 04: Closing Ceremony                             */}
+          {/* ------------------------------------------------------ */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={hasBeenInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.5, delay: 0.5 }}
+            className="journey-phase journey-phase--closing"
+          >
+            <div className="journey-phase__header">
+              <div className="journey-phase__title-wrap">
+                <span className="journey-phase__badge journey-phase__badge--gold">
+                  {phases.closing.num}
+                </span>
+                <h3 className="journey-phase__name">
+                  {phases.closing.name}
+                </h3>
+              </div>
+              <span className="journey-phase__range font-arapix text-lime">
+                6 {isRTL ? "أكتوبر" : "Oct"}
+              </span>
+            </div>
+
+            <div
+              className="journey-events"
+              style={{ "--event-count": 1 } as React.CSSProperties}
+            >
+              {phases.closing.events.map((evt, idx) => (
+                <div
+                  key={`closing-${idx}`}
+                  onMouseEnter={() => setHoveredEvent(`closing-${idx}`)}
+                  onMouseLeave={() => setHoveredEvent(null)}
+                  className={`journey-node journey-node--final group ${
+                    hoveredEvent === `closing-${idx}` ? "is-hovered" : ""
+                  }`}
+                >
+                  <div className="journey-node__top">
+                    <span className="journey-node__date text-lime">{evt.date}</span>
+                    <div className="flex items-center gap-2">
+                      <Image
+                        src="/assets/icons/trophy-light.png"
+                        alt=""
+                        width={20}
+                        height={20}
+                        className="w-5 h-5 object-contain"
+                      />
+                      <span className="journey-node__dot journey-node__dot--lime" />
+                    </div>
+                  </div>
+                  <span className="journey-node__subtag font-arapix">{evt.dayNum}</span>
+                  <h4 className="journey-node__title text-lime text-lg sm:text-xl font-black">
+                    {evt.title}
+                  </h4>
+                  <p className="journey-node__desc sm:text-base">{evt.desc}</p>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+
+        </div>
       </div>
     </section>
   );

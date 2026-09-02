@@ -1,202 +1,344 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 import { useInView } from "@/hooks/useInView";
-import { useCountUp } from "@/hooks/useCountUp";
 import Image from "next/image";
 
 export default function TrainerSection() {
   const { t, locale } = useLanguage();
+  const isRTL = locale === "ar";
   const { ref, hasBeenInView } = useInView();
-  const [showMore, setShowMore] = useState(false);
 
-  const projects = useCountUp(32, 2000, hasBeenInView);
-  const achievements = useCountUp(8, 1500, hasBeenInView);
+  // Desktop subtle 3D tilt
+  const [tilt, setTilt] = useState({ rotateX: 0, rotateY: 0, translateY: 0 });
+  const [breakdownHighlight, setBreakdownHighlight] = useState(false);
 
-  const stats = [
-    { value: `+${projects}`, label: t.trainer.stats.projects },
-    { value: `${achievements}`, label: t.trainer.stats.achievements },
-    { value: locale === "ar" ? "٢" : "2", label: t.trainer.stats.awards },
-    { value: "Top 50", label: t.trainer.stats.top50 },
-  ];
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (typeof window !== "undefined" && window.innerWidth < 1024) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    setTilt({
+      rotateX: -y * 3,
+      rotateY: x * 5,
+      translateY: -Math.abs(y) * 4,
+    });
+  };
+
+  const handleMouseLeave = () => {
+    setTilt({ rotateX: 0, rotateY: 0, translateY: 0 });
+  };
 
   return (
-    <section id="trainer" className="relative py-20 overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-dark via-dark-secondary/8 to-dark" />
+    <section id="trainer" className="trainer-section scroll-mt-24">
+      {/* Background Subtle Watermark */}
+      <div className="trainer-ghost-watermark">01</div>
 
-      <div ref={ref} className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6">
-        <motion.h2
-          initial={{ opacity: 0, y: 20 }}
-          animate={hasBeenInView ? { opacity: 1, y: 0 } : {}}
-          className="text-3xl sm:text-4xl text-center text-light mb-12"
-          style={{ fontFamily: locale === "ar" ? "var(--font-news-almstqbl)" : "var(--font-bauhaus)" }}
-        >
-          {t.trainer.sectionTitle}
-        </motion.h2>
-
-        <div className="flex flex-col lg:flex-row items-center lg:items-start gap-8 lg:gap-12">
-          {/* Photo */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={hasBeenInView ? { opacity: 1, scale: 1 } : {}}
-            transition={{ duration: 0.6 }}
-            className="flex-shrink-0 order-1 lg:order-none"
-          >
-            <div className="relative w-64 h-80 sm:w-72 sm:h-96">
-              <Image
-                src="/assets/trainer/ahmed-alrasheed.png"
-                alt={t.trainer.name}
-                fill
-                className="object-contain"
-                sizes="(max-width: 768px) 256px, 288px"
-                priority
-              />
+      <div ref={ref} className="trainer-container">
+        {/* ====================================================================
+            1. SECTION HEADING
+            ==================================================================== */}
+        <div className="trainer-section-heading">
+          <div className="flex items-center justify-between flex-wrap gap-3 mb-3">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-lime/10 border border-lime/30 text-lime text-xs font-bold font-arapix tracking-wider">
+              <span className="w-1.5 h-1.5 bg-lime inline-block animate-pulse" />
+              <span>{t.trainer.fileBadge}</span>
             </div>
-          </motion.div>
+          </div>
 
-          {/* Content */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={hasBeenInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ delay: 0.2, duration: 0.6 }}
-            className="flex-1 order-2 lg:order-none"
+          <h2
+            className="trainer-section-title"
+            style={{ fontFamily: isRTL ? "var(--font-news-almstqbl)" : "var(--font-bauhaus)" }}
           >
-            {/* Name */}
-            <h3
-              className="text-2xl sm:text-3xl text-light mb-2"
-              style={{ fontFamily: "var(--font-janna-bold)" }}
-            >
-              {t.trainer.name}
-            </h3>
+            {t.trainer.sectionHeading}
+          </h2>
 
-            {/* Title */}
-            <p
-              className="text-sm text-lime/80 mb-6 leading-relaxed"
-              style={{ fontFamily: "var(--font-janna)" }}
-            >
-              {t.trainer.title}
-            </p>
+          <p
+            className="text-base sm:text-lg lg:text-xl text-light/75 max-w-3xl mt-3 leading-relaxed"
+            style={{ fontFamily: "var(--font-janna)" }}
+          >
+            {t.trainer.sectionSubheading}
+          </p>
+        </div>
 
-            {/* Bio */}
-            <p
-              className="text-base text-light/75 leading-relaxed mb-6"
-              style={{ fontFamily: "var(--font-janna)" }}
+        {/* ====================================================================
+            2. PROFILE LAYOUT
+            ==================================================================== */}
+        <div className="trainer-profile-layout">
+          {/* PORTRAIT COLUMN */}
+          <div
+            className="trainer-portrait-column"
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+          >
+            <motion.div
+              className="trainer-portrait-wrapper"
+              initial={{ opacity: 0, y: 25 }}
+              animate={hasBeenInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
             >
-              {t.trainer.bio}
-            </p>
+              <motion.div
+                animate={{
+                  rotateX: tilt.rotateX,
+                  rotateY: tilt.rotateY,
+                  y: tilt.translateY,
+                }}
+                transition={{
+                  type: "spring",
+                  stiffness: 140,
+                  damping: 18,
+                  mass: 0.6,
+                }}
+                className="w-full h-full"
+              >
+                <Image
+                  src="/assets/trainer/ahmed-alrasheed-portrait.png"
+                  alt={t.trainer.name}
+                  width={2580}
+                  height={3692}
+                  priority
+                  className="trainer-portrait"
+                  sizes="(max-width: 768px) 88vw, (max-width: 1200px) 45vw, 540px"
+                />
+              </motion.div>
+            </motion.div>
+          </div>
 
-            {/* Stats */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-              {stats.map((stat, i) => (
-                <div
-                  key={i}
-                  className="pixel-card p-3 text-center"
-                >
-                  <div
-                    className="text-xl sm:text-2xl text-lime mb-1"
-                    style={{ fontFamily: "var(--font-arapix)" }}
-                  >
-                    {stat.value}
-                  </div>
-                  <div
-                    className="text-[10px] text-light/50"
-                    style={{ fontFamily: "var(--font-janna)" }}
+          {/* CONTENT COLUMN */}
+          <div className="trainer-content">
+            {/* Identity: Name & Roles */}
+            <div className="trainer-identity">
+              <h3
+                className="trainer-name"
+                style={{ fontFamily: isRTL ? "var(--font-janna-bold)" : "var(--font-bauhaus)" }}
+              >
+                {t.trainer.name}
+              </h3>
+
+              <div className="trainer-roles">
+                {t.trainer.roles.map((role, idx) => (
+                  <span key={idx} className="trainer-role-item">
+                    {idx > 0 && <span className="role-sep">◆</span>}
+                    {role}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Biography */}
+            <div className="trainer-biography">
+              <p
+                className="trainer-bio-p"
+                style={{ fontFamily: isRTL ? "var(--font-janna)" : "sans-serif" }}
+              >
+                {t.trainer.bioP1}
+              </p>
+              <p
+                className="trainer-bio-p mt-3 text-light/85 font-medium"
+                style={{ fontFamily: isRTL ? "var(--font-janna)" : "sans-serif" }}
+              >
+                {t.trainer.bioP2}
+              </p>
+            </div>
+
+            {/* Five Stats: +32 | +26 | 12 | 2 | Top 50 */}
+            <div className="trainer-stats">
+              {t.trainer.stats.map((stat, idx) => (
+                <div key={idx} className="trainer-stat">
+                  <span className="trainer-stat-number">{stat.number}</span>
+                  <span
+                    className="trainer-stat-label"
+                    style={{ fontFamily: isRTL ? "var(--font-janna)" : "sans-serif" }}
                   >
                     {stat.label}
-                  </div>
+                  </span>
                 </div>
               ))}
             </div>
 
-            {/* Visit Profile button */}
-            <a
-              href="https://ahmedalrasheed.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="pixel-btn pixel-btn-primary text-sm py-2 px-6 mb-4 inline-block"
+            {/* 12 Achievements Breakdown Panel */}
+            <div
+              id="achievements-breakdown"
+              className={`achievement-breakdown-wrapper scroll-mt-28 transition-all duration-500 ${
+                breakdownHighlight ? "is-highlighted" : ""
+              }`}
             >
-              {t.trainer.visitProfile}
-            </a>
-
-            {/* Accordion: More about trainer */}
-            <div className="mt-6">
-              <button
-                onClick={() => setShowMore(!showMore)}
-                className="flex items-center gap-2 text-light/60 hover:text-light transition-colors cursor-pointer group"
-                aria-expanded={showMore}
-                style={{ fontFamily: "var(--font-janna-bold)" }}
-              >
-                <span className="text-sm">{t.trainer.moreAbout}</span>
-                <motion.span
-                  animate={{ rotate: showMore ? 180 : 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="text-lime"
-                >
-                  ▼
-                </motion.span>
-              </button>
-
-              <AnimatePresence>
-                {showMore && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="overflow-hidden"
+              <div className="achievement-breakdown-header">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 bg-lime inline-block" />
+                  <h4
+                    className="text-base sm:text-lg font-bold text-light"
+                    style={{ fontFamily: isRTL ? "var(--font-janna-bold)" : "var(--font-bauhaus)" }}
                   >
-                    <div className="pt-4 space-y-6">
-                      {/* Programs */}
-                      <div>
-                        <h4
-                          className="text-sm text-pink mb-3"
-                          style={{ fontFamily: "var(--font-janna-bold)" }}
-                        >
-                          {t.trainer.programs}
-                        </h4>
-                        <ul className="space-y-2">
-                          {t.trainer.programsList.map((prog, i) => (
-                            <li
-                              key={i}
-                              className="flex items-start gap-2 text-sm text-light/60"
-                              style={{ fontFamily: "var(--font-janna)" }}
-                            >
-                              <span className="text-lime mt-1 flex-shrink-0">{"▸"}</span>
-                              {prog}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
+                    {t.trainer.breakdownTitle}
+                  </h4>
+                </div>
+              </div>
 
-                      {/* Experience */}
-                      <div>
-                        <h4
-                          className="text-sm text-pink mb-3"
-                          style={{ fontFamily: "var(--font-janna-bold)" }}
-                        >
-                          {t.trainer.experience}
-                        </h4>
-                        <ul className="space-y-2">
-                          {t.trainer.experienceList.map((exp, i) => (
-                            <li
-                              key={i}
-                              className="flex items-start gap-2 text-sm text-light/60"
-                              style={{ fontFamily: "var(--font-janna)" }}
-                            >
-                              <span className="text-lime mt-1 flex-shrink-0">{"▸"}</span>
-                              {exp}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
+              {/* Visual Equation: 8 + 3 + 1 = 12 (always LTR) */}
+              <div
+                className="achievement-equation"
+                dir="ltr"
+                aria-label={isRTL ? "ثمانية زائد ثلاثة زائد واحد يساوي اثني عشر" : "Eight plus three plus one equals twelve"}
+              >
+                <span>8</span>
+                <span className="operator">+</span>
+                <span>3</span>
+                <span className="operator">+</span>
+                <span>1</span>
+                <span className="operator">=</span>
+                <strong>12</strong>
+              </div>
+
+              {/* Three Breakdown Parts */}
+              <div className="achievement-breakdown">
+                {/* Part 1: 8 Hackathon Wins */}
+                <div className="achievement-part">
+                  <span className="achievement-part-number font-arapix">
+                    {t.trainer.breakdownParts.hackathons.number}
+                  </span>
+                  <h5
+                    className="achievement-part__title"
+                    style={{ fontFamily: isRTL ? "var(--font-janna-bold)" : "var(--font-bauhaus)" }}
+                  >
+                    {t.trainer.breakdownParts.hackathons.label}
+                  </h5>
+                  <p
+                    className="achievement-part__sub"
+                    style={{ fontFamily: isRTL ? "var(--font-janna)" : "sans-serif" }}
+                  >
+                    {t.trainer.breakdownParts.hackathons.sub}
+                  </p>
+                </div>
+
+                {/* Part 2: 3 Entrepreneurship Placements */}
+                <div className="achievement-part">
+                  <span className="achievement-part-number font-arapix">
+                    {t.trainer.breakdownParts.entrepreneurship.number}
+                  </span>
+                  <h5
+                    className="achievement-part__title"
+                    style={{ fontFamily: isRTL ? "var(--font-janna-bold)" : "var(--font-bauhaus)" }}
+                  >
+                    {t.trainer.breakdownParts.entrepreneurship.label}
+                  </h5>
+                  <p
+                    className="achievement-part__sub"
+                    style={{ fontFamily: isRTL ? "var(--font-janna)" : "sans-serif" }}
+                  >
+                    {t.trainer.breakdownParts.entrepreneurship.sub}
+                  </p>
+                </div>
+
+                {/* Part 3: 1 International Achievement → 2 Awards */}
+                <div className="achievement-part">
+                  <span className="achievement-part-number font-arapix">
+                    {t.trainer.breakdownParts.international.number}
+                  </span>
+                  <h5
+                    className="achievement-part__title"
+                    style={{ fontFamily: isRTL ? "var(--font-janna-bold)" : "var(--font-bauhaus)" }}
+                  >
+                    {t.trainer.breakdownParts.international.label}
+                  </h5>
+                  <span className="achievement-part__event font-mono text-xs text-lime/90 block mb-2">
+                    {t.trainer.breakdownParts.international.event}
+                  </span>
+                  <p
+                    className="achievement-part__sub"
+                    style={{ fontFamily: isRTL ? "var(--font-janna)" : "sans-serif" }}
+                  >
+                    {t.trainer.breakdownParts.international.sub}
+                  </p>
+
+                  {/* 2 International Awards detail */}
+                  <div className="international-awards-detail mt-3">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="international-awards-count font-arapix">
+                        {t.trainer.breakdownParts.international.awardsCount}
+                      </span>
+                      <span
+                        className="text-sm font-bold text-pink"
+                        style={{ fontFamily: isRTL ? "var(--font-janna-bold)" : "sans-serif" }}
+                      >
+                        {t.trainer.breakdownParts.international.awardsLabel}
+                      </span>
                     </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                    <div className="flex flex-col gap-1">
+                      {t.trainer.breakdownParts.international.awards.map((award, idx) => (
+                        <div key={idx} className="flex items-center gap-2">
+                          <Image
+                            src={idx === 0 ? "/assets/icons/trophy-light.png" : "/assets/icons/star-light.png"}
+                            alt=""
+                            width={16}
+                            height={16}
+                            className="w-4 h-4 object-contain opacity-80"
+                          />
+                          <span
+                            className="text-sm text-light/90 font-semibold"
+                            style={{ fontFamily: isRTL ? "var(--font-janna)" : "sans-serif" }}
+                          >
+                            {award}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-          </motion.div>
+
+            {/* Programs That Shaped the Journey */}
+            <div className="trainer-programs-section">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="w-2 h-2 bg-lime inline-block" />
+                <h4
+                  className="text-base sm:text-lg font-bold text-light"
+                  style={{ fontFamily: isRTL ? "var(--font-janna-bold)" : "var(--font-bauhaus)" }}
+                >
+                  {t.trainer.programsTitle}
+                </h4>
+              </div>
+
+              <div className="trainer-programs">
+                {t.trainer.programsList.map((prog, idx) => (
+                  <div key={idx} className="trainer-program-chip">
+                    <span className="trainer-program-chip__dot" />
+                    <div className="trainer-program-chip__content">
+                      <span
+                        className="trainer-program-chip__name"
+                        style={{ fontFamily: isRTL ? "var(--font-janna-bold)" : "sans-serif" }}
+                      >
+                        {prog.institution}
+                      </span>
+                      <span
+                        className="trainer-program-chip__desc"
+                        style={{ fontFamily: isRTL ? "var(--font-janna)" : "sans-serif" }}
+                      >
+                        {prog.desc}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Profile Link Button */}
+            <div className="trainer-profile-link-wrap">
+              <a
+                href="https://ahmedalrasheed.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="trainer-profile-link"
+                style={{ fontFamily: isRTL ? "var(--font-janna-bold)" : "var(--font-bauhaus)" }}
+              >
+                <span>{t.trainer.exploreProfile}</span>
+                <span className="text-lg">{isRTL ? "←" : "→"}</span>
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </section>

@@ -102,7 +102,7 @@ export default function VibeCodingSection() {
             {/* Subtle localized glow behind visual */}
             <div className="absolute inset-10 bg-primary/20 rounded-full blur-[50px] pointer-events-none -z-10" />
 
-            <div className="relative w-full max-w-[340px] sm:max-w-[420px] lg:max-w-[500px] xl:max-w-[540px]">
+            <div className="vibe-float-1 relative w-full max-w-[340px] sm:max-w-[420px] lg:max-w-[500px] xl:max-w-[540px]">
               <Image
                 src="/assets/side/glass-characters.png"
                 alt={locale === "ar" ? "شخصيات BUILDx الزجاجية" : "BUILDx Glass Characters"}
@@ -121,8 +121,11 @@ export default function VibeCodingSection() {
         <div className="my-16 sm:my-24 lg:my-28 flex items-center justify-center gap-3 select-none pointer-events-none opacity-60">
           <span className="w-2 h-2 bg-pink/70" />
           <span className="w-16 sm:w-28 h-[1px] bg-gradient-to-r from-pink/50 via-lime/50 to-primary/50" />
-          <span className="font-mono text-[10px] sm:text-xs text-light/40 tracking-widest uppercase">
-            PARADIGM // SHIFT
+          <span
+            className="text-[11px] sm:text-xs text-light/50 tracking-wider font-bold"
+            style={{ fontFamily: locale === "ar" ? "var(--font-janna-bold)" : "var(--font-arapix)" }}
+          >
+            {locale === "ar" ? "نقلة نوعية // في أسلوب البناء" : "PARADIGM // SHIFT"}
           </span>
           <span className="w-16 sm:w-28 h-[1px] bg-gradient-to-r from-primary/50 via-lime/50 to-pink/50" />
           <span className="w-2 h-2 bg-lime/70" />
@@ -157,7 +160,7 @@ export default function VibeCodingSection() {
             {/* Subtle localized glow behind visual */}
             <div className="absolute inset-10 bg-pink/20 rounded-full blur-[50px] pointer-events-none -z-10" />
 
-            <div className="relative w-full max-w-[340px] sm:max-w-[420px] lg:max-w-[500px] xl:max-w-[540px]">
+            <div className="vibe-float-2 relative w-full max-w-[340px] sm:max-w-[420px] lg:max-w-[500px] xl:max-w-[540px]">
               <Image
                 src="/assets/side/collage.png"
                 alt={locale === "ar" ? "كولاج BUILDx" : "BUILDx Collage"}

@@ -1,105 +1,96 @@
 "use client";
 
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 import { useInView } from "@/hooks/useInView";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function FinalCTA() {
   const { t, locale } = useLanguage();
   const { ref, hasBeenInView } = useInView();
-  const [showTransition, setShowTransition] = useState(false);
-  const router = useRouter();
-
-  const handleRegister = () => {
-    setShowTransition(true);
-    setTimeout(() => {
-      router.push("/register");
-    }, 1200);
-  };
+  const isRTL = locale === "ar";
 
   return (
-    <>
-      <section className="relative py-24 overflow-hidden" id="register">
-        {/* Keyboard background */}
-        <div className="absolute inset-0">
-          <Image
-            src="/assets/side/keyboard.png"
-            alt=""
-            fill
-            className="object-cover"
-            style={{ opacity: 0.25 }}
-            aria-hidden="true"
+    <section className="final-cta relative overflow-hidden" id="register">
+      {/* Subtle ambient lighting */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[46rem] h-[26rem] bg-pink/10 rounded-full blur-[170px] pointer-events-none" />
+      <div className="absolute bottom-4 left-1/3 w-[34rem] h-[18rem] bg-lime/10 rounded-full blur-[150px] pointer-events-none" />
+
+      <div ref={ref} className="final-cta__content relative z-10">
+        {/* ======================================================== */}
+        {/* 1. BUILDx Keyboard Image Stage (Centered, No Card Frame) */}
+        {/* ======================================================== */}
+        <motion.div
+          initial={{ opacity: 0, y: 35, scale: 0.95 }}
+          animate={hasBeenInView ? { opacity: 1, y: 0, scale: 1 } : {}}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          className="keyboard-stage"
+        >
+          <motion.img
+            src="/assets/final-cta/buildx-keyboard.png"
+            alt={isRTL ? "أزرار BUILDx: جاهز للبناء" : "BUILDx Keycaps: Ready to Build"}
+            className="w-full h-auto object-contain select-none pointer-events-none"
+            initial={{ scale: 1 }}
+            animate={hasBeenInView ? { scale: [1, 0.98, 1] } : {}}
+            transition={{ duration: 0.6, delay: 0.65, ease: "easeInOut" }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-dark via-dark/85 to-dark/90" />
-        </div>
+        </motion.div>
 
-        <div ref={ref} className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={hasBeenInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.7 }}
+        {/* ======================================================== */}
+        {/* 2. Heading Directly Under Image                          */}
+        {/* ======================================================== */}
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          animate={hasBeenInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.55, delay: 0.2 }}
+          style={{ fontFamily: isRTL ? "var(--font-news-almstqbl)" : "var(--font-bauhaus)" }}
+        >
+          {t.finalCta.title}
+        </motion.h2>
+
+        {/* ======================================================== */}
+        {/* 3. Styled Sentence with Highlighted Key Terms            */}
+        {/* ======================================================== */}
+        <motion.p
+          initial={{ opacity: 0, y: 15 }}
+          animate={hasBeenInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.55, delay: 0.3 }}
+          style={{ fontFamily: "var(--font-janna)" }}
+        >
+          {isRTL ? (
+            <>
+              فكرتك هي <span className="text-light font-bold">البداية</span>.{" "}
+              البرومبت <span className="text-pink font-bold">أداتك</span>.{" "}
+              والمنتج هو <span className="text-lime font-bold">النتيجة</span>.
+            </>
+          ) : (
+            <>
+              Your idea is the <span className="text-light font-bold">beginning</span>.{" "}
+              Your prompt is the <span className="text-pink font-bold">tool</span>.{" "}
+              Your product is the <span className="text-lime font-bold">outcome</span>.
+            </>
+          )}
+        </motion.p>
+
+        {/* ======================================================== */}
+        {/* 4. Prominent Game Level Registration Button              */}
+        {/* ======================================================== */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={hasBeenInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.55, delay: 0.4 }}
+        >
+          <Link
+            href="/register"
+            className="final-cta__button"
+            style={{ fontFamily: "var(--font-janna-bold)" }}
           >
-            <h2
-              className="text-3xl sm:text-4xl md:text-5xl text-light mb-6"
-              style={{ fontFamily: locale === "ar" ? "var(--font-news-almstqbl)" : "var(--font-bauhaus)" }}
-            >
-              {t.finalCta.title}
-            </h2>
-
-            <p
-              className="text-lg sm:text-xl text-light/70 mb-10"
-              style={{ fontFamily: "var(--font-janna)" }}
-            >
-              {t.finalCta.description}
-            </p>
-
-            <button
-              onClick={handleRegister}
-              className="pixel-btn pixel-btn-primary text-lg py-4 px-10"
-            >
-              {t.finalCta.button}
-            </button>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Registration transition overlay */}
-      <AnimatePresence>
-        {showTransition && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[9998] flex items-center justify-center bg-dark/95"
-          >
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 0.1, duration: 0.4 }}
-              className="flex flex-col items-center"
-            >
-              <Image
-                src="/assets/side/impact-makers.png"
-                alt="BUILDx"
-                width={200}
-                height={200}
-                className="object-contain mb-4"
-              />
-              <Image
-                src="/assets/icons/loading-99.png"
-                alt=""
-                width={48}
-                height={48}
-                className="object-contain animate-spin"
-                aria-hidden="true"
-              />
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </>
+            <span className="w-2 h-2 bg-dark rotate-45 shrink-0" />
+            <span>{t.finalCta.button}</span>
+            <span className="text-sm">◀</span>
+          </Link>
+        </motion.div>
+      </div>
+    </section>
   );
 }

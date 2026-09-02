@@ -52,7 +52,14 @@ export default function HomePage() {
 
             <ObjectivesSection />
 
-            <div className="section-divider" />
+            {/* Visual Pixel Transition between Objectives and Target Audience */}
+            <div className="relative py-8 md:py-14 flex items-center justify-center gap-3 select-none pointer-events-none opacity-80">
+              <span className="w-2.5 h-2.5 bg-lime shadow-[0_0_8px_#c3f937]" />
+              <span className="w-2 h-2 bg-pink/80" />
+              <span className="w-24 sm:w-48 h-[2px] bg-gradient-to-r from-lime via-pink to-primary" />
+              <span className="w-2 h-2 bg-primary/80" />
+              <span className="w-2.5 h-2.5 bg-pink shadow-[0_0_8px_#fb50c3]" />
+            </div>
 
             <TargetAudienceSection />
 
@@ -72,9 +79,6 @@ export default function HomePage() {
           <Footer />
 
           <MobileBottomNavigation />
-
-          {/* Bottom spacer for mobile nav */}
-          <div className="h-16 lg:hidden" />
         </>
       )}
     </>

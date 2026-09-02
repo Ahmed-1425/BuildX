@@ -120,7 +120,7 @@ export default function HeroSection() {
       ref={containerRef}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="relative min-h-[92vh] lg:min-h-screen flex items-center justify-center overflow-hidden bg-dark select-none pt-16 sm:pt-20 pb-16 lg:py-0"
+      className="hero-section relative min-h-[92vh] lg:min-h-screen flex items-center justify-center overflow-hidden bg-dark select-none pt-16 sm:pt-20 pb-16 lg:py-0"
     >
       {/* ============================================================ */}
       {/* 1. ATMOSPHERIC GAME WORLD: GRID, DEPTH LAYERS, SCANLINES      */}
@@ -249,10 +249,25 @@ export default function HeroSection() {
               isRTL ? "lg:text-right" : "lg:text-left"
             }`}
           >
-            {/* Mobile-Only Camp Badge */}
-            <div className="lg:hidden inline-flex items-center gap-2 px-3.5 py-1 bg-lime/10 border border-lime/30 text-lime text-xs font-bold mb-4 font-arapix tracking-wider">
-              <span className="w-1.5 h-1.5 bg-lime rounded-full animate-ping" />
-              <span>VIBE CODING CAMP ⚡</span>
+            {/* Camp Info Badges (Location + Camp Type) */}
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2.5 sm:gap-3 mb-4 lg:ps-8 xl:ps-12">
+              <div className="location-badge">
+                <Image
+                  src="/assets/icons/location-white.png"
+                  alt=""
+                  width={16}
+                  height={16}
+                  className="w-4 h-4 object-contain shrink-0"
+                />
+                <span className="font-arapix text-xs sm:text-sm tracking-wide font-medium whitespace-nowrap">
+                  {isRTL ? "حضوريًا في الرياض" : "In Person — Riyadh"}
+                </span>
+              </div>
+
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-lime/10 border border-lime/30 text-lime text-xs font-bold font-arapix tracking-wider min-h-[42px]">
+                <span className="w-1.5 h-1.5 bg-lime rounded-full animate-ping" />
+                <span>VIBE CODING CAMP ⚡</span>
+              </div>
             </div>
 
             {/* BUILDx Glowing Logo */}

@@ -25,10 +25,11 @@ export default function MobileHeader() {
           : "bg-[#0c1018]/60 backdrop-blur-sm"
       }`}
       style={{
-        height: "64px",
+        height: "var(--mobile-header-height, 84px)",
         alignItems: "center",
         justifyContent: "space-between",
         paddingInline: "16px",
+        display: "flex",
       }}
     >
       <Link
@@ -58,164 +59,309 @@ export default function MobileHeader() {
   );
 }
 
+const CHARACTER_IMAGES: Record<string, string> = {
+  ready: "/assets/navigation-states/ready.png",
+  thinking: "/assets/navigation-states/thinking.png",
+  building: "/assets/navigation-states/building.png",
+  loading: "/assets/navigation-states/loading.png",
+  success: "/assets/navigation-states/success.png",
+};
+
+function getNavigationCharacter(progress: number): "ready" | "thinking" | "building" | "loading" | "success" {
+  if (progress >= 0.94) return "success";
+  if (progress >= 0.70) return "loading";
+  if (progress >= 0.38) return "building";
+  if (progress >= 0.15) return "thinking";
+  return "ready";
+}
+
 export function MobileBottomNavigation() {
-  const { t } = useLanguage();
-  const [visible, setVisible] = useState(true);
+  const { t, locale } = useLanguage();
+  const [navMode, setNavMode] = useState<"expanded" | "compact">("expanded");
+  const [characterState, setCharacterState] = useState<"ready" | "thinking" | "building" | "loading" | "success">("ready");
   const [activeSection, setActiveSection] = useState("home");
   const lastScrollY = useRef(0);
+  const idleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const keepExpandedUntil = useRef(0);
+  const lastCharSwitch = useRef(0);
 
   useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      const docHeight =
-        document.documentElement.scrollHeight - window.innerHeight;
-      const atNearBottom = currentScrollY > docHeight - 200;
-
-      if (atNearBottom) {
-        setVisible(true);
-      } else if (currentScrollY < 100) {
-        setVisible(true);
-      } else if (currentScrollY > lastScrollY.current + 10) {
-        setVisible(false);
-      } else if (currentScrollY < lastScrollY.current - 10) {
-        setVisible(true);
+    const checkHash = () => {
+      if (typeof window !== "undefined") {
+        const hash = window.location.hash;
+        if (hash === "#compact" || hash.startsWith("#compact-")) {
+          setNavMode("compact");
+          if (hash === "#compact-ready") setCharacterState("ready");
+          if (hash === "#compact-thinking") setCharacterState("thinking");
+          if (hash === "#compact-building") setCharacterState("building");
+          if (hash === "#compact-loading") setCharacterState("loading");
+          if (hash === "#compact-success") setCharacterState("success");
+        }
       }
+    };
 
-      lastScrollY.current = currentScrollY;
+    checkHash();
+    window.addEventListener("hashchange", checkHash);
+    return () => window.removeEventListener("hashchange", checkHash);
+  }, []);
 
-      // Active section detection
-      const sections = ["about", "journey", "register"];
-      let found = false;
-      for (let i = sections.length - 1; i >= 0; i--) {
-        const el = document.getElementById(sections[i]);
-        if (el) {
-          const rect = el.getBoundingClientRect();
-          if (rect.top <= 250) {
-            setActiveSection(sections[i]);
-            found = true;
-            break;
+  useEffect(() => {
+    // Initial active section based on URL
+    if (typeof window !== "undefined" && window.location.pathname === "/register") {
+      setActiveSection("register");
+    }
+
+    const handleScroll = () => {
+      const currentY = window.scrollY;
+      const delta = currentY - lastScrollY.current;
+
+      // 1. Active section detection on homepage
+      if (window.location.pathname === "/register") {
+        setActiveSection("register");
+      } else {
+        const scrollHeight = document.documentElement.scrollHeight;
+        const clientHeight = window.innerHeight;
+
+        if (currentY + clientHeight >= scrollHeight - 90) {
+          setActiveSection("register");
+        } else if (currentY < 180) {
+          setActiveSection("home");
+        } else {
+          const journeyEl = document.getElementById("journey");
+          const aboutEl = document.getElementById("about");
+
+          if (journeyEl && journeyEl.getBoundingClientRect().top <= 320) {
+            setActiveSection("journey");
+          } else if (aboutEl && aboutEl.getBoundingClientRect().top <= 320) {
+            setActiveSection("about");
           }
         }
       }
-      if (!found) setActiveSection("home");
+
+      // 2. Character state based on scroll progress
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = maxScroll > 0 ? Math.max(0, Math.min(1, currentY / maxScroll)) : 0;
+
+      const now = Date.now();
+      if (now - lastCharSwitch.current > 120) {
+        setCharacterState(getNavigationCharacter(progress));
+        lastCharSwitch.current = now;
+      }
+
+      // Ignore micro jitters (< 6px)
+      if (Math.abs(delta) < 6) return;
+
+      const nearTop = currentY <= 30;
+      const nearBottom = progress >= 0.94;
+      const scrollingDown = delta > 6;
+      const scrollingUp = delta < -6;
+
+      if (idleTimer.current) {
+        clearTimeout(idleTimer.current);
+      }
+
+      // If clicked a link, keep expanded for 1 second
+      if (now < keepExpandedUntil.current) {
+        setNavMode("expanded");
+        lastScrollY.current = currentY;
+        return;
+      }
+
+      if (nearTop || scrollingUp) {
+        setNavMode("expanded");
+      } else if (scrollingDown) {
+        setNavMode("compact");
+      }
+
+      // Re-expand after scrolling stops: 450ms near bottom, 280ms otherwise
+      idleTimer.current = setTimeout(() => {
+        if (typeof window !== "undefined" && window.location.hash.startsWith("#compact")) return;
+        setNavMode("expanded");
+      }, nearBottom ? 450 : 280);
+
+      lastScrollY.current = currentY;
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (idleTimer.current) {
+        clearTimeout(idleTimer.current);
+      }
+    };
   }, []);
 
-  const scrollTo = (id: string) => {
-    if (id === "home") {
+  const handleItemClick = (key: string, href: string) => {
+    setNavMode("expanded");
+    keepExpandedUntil.current = Date.now() + 1000;
+
+    if (key === "register") {
+      window.location.href = href;
+      return;
+    }
+
+    if (window.location.pathname !== "/") {
+      window.location.href = href;
+      return;
+    }
+
+    if (key === "home") {
       window.scrollTo({ top: 0, behavior: "smooth" });
-    } else {
-      const el = document.getElementById(id);
-      if (el) el.scrollIntoView({ behavior: "smooth" });
+      setActiveSection("home");
+      return;
+    }
+
+    const targetEl = document.getElementById(key);
+    if (targetEl) {
+      targetEl.scrollIntoView({ behavior: "smooth" });
+      setActiveSection(key);
     }
   };
 
-  const items = [
+  const navItems = [
     {
       key: "home",
       label: t.nav.home,
+      href: "/",
       icon: (
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-          <path d="M2 8L10 2L18 8V18H13V12H7V18H2V8Z" />
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <rect x="10" y="15" width="4" height="6" fill="currentColor" opacity="0.4" />
         </svg>
       ),
     },
     {
       key: "about",
       label: t.nav.aboutCamp,
+      href: "/#about",
       icon: (
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-          <rect x="3" y="3" width="14" height="14" rx="0" />
-          <rect x="6" y="7" width="8" height="2" fill="#0c1018" />
-          <rect x="6" y="11" width="5" height="2" fill="#0c1018" />
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <rect
+            x="4"
+            y="4"
+            width="16"
+            height="16"
+            rx="2"
+            stroke="currentColor"
+            strokeWidth="2"
+          />
+          <line x1="8" y1="9" x2="16" y2="9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <line x1="8" y1="13" x2="14" y2="13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <circle cx="8" cy="17" r="1" fill="currentColor" />
         </svg>
       ),
     },
     {
       key: "journey",
       label: t.nav.journey,
+      href: "/#journey",
       icon: (
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-          <rect x="2" y="4" width="4" height="4" />
-          <rect x="8" y="8" width="4" height="4" />
-          <rect x="14" y="12" width="4" height="4" />
-          <rect x="5" y="7" width="4" height="2" />
-          <rect x="11" y="11" width="4" height="2" />
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M4 19L9 13.5L14 17L20 6"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <circle cx="20" cy="6" r="2.5" fill="currentColor" />
+          <circle cx="4" cy="19" r="2" fill="currentColor" opacity="0.6" />
         </svg>
       ),
     },
     {
       key: "register",
       label: t.nav.register,
+      href: "/register",
       icon: (
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-          <rect x="3" y="2" width="14" height="16" rx="0" />
-          <rect x="6" y="5" width="8" height="2" fill="#0c1018" />
-          <rect x="6" y="9" width="6" height="2" fill="#0c1018" />
-          <rect x="6" y="13" width="4" height="2" fill="#0c1018" />
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+          <path
+            d="M10 17l5-5-5-5"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <line x1="15" y1="12" x2="3" y2="12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
         </svg>
       ),
-      isRegister: true,
     },
   ];
 
   return (
-    <nav
-      className={`mobile-bottom-navigation fixed bottom-0 left-0 right-0 z-50 transition-transform duration-300 safe-area-bottom ${
-        visible ? "translate-y-0" : "translate-y-full"
-      }`}
-      role="navigation"
-      aria-label="Mobile navigation"
-    >
-      <div className="bg-[#0c1018]/95 backdrop-blur-md border-t-2 border-[#823419]">
-        <div className="flex items-center justify-around py-2 px-2 max-w-md mx-auto">
-          {items.map((item) => {
-            const isActive = activeSection === item.key;
-            const isReg = item.isRegister;
+    <div className="mobile-nav-stage">
+      <nav
+        className={`game-bottom-nav ${
+          navMode === "compact" ? "is-compact" : "is-expanded"
+        }`}
+        aria-label={locale === "ar" ? "التنقل الرئيسي" : "Main Navigation"}
+      >
+        {navMode === "expanded" ? (
+          <div className="expanded-navigation">
+            {navItems.map((item) => {
+              const isActive = activeSection === item.key;
 
-            return (
-              <button
-                key={item.key}
-                type="button"
-                onClick={() =>
-                  isReg
-                    ? (window.location.href = "/register")
-                    : scrollTo(item.key)
-                }
-                className={`flex flex-col items-center justify-center py-1 px-3 min-w-[64px] transition-colors cursor-pointer ${
-                  isReg
-                    ? "text-dark"
-                    : isActive
-                    ? "text-[#c3f937]"
-                    : "text-[#e7edfd]/50"
-                }`}
-                aria-current={isActive ? "page" : undefined}
-              >
-                <div
-                  className={`p-1.5 rounded-none ${
-                    isReg
-                      ? "bg-[#c3f937] border-2 border-[#c3f937] shadow-[2px_2px_0px_0px_#823419]"
-                      : ""
-                  }`}
+              return (
+                <button
+                  key={item.key}
+                  type="button"
+                  onClick={() => handleItemClick(item.key, item.href)}
+                  className={`game-nav-item ${isActive ? "is-active" : ""}`}
+                  aria-current={isActive ? "page" : undefined}
                 >
                   {item.icon}
-                </div>
-                <span
-                  className={`text-[11px] mt-1 font-bold ${
-                    isReg ? "text-[#c3f937]" : ""
-                  }`}
-                  style={{ fontFamily: "var(--font-janna-bold), sans-serif" }}
-                >
-                  {item.label}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-    </nav>
+                  <span>{item.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setNavMode("expanded")}
+            className="compact-character"
+            aria-label={locale === "ar" ? "فتح قائمة التنقل" : "Open Navigation"}
+          >
+            <Image
+              src={CHARACTER_IMAGES[characterState] || CHARACTER_IMAGES.ready}
+              alt={characterState}
+              width={52}
+              height={52}
+              className="object-contain"
+              priority
+            />
+          </button>
+        )}
+      </nav>
+    </div>
   );
 }

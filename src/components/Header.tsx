@@ -248,7 +248,11 @@ export default function Header() {
           .mobile-header {
             display: none !important;
           }
-          .mobile-bottom-navigation {
+          .mobile-bottom-navigation,
+          .mobile-nav-shell,
+          .mobile-bottom-nav,
+          .mobile-nav-stage,
+          .game-bottom-nav {
             display: none !important;
           }
         }

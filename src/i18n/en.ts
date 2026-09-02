@@ -147,114 +147,174 @@ export const en = {
     ],
   },
   trainer: {
-    sectionTitle: "Camp Trainer",
-    name: "Eng. Ahmed bin Khalid Alrasheed",
-    title:
-      "AI & Software Engineer | Entrepreneur & Innovator | Full-Stack & iOS Developer | Public Speaker and Trainer",
-    bio: "An AI and Software Engineer, digital product developer, public speaker, and trainer combining technical expertise in artificial intelligence and software development with innovation and entrepreneurship. Ahmed has built more than 32 technical projects and achieved eight competitive placements, including four first-place wins, three second-place wins, and one third-place finish. He also received two international innovation awards while representing Saudi Arabia at Malaysia Technology Expo 2026 and was selected among the top 50 candidates from more than 18,000 applicants for the McKinsey & Company Qimam Fellowship 2026.",
-    stats: {
-      projects: "Technical Projects",
-      achievements: "Competitive Achievements",
-      awards: "International Awards",
-      top50: "from 18,000+ Applicants",
+    sectionHeading: "Camp Trainer",
+    sectionSubheading: "Technical expertise and competitive experience guiding the BUILDx journey from prompt to product.",
+    fileBadge: "PROFILE // 01",
+    name: "Eng. Ahmed Khalid Alrashid",
+    roles: [
+      "AI & Software Engineer",
+      "Entrepreneur & Innovator",
+      "Full-Stack Developer",
+      "Application Developer using iOS Technologies",
+      "Public Speaker & Trainer",
+    ],
+    bioP1: "An AI and Software Engineer, entrepreneur, and innovator specializing in digital products and AI-powered solutions. Ahmed has built more than 32 technical projects and participated in more than 26 hackathons and innovation competitions, combining technical expertise, product development, and leadership.",
+    bioP2: "He has achieved 12 competitive accomplishments locally and internationally and received two international awards—the Grand Prize and a Gold Medal—while representing Saudi Arabia at Malaysia Technology Expo 2026. He was also selected among the top 50 candidates from more than 18,000 applicants for Qimam Fellowship '26.",
+    stats: [
+      { number: "32+", label: "Technical Projects" },
+      { number: "26+", label: "Hackathons & Competitions" },
+      { number: "12", label: "Competitive Achievements" },
+      { number: "2", label: "International Awards" },
+      { number: "Top 50", label: "From 18,000+ Applicants" },
+    ],
+    breakdownTitle: "The 12 Achievements Breakdown",
+    breakdownParts: {
+      hackathons: {
+        number: "8",
+        label: "Hackathon Wins",
+        sub: "Eight wins and first places in national & competitive hackathons.",
+      },
+      entrepreneurship: {
+        number: "3",
+        label: "Distinguished Entrepreneurship Idea Placements",
+        sub: "Two First-Place Awards and One Third-Place Award.",
+      },
+      international: {
+        number: "1",
+        label: "International Achievement",
+        event: "Malaysia Technology Expo 2026",
+        sub: "Recognized with Two International Awards:",
+        awardsCount: "2",
+        awardsLabel: "International Awards",
+        awards: ["Grand Prize", "Gold Medal"],
+      },
     },
-    visitProfile: "Visit Profile",
-    moreAbout: "More About the Trainer",
-    programs: "Programs & Fellowships",
-    experience: "Experience",
+    programsTitle: "Programs That Shaped the Journey",
     programsList: [
-      "Qimam Fellow '26 — McKinsey & Company",
-      "Apple Developer Academy × Tuwaiq Academy",
-      "Samsung Innovation Campus × Misk",
-      "KAUST Academy — AI & Machine Learning",
-      "Misk Foundation — Backend Development",
-      "Coventry University — Global Leadership Program",
+      { institution: "Apple Developer Academy", desc: "Application & Digital Product Development" },
+      { institution: "Samsung Innovation Campus", desc: "Artificial Intelligence & Emerging Tech" },
+      { institution: "Tuwaiq Academy", desc: "Software Development & Digital Technologies" },
+      { institution: "KAUST Academy", desc: "Artificial Intelligence & Machine Learning" },
+      { institution: "University of Liverpool", desc: "Global Leadership & Intercultural Competence" },
+      { institution: "Coventry University", desc: "Global Leadership Program" },
+      { institution: "Qimam Fellowship '26", desc: "Top 50 Candidate from +18,000 Applicants" },
     ],
-    experienceList: [
-      "IT Systems Engineer — Areen Alnokhba Holding Group",
-      "AI / Software Engineer — Bashayer Al-Saadoun Law Firm",
-      "Software Engineer & Project Manager — Student Partnership Program, King Saud University",
-      "Software Engineer Co-op — Leasehold",
-    ],
+    exploreProfile: "Explore Profile",
   },
+  locationBadge: "In Person — Riyadh",
   timeline: {
-    title: "Camp Journey",
-    trainingPhase: "Training Camp",
-    trainingDates: "Sep 27 → Oct 1",
-    hackathonPhase: "Collaborative Hackathon",
-    hackathonDates: "Oct 4 & 5",
-    closingPhase: "Closing Ceremony",
-    closingDate: "Oct 6",
-    days: [
-      {
-        date: "Sep 27",
-        label: "Day One",
-        title: "The Launch and Vibe Coding Foundations",
-        description:
-          "Explore the BUILDx journey, understand the Vibe Coding approach, discover the tools, and transform an initial idea into a clear product direction.",
+    title: "The BUILDx Journey",
+    subtitle: "From registration to product building and the announcement of the winners.",
+    location: "In Person — Riyadh",
+    phases: {
+      reg: {
+        num: "01",
+        name: "Registration & Acceptance",
+        events: [
+          {
+            date: "Sep 17",
+            title: "Registration Opens",
+            desc: "Applications for the BUILDx experience officially open.",
+          },
+          {
+            date: "Sep 20",
+            title: "Registration Closes",
+            desc: "Applications close and the review process begins.",
+          },
+          {
+            date: "Sep 22",
+            title: "Acceptance Announcement",
+            desc: "Selected participants are notified.",
+          },
+          {
+            date: "Sep 23",
+            title: "Acceptance Confirmation",
+            desc: "Selected participants confirm attendance and complete onboarding.",
+          },
+        ],
       },
-      {
-        date: "Sep 28",
-        label: "Day Two",
-        title: "Prompt Engineering and Product Thinking",
-        description:
-          "Learn effective prompting, problem analysis, target-user definition, and how to translate needs into buildable product requirements.",
+      camp: {
+        num: "02",
+        name: "Training Camp",
+        badge: "In Person — Riyadh",
+        events: [
+          {
+            date: "Sep 27",
+            dayNum: "Day One",
+            title: "The Launch and Vibe Coding Foundations",
+            desc: "Explore the BUILDx journey, understand the Vibe Coding approach, and move from idea to clear product vision.",
+          },
+          {
+            date: "Sep 28",
+            dayNum: "Day Two",
+            title: "Prompt Engineering and Product Thinking",
+            desc: "Problem analysis, target-user definition, and drafting buildable prompts and requirements.",
+          },
+          {
+            date: "Sep 29",
+            dayNum: "Day Three",
+            title: "Experience Design and Interface Building",
+            desc: "Translate requirements into user journeys and build clean, cohesive digital interfaces.",
+          },
+          {
+            date: "Sep 30",
+            dayNum: "Day Four",
+            title: "Functional Development and AI Integration",
+            desc: "Develop product functionality, wire components, and effectively integrate AI capabilities.",
+          },
+          {
+            date: "Oct 1",
+            dayNum: "Day Five",
+            title: "From Building to a Ready Product",
+            desc: "Test individual projects, debug, refine quality, and prepare for the group challenge.",
+          },
+        ],
+        breakEvent: {
+          date: "Oct 2–3",
+          title: "Break and Preparation",
+          desc: "Two days to prepare and recharge before the hackathon.",
+        },
       },
-      {
-        date: "Sep 29",
-        label: "Day Three",
-        title: "Experience Design and Interface Building",
-        description:
-          "Translate requirements into a clear user journey, build interfaces, structure content, and create a coherent digital experience.",
+      hackathon: {
+        num: "03",
+        name: "Collaborative Hackathon",
+        events: [
+          {
+            date: "Oct 4",
+            dayNum: "Hackathon Day 1",
+            title: "The Collaborative Challenge Begins",
+            desc: "Challenge reveal, team formation, track selection, and product building.",
+          },
+          {
+            date: "Oct 5",
+            dayNum: "Hackathon Day 2",
+            title: "Product Completion and Pitch Preparation",
+            desc: "MVP completion, testing, refinement, and final pitch preparation.",
+          },
+        ],
       },
-      {
-        date: "Sep 30",
-        label: "Day Four",
-        title: "Functional Development and AI Integration",
-        description:
-          "Develop product functionality, connect components, integrate AI meaningfully, and test and refine the solution.",
+      closing: {
+        num: "04",
+        name: "Closing Ceremony",
+        events: [
+          {
+            date: "Oct 6",
+            dayNum: "Closing Ceremony",
+            title: "Project Showcase and Results",
+            desc: "Digital product presentations, results announcement, and recognition of the winning projects.",
+          },
+        ],
       },
-      {
-        date: "Oct 1",
-        label: "Day Five",
-        title: "From Building to a Ready Product",
-        description:
-          "Complete the individual project, test the user experience, resolve issues, improve quality, and prepare for the collaborative challenge.",
-      },
-      {
-        date: "Oct 2–3",
-        label: "Break & Preparation",
-        title: "Break and Preparation",
-        description:
-          "Two days to prepare for the next stage and recharge before the hackathon.",
-      },
-      {
-        date: "Oct 4",
-        label: "Hackathon — Day One",
-        title: "The Collaborative Challenge Begins",
-        description:
-          "Reveal the challenges, form teams, select tracks, analyze problems, distribute roles, and begin building digital products.",
-      },
-      {
-        date: "Oct 5",
-        label: "Hackathon — Day Two",
-        title: "Product Completion and Pitch Preparation",
-        description:
-          "Complete the MVP, test the solution, improve its design and functionality, develop the product story, and prepare the final pitch.",
-      },
-      {
-        date: "Oct 6",
-        label: "Closing Ceremony",
-        title: "Project Showcase and Results",
-        description:
-          "Showcase the eight digital products, deliver final pitches, evaluate the projects, announce the results, and celebrate the winning teams.",
-      },
-    ],
+    },
   },
   finalCta: {
-    title: "Ready to build your product?",
-    description:
-      "Your idea is the input. Your prompt is the tool. Your product is the output.",
+    title: "Ready to Build Your Product?",
+    prefix: "Your idea is the",
+    beginning: "beginning",
+    promptIs: "Your prompt is the",
+    tool: "tool",
+    productIs: "Your product is the",
+    outcome: "outcome",
     button: "Register Now",
   },
   register: {
@@ -265,8 +325,21 @@ export const en = {
     backHome: "Back to Home",
   },
   footer: {
-    slogan: "BUILDx — From a prompt you say… to a product that works.",
-    rights: "All rights reserved",
+    initiativeBy: "An Initiative by",
+    contactTeam: "Contact the BUILDx Team",
+    whatsapp: {
+      label: "WhatsApp",
+      number: "055 457 3554",
+      action: "Tap to chat directly",
+      link: "https://wa.me/966554573554?text=Hello%20BUILDx%20Team%2C%20I%20would%20like%20to%20inquire%20about%20the%20camp.",
+    },
+    email: {
+      label: "Email",
+      address: "buildx.info@gmail.com",
+      action: "Tap to compose an email",
+      link: "mailto:buildx.info@gmail.com?subject=Inquiry%20about%20BUILDx%20Camp",
+    },
+    rights: "All Rights Reserved",
   },
   chatBubbles: {
     think: "Think.",

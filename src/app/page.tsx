@@ -42,23 +42,15 @@ export default function HomePage() {
             {/* Section divider */}
             <div className="section-divider" />
 
-            <StatsSection />
-
-            <div className="section-divider" />
-
             <VibeCodingSection />
 
             <div className="section-divider" />
 
-            <VisionMissionSection />
+            <StatsSection />
 
             <div className="section-divider" />
 
             <ObjectivesSection />
-
-            <div className="section-divider" />
-
-            <OutcomesSection />
 
             <div className="section-divider" />
 

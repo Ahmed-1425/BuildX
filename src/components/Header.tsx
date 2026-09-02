@@ -9,7 +9,6 @@ import Link from "next/link";
 const NAV_SECTIONS = [
   { key: "about", id: "about" },
   { key: "objectives", id: "objectives" },
-  { key: "outcomes", id: "outcomes" },
   { key: "trainer", id: "trainer" },
   { key: "journey", id: "journey" },
 ] as const;

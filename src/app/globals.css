@@ -78,6 +78,12 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Crisp Pixel Art Rendering */
+.image-pixelated {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
 /* Pixel Button Styles */
 .pixel-btn {
   position: relative;
@@ -261,3 +267,18 @@ body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Ensure no video controls overlay */
+video::-webkit-media-controls,
+video::-webkit-media-controls-panel,
+video::-webkit-media-controls-overlay-play-button,
+video::-webkit-media-controls-start-playback-button {
+  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+video {
+  pointer-events: none;
+}
+

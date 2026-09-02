@@ -51,6 +51,8 @@ export const metadata: Metadata = {
   },
 };
 
+import GamingCursor from "@/components/GamingCursor";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -88,6 +90,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen bg-dark text-light antialiased">
+        <GamingCursor />
         <LanguageProvider>{children}</LanguageProvider>
       </body>
     </html>

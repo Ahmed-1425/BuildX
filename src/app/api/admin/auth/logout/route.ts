@@ -15,5 +15,6 @@ export async function POST() {
 
   const res = NextResponse.json({ success: true });
   res.cookies.delete(ADMIN_COOKIE_NAME);
+  res.cookies.delete("buildx_admin_token");
   return res;
 }

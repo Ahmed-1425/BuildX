@@ -2,7 +2,8 @@ import { cookies } from "next/headers";
 import { createServerClient } from "@/lib/supabase/server";
 import type { AdminUser, AdminRole } from "@/types/admin";
 
-export const ADMIN_COOKIE_NAME = "buildx_admin_token";
+export const ADMIN_COOKIE_NAME = "buildx_auth_admin_session";
+export const ALLOWED_ADMIN_EMAIL = "ahmedrasheed121m@gmail.com";
 
 export async function getAuthenticatedAdmin(): Promise<AdminUser | null> {
   try {
@@ -16,6 +17,11 @@ export async function getAuthenticatedAdmin(): Promise<AdminUser | null> {
     // Verify token with Supabase Auth
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
     if (authError || !user) return null;
+
+    // Strictly enforce single authorized admin email
+    if (user.email?.toLowerCase() !== ALLOWED_ADMIN_EMAIL.toLowerCase()) {
+      return null;
+    }
 
     // Verify user exists in admin_users and is_active = true
     const { data: adminRecord, error: adminError } = await supabase

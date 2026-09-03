@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase/server";
-import { ADMIN_COOKIE_NAME } from "@/lib/admin/auth";
+import { ADMIN_COOKIE_NAME, ALLOWED_ADMIN_EMAIL } from "@/lib/admin/auth";
 import { recordAuditLog } from "@/lib/admin/audit";
 
 export async function POST(req: NextRequest) {
@@ -14,11 +14,21 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const normalizedEmail = email.trim().toLowerCase();
+
+    // Strictly enforce single authorized admin email
+    if (normalizedEmail !== ALLOWED_ADMIN_EMAIL.toLowerCase()) {
+      return NextResponse.json(
+        { success: false, error: "هذا الحساب غير مصرح له بالدخول إلى لوحة الإدارة." },
+        { status: 403 }
+      );
+    }
+
     const supabase = createServerClient();
 
     // 1. Authenticate with Supabase Auth
     const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-      email: email.trim().toLowerCase(),
+      email: normalizedEmail,
       password,
     });
 

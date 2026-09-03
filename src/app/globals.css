@@ -116,6 +116,14 @@ input:-webkit-autofill:active {
    ========================================================================== */
 
 .admin-bg {
+  min-height: 100dvh;
+  width: 100%;
+  color: #e7edfd;
+  font-family: "JannaLT", Tahoma, Arial, sans-serif;
+  position: relative;
+  select-none: auto;
+  -webkit-user-select: none;
+  user-select: none;
   background-color: #10141d;
   background-image:
     radial-gradient(circle at 85% 8%, rgba(195, 249, 55, 0.10), transparent 28%),
@@ -124,7 +132,6 @@ input:-webkit-autofill:active {
     radial-gradient(circle at 20% 90%, rgba(52, 21, 95, 0.28), transparent 34%),
     linear-gradient(135deg, #111622 0%, #151327 52%, #101821 100%);
   background-attachment: fixed;
-  position: relative;
 }
 
 .admin-bg::before {
@@ -149,21 +156,27 @@ input:-webkit-autofill:active {
 
   .admin-sidebar {
     grid-column: 2;
+    grid-row: 1;
     direction: rtl;
     position: sticky;
     top: 0;
     height: 100dvh;
     width: 280px;
     z-index: 40;
+    overflow-y: auto;
   }
 
   .admin-main {
     grid-column: 1;
+    grid-row: 1;
     direction: rtl;
     min-width: 0;
     width: 100%;
+    min-height: 100dvh;
     position: relative;
     z-index: 10;
+    display: flex;
+    flex-direction: column;
   }
 }
 
@@ -178,6 +191,43 @@ input:-webkit-autofill:active {
   .admin-main {
     width: 100%;
     min-width: 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+/* Page Content Container - starts from top, no giant gaps */
+.admin-content {
+  flex: 1;
+  width: 100%;
+  max-width: 1680px;
+  margin-inline: auto;
+  padding: 24px 16px 48px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  gap: 0;
+  position: relative;
+  z-index: 1;
+}
+
+@media (min-width: 640px) {
+  .admin-content {
+    padding: 28px 24px 48px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .admin-content {
+    padding: 32px 32px 48px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .admin-content {
+    padding: 36px clamp(32px, 3vw, 44px) 48px;
   }
 }
 

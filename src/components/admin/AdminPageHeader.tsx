@@ -1,7 +1,6 @@
 "use client";
 import React from "react";
-import Link from "next/link";
-import { RefreshCw, Files } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 
 interface Props {
   title: string;
@@ -18,38 +17,35 @@ export default function AdminPageHeader({
   isRefreshing = false,
   actions,
 }: Props) {
-  // Format current time in Riyadh timezone
-  const formattedTime = new Date().toLocaleTimeString("ar-SA", {
-    hour: "2-digit",
-    minute: "2-digit",
-    timeZone: "Asia/Riyadh",
-  });
-
   return (
-    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5 pb-6 border-b border-white/[0.07]" dir="rtl">
+    <div
+      className="flex flex-col md:flex-row md:items-flex-start md:justify-between gap-5 lg:gap-6 pb-6 border-b border-white/[0.07]"
+      dir="rtl"
+    >
       {/* Title & Subtitle */}
-      <div className="space-y-1.5">
-        <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+      <div className="space-y-2 min-w-0 flex-1">
+        <h1
+          className="font-bold text-white tracking-tight leading-tight"
+          style={{ fontSize: "clamp(1.625rem, 2.5vw, 2.125rem)" }}
+        >
           {title}
         </h1>
-        <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-2xl">
+        <p
+          className="text-slate-300 leading-relaxed max-w-2xl"
+          style={{ fontSize: "clamp(0.8125rem, 1.2vw, 1rem)" }}
+        >
           {subtitle}
         </p>
       </div>
 
-      {/* Action Buttons & Time */}
-      <div className="flex flex-wrap items-center gap-3">
-        <div className="text-[11px] text-slate-400 font-mono hidden xl:block">
-          <span>آخر تحديث: </span>
-          <span className="text-slate-300">{formattedTime} (الرياض)</span>
-        </div>
-
+      {/* Action Buttons */}
+      <div className="flex flex-wrap items-center gap-3 shrink-0">
         {onRefresh && (
           <button
             type="button"
             onClick={onRefresh}
             disabled={isRefreshing}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs sm:text-sm font-semibold text-slate-200 hover:text-white transition-all duration-150 disabled:opacity-50 cursor-pointer"
+            className="inline-flex items-center gap-2 px-5 h-11 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-sm font-semibold text-slate-200 hover:text-white transition-all duration-150 disabled:opacity-50 cursor-pointer"
             aria-label="تحديث البيانات"
           >
             <RefreshCw
@@ -57,17 +53,9 @@ export default function AdminPageHeader({
               strokeWidth={2}
               aria-hidden="true"
             />
-            <span>تحديث البيانات</span>
+            <span>تحديث</span>
           </button>
         )}
-
-        <Link
-          href="/admin/applications"
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#c3f937] hover:bg-[#c3f937]/90 text-[#0c1018] text-xs sm:text-sm font-bold transition-all shadow-md shadow-[#c3f937]/15 cursor-pointer"
-        >
-          <Files className="w-4 h-4" strokeWidth={2} aria-hidden="true" />
-          <span>عرض جميع الطلبات</span>
-        </Link>
 
         {actions}
       </div>

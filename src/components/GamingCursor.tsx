@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { usePathname } from "next/navigation";
 import { motion, useSpring, useMotionValue, AnimatePresence } from "framer-motion";
 
 interface TrailDot {
@@ -10,6 +11,7 @@ interface TrailDot {
 }
 
 export default function GamingCursor() {
+  const pathname = usePathname();
   const [cursorPos, setCursorPos] = useState({ x: -100, y: -100 });
   const [isVisible, setIsVisible] = useState(false);
   const [trail, setTrail] = useState<TrailDot[]>([]);
@@ -18,6 +20,9 @@ export default function GamingCursor() {
 
   const cursorX = useSpring(useMotionValue(-100), { stiffness: 280, damping: 22 });
   const cursorY = useSpring(useMotionValue(-100), { stiffness: 280, damping: 22 });
+
+  // Disable on admin routes entirely
+  const isAdmin = pathname.startsWith("/admin");
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
     const x = e.clientX;
@@ -53,6 +58,9 @@ export default function GamingCursor() {
   }, []);
 
   useEffect(() => {
+    // Disable on admin routes
+    if (isAdmin) return;
+
     // Only enable on non-touch devices
     const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
     if (isTouchDevice) return;
@@ -81,9 +89,9 @@ export default function GamingCursor() {
       const s = document.getElementById("gaming-cursor-style");
       if (s) s.remove();
     };
-  }, [handleMouseMove, handleMouseLeave, handleMouseEnter, handleMouseDown, handleMouseUp]);
+  }, [isAdmin, handleMouseMove, handleMouseLeave, handleMouseEnter, handleMouseDown, handleMouseUp]);
 
-  if (!isVisible) return null;
+  if (isAdmin || !isVisible) return null;
 
   return (
     <div className="fixed inset-0 z-[9999] pointer-events-none hidden lg:block">

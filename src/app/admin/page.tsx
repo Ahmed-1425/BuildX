@@ -1,8 +1,9 @@
 "use client";
 import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import Image from "next/image";
+import { motion } from "framer-motion";
 import type { DashboardStats, ApplicationListItem } from "@/types/admin";
-import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
 import AdminStatusBadge from "@/components/admin/StatusBadge";
 import {
@@ -16,11 +17,41 @@ import {
   MapPin,
   TrendingUp,
   Layers,
-  ArrowLeft,
-  Calendar,
-  CheckCircle2,
-  Users,
+  RefreshCw,
+  Activity,
+  UserCheck,
+  ChevronLeft,
 } from "lucide-react";
+
+// ── Animated Number Counter Component ────────────────────────────────
+function AnimatedCounter({ value }: { value: number }) {
+  const [displayValue, setDisplayValue] = useState(0);
+
+  useEffect(() => {
+    let start = 0;
+    const duration = 1000; // ms
+    const startTime = performance.now();
+
+    function update(currentTime: number) {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      // Smooth ease out expo curve
+      const ease = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+      const current = Math.floor(ease * (value - start) + start);
+      setDisplayValue(current);
+
+      if (progress < 1) {
+        requestAnimationFrame(update);
+      } else {
+        setDisplayValue(value);
+      }
+    }
+
+    requestAnimationFrame(update);
+  }, [value]);
+
+  return <span>{displayValue.toLocaleString()}</span>;
+}
 
 export default function AdminDashboardPage() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
@@ -51,16 +82,16 @@ export default function AdminDashboardPage() {
 
   if (loading && !stats) {
     return (
-      <div className="space-y-8 animate-pulse" dir="rtl">
-        <div className="h-16 bg-white/[0.03] rounded-2xl" />
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-          <div className="col-span-12 lg:col-span-6 h-52 bg-white/[0.03] rounded-3xl" />
-          <div className="col-span-12 lg:col-span-6 grid grid-cols-2 gap-4">
-            <div className="h-24 bg-white/[0.03] rounded-2xl" />
-            <div className="h-24 bg-white/[0.03] rounded-2xl" />
-            <div className="h-24 bg-white/[0.03] rounded-2xl" />
-            <div className="h-24 bg-white/[0.03] rounded-2xl" />
-          </div>
+      <div className="space-y-10 animate-pulse" dir="rtl">
+        <div className="h-24 bg-white/[0.03] rounded-3xl" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5 lg:gap-6">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="h-44 bg-white/[0.03] rounded-2xl" />
+          ))}
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div className="col-span-12 lg:col-span-5 h-80 bg-white/[0.03] rounded-3xl" />
+          <div className="col-span-12 lg:col-span-7 h-80 bg-white/[0.03] rounded-3xl" />
         </div>
       </div>
     );
@@ -68,13 +99,16 @@ export default function AdminDashboardPage() {
 
   if (error || !stats) {
     return (
-      <div className="p-8 text-center bento-card text-rose-300 max-w-xl mx-auto my-12 space-y-4" dir="rtl">
+      <div className="p-10 text-center bento-card text-rose-300 max-w-xl mx-auto my-14 space-y-5" dir="rtl">
+        <div className="w-12 h-12 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center mx-auto">
+          <CircleX className="w-6 h-6" />
+        </div>
         <h2 className="text-xl font-bold text-white">تعذر تحميل لوحة التحكم</h2>
-        <p className="text-sm">{error}</p>
+        <p className="text-sm text-slate-300">{error}</p>
         <button
           type="button"
           onClick={fetchStats}
-          className="px-5 py-2.5 rounded-xl bg-[#c3f937] text-[#0c1018] font-bold text-xs hover:bg-[#c3f937]/90 transition-all cursor-pointer"
+          className="px-6 py-2.5 rounded-xl bg-[#c3f937] text-[#0c1018] font-bold text-xs hover:bg-[#c3f937]/90 transition-all cursor-pointer shadow-lg shadow-[#c3f937]/20"
         >
           إعادة المحاولة
         </button>
@@ -86,7 +120,7 @@ export default function AdminDashboardPage() {
   const todayCount = stats.today || 0;
   const isZeroApplications = total === 0;
 
-  // Level percentages
+  // Level statistics
   const fnd = stats.by_level?.foundation || 0;
   const prac = stats.by_level?.practitioner || 0;
   const adv = stats.by_level?.advanced || 0;
@@ -94,359 +128,494 @@ export default function AdminDashboardPage() {
   const pracPct = total > 0 ? Math.round((prac / total) * 100) : 0;
   const advPct = total > 0 ? Math.round((adv / total) * 100) : 0;
 
-  // Pipeline stages
+  // Pipeline funnel data
   const pipelineStages = [
     {
       id: "submitted",
       name: "طلب جديد",
       count: stats.by_status?.submitted || 0,
-      color: "#e7edfd",
-      barColor: "bg-slate-300",
+      color: "#38bdf8",
       href: "/admin/applications?status=submitted",
+      icon: FileText,
+      needsAttention: (stats.by_status?.submitted || 0) > 0,
     },
     {
       id: "under_review",
       name: "قيد المراجعة",
       count: stats.by_status?.under_review || 0,
-      color: "#a855f7",
-      barColor: "bg-purple-400",
+      color: "#c084fc",
       href: "/admin/applications?status=under_review",
+      icon: Search,
     },
     {
       id: "preliminary_candidate",
       name: "مرشح مبدئي",
       count: stats.by_status?.preliminary_candidate || 0,
       color: "#facc15",
-      barColor: "bg-yellow-400",
       href: "/admin/preliminary",
+      icon: Star,
     },
     {
       id: "accepted",
       name: "مقبول",
       count: stats.by_status?.accepted || 0,
       color: "#c3f937",
-      barColor: "bg-[#c3f937]",
       href: "/admin/accepted",
+      icon: CircleCheckBig,
     },
     {
       id: "confirmed",
       name: "تأكيد القبول",
       count: stats.by_status?.confirmed || 0,
-      color: "#38bdf8",
-      barColor: "bg-sky-400",
+      color: "#4ade80",
       href: "/admin/applications?status=confirmed",
+      icon: UserCheck,
     },
   ];
 
   return (
-    <div className="space-y-8" dir="rtl">
-      {/* ── Dashboard Header ─────────────────────────── */}
-      <AdminPageHeader
-        title="لوحة مؤشرات BUILDx"
-        subtitle="متابعة التسجيلات، مراجعة الطلبات، وإدارة مراحل القبول والفرق."
-        onRefresh={fetchStats}
-        isRefreshing={loading}
-      />
+    <div className="space-y-10 pb-14 select-none font-janna" dir="rtl">
+      
+      {/* ── 1. WELCOMING HEADER ──────────────────────────────────────── */}
+      <motion.div
+        initial={{ opacity: 0, y: -16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+        className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 p-6 sm:p-7 rounded-[26px] relative overflow-hidden"
+        style={{
+          background: "linear-gradient(135deg, rgba(26, 32, 50, 0.88) 0%, rgba(14, 18, 28, 0.96) 100%)",
+          border: "1px solid rgba(255, 255, 255, 0.08)",
+          boxShadow: "inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 20px 48px rgba(0, 0, 0, 0.35)",
+        }}
+      >
+        {/* Subtle Ambient Radial Light */}
+        <div
+          className="absolute -top-12 -right-12 w-48 h-48 rounded-full blur-3xl pointer-events-none opacity-20 bg-[#c3f937]"
+          aria-hidden="true"
+        />
 
-      {/* ── Bento Grid Row 1: Primary Total Card + 4 Mini Stat Cards ──────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        {/* Large Featured Card: Total Applications (6 cols) */}
-        <div className="col-span-12 lg:col-span-6">
-          <div className="bento-card p-6 sm:p-7 flex flex-col justify-between h-full relative overflow-hidden group">
-            {/* Top green glow accent */}
-            <div className="absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent via-[#c3f937]/50 to-transparent pointer-events-none" />
-            <div
-              className="absolute -top-12 -right-12 w-36 h-36 rounded-full blur-3xl pointer-events-none bg-[#c3f937]/15 opacity-70"
-              aria-hidden="true"
+        <div className="flex items-center gap-4 sm:gap-5 relative z-10">
+          {/* Floating Mascot Avatar */}
+          <motion.div
+            animate={{ y: [0, -3, 0] }}
+            transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
+            className="w-14 h-14 rounded-2xl bg-[#c3f937]/10 border border-[#c3f937]/25 flex items-center justify-center relative shadow-[0_0_20px_rgba(195,249,55,0.18)] shrink-0"
+          >
+            <Image
+              src="/assets/characters/ready.png"
+              alt="Avatar"
+              width={40}
+              height={40}
+              className="w-10 h-10 object-contain image-pixelated drop-shadow-[0_2px_8px_rgba(195,249,55,0.4)]"
+              priority
             />
+            <span className="absolute -bottom-1 w-8 h-1 bg-[#c3f937] rounded-full blur-xs opacity-75" />
+          </motion.div>
 
-            {/* Top Bar */}
-            <div className="flex items-center justify-between relative z-10">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-[#c3f937]/10 border border-[#c3f937]/25 flex items-center justify-center text-[#c3f937]">
-                  <Files className="w-6 h-6" strokeWidth={1.8} aria-hidden="true" />
-                </div>
-                <div>
-                  <h3 className="text-base font-bold text-white">إجمالي الطلبات المسجلة</h3>
-                  <span className="text-xs text-slate-400 font-mono">ALL APPLICATIONS</span>
-                </div>
-              </div>
-
-              <Link
-                href="/admin/applications"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-xs font-semibold text-slate-300 hover:text-white transition-colors"
-              >
-                <span>القائمة</span>
-                <ArrowLeft className="w-3.5 h-3.5" aria-hidden="true" />
-              </Link>
-            </div>
-
-            {/* Big Figure & Micro Sparkline */}
-            <div className="my-6 relative z-10 flex flex-wrap items-end justify-between gap-4">
-              <div>
-                <span className="text-5xl sm:text-6xl font-bold font-mono text-[#c3f937] tracking-tight block">
-                  {total.toLocaleString()}
-                </span>
-                <div className="flex items-center gap-2 mt-1 text-xs text-slate-300">
-                  <span className="inline-flex items-center gap-1 text-emerald-400 font-semibold">
-                    <TrendingUp className="w-3.5 h-3.5" aria-hidden="true" />
-                    <span>+{todayCount} اليوم</span>
-                  </span>
-                  <span className="text-slate-500">•</span>
-                  <span className="text-slate-400">
-                    آخر 7 أيام: <strong className="text-white font-mono">{stats.last_7_days || 0}</strong>
-                  </span>
-                </div>
-              </div>
-
-              {/* Decorative Micro Trendline SVG */}
-              <div className="w-36 h-12 opacity-70 pointer-events-none shrink-0" aria-hidden="true">
-                <svg viewBox="0 0 140 45" fill="none" className="w-full h-full">
-                  <path
-                    d="M0 40 Q 25 35, 50 25 T 100 18 T 140 5"
-                    stroke="#c3f937"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                  />
-                  <path
-                    d="M0 40 Q 25 35, 50 25 T 100 18 T 140 5 L 140 45 L 0 45 Z"
-                    fill="url(#sparkline-grad)"
-                    opacity="0.2"
-                  />
-                  <defs>
-                    <linearGradient id="sparkline-grad" x1="0" y1="0" x2="0" y2="45" gradientUnits="userSpaceOnUse">
-                      <stop stopColor="#c3f937" stopOpacity="0.8" />
-                      <stop offset="1" stopColor="#c3f937" stopOpacity="0" />
-                    </linearGradient>
-                  </defs>
-                </svg>
-              </div>
-            </div>
-
-            {/* Bottom Meta */}
-            <div className="pt-3 border-t border-white/[0.06] flex items-center justify-between text-xs text-slate-400 relative z-10">
-              <span>نسبة إنجاز المراجعات</span>
-              <span className="font-mono text-[#c3f937] font-semibold">
-                {total - (stats.unreviewed_count || 0)} من {total} مُراجع
+          <div className="space-y-1.5">
+            <div className="flex flex-wrap items-center gap-3">
+              <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                مرحبًا أحمد 👋
+              </h1>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-[#c3f937]/10 text-[#c3f937] border border-[#c3f937]/25">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#c3f937] animate-ping" />
+                <span>متصل بالخادم · تحديث لحظي</span>
               </span>
             </div>
+            <p className="text-xs sm:text-sm text-slate-300/90 leading-relaxed">
+              إليك نظرة سريعة على حالة المتقدمين والطلبات اليوم في معسكر BUILDx.
+            </p>
           </div>
         </div>
 
-        {/* 4 Smaller Stat Cards (2x2 grid, 6 cols) */}
-        <div className="col-span-12 lg:col-span-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* 1. New / Submitted */}
-          <Link href="/admin/applications?status=submitted" className="focus:outline-none block">
-            <div className="bento-card p-5 h-full flex flex-col justify-between group">
+        {/* Action Button */}
+        <div className="flex items-center gap-3 shrink-0 relative z-10">
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            type="button"
+            onClick={fetchStats}
+            disabled={loading}
+            className="inline-flex items-center gap-2 px-5 h-11 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-[#c3f937]/30 text-xs font-bold text-slate-200 hover:text-white transition-all duration-150 disabled:opacity-50 cursor-pointer shadow-sm"
+            aria-label="تحديث البيانات"
+          >
+            <RefreshCw
+              className={`w-4 h-4 text-[#c3f937] ${loading ? "animate-spin" : ""}`}
+              strokeWidth={2.2}
+              aria-hidden="true"
+            />
+            <span>تحديث البيانات</span>
+          </motion.button>
+        </div>
+      </motion.div>
+
+      {/* ── 2. KPI METRIC CARDS (5 Balanced Spaced Metric Cards) ─────── */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5 lg:gap-6">
+        
+        {/* 1. Total Applications */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, delay: 0.05 }}
+          whileHover={{ y: -3, scale: 1.015 }}
+        >
+          <Link href="/admin/applications" className="block h-full group focus:outline-none">
+            <div
+              className="p-6 sm:p-7 rounded-[22px] h-full flex flex-col justify-between transition-all duration-200 relative overflow-hidden"
+              style={{
+                background: "linear-gradient(155deg, rgba(28, 34, 52, 0.82) 0%, rgba(14, 18, 28, 0.94) 100%)",
+                border: "1px solid rgba(195, 249, 55, 0.16)",
+                boxShadow: "inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 14px 32px rgba(0, 0, 0, 0.35)",
+              }}
+            >
               <div className="flex items-center justify-between">
-                <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/25 text-purple-300 flex items-center justify-center">
-                  <FileText className="w-5 h-5" strokeWidth={1.8} aria-hidden="true" />
+                <div className="w-11 h-11 rounded-xl bg-[#c3f937]/10 border border-[#c3f937]/20 text-[#c3f937] flex items-center justify-center transition-transform duration-200 group-hover:scale-110">
+                  <Files className="w-5 h-5" strokeWidth={2.2} />
                 </div>
-                <span className="text-[11px] font-mono text-slate-400 bg-white/[0.04] px-2 py-0.5 rounded-md">
+                <span className="text-[10px] font-mono font-bold text-[#c3f937]/90 bg-[#c3f937]/10 border border-[#c3f937]/20 px-2.5 py-0.5 rounded-md">
+                  +{todayCount} اليوم
+                </span>
+              </div>
+              <div className="mt-5 space-y-1.5 text-right">
+                <span className="text-xs font-semibold text-slate-300 block">إجمالي الطلبات</span>
+                <span className="text-4xl sm:text-5xl font-black font-mono text-[#c3f937] tracking-tight block leading-none">
+                  <AnimatedCounter value={total} />
+                </span>
+                <span className="text-[11px] text-slate-400 block pt-1 leading-relaxed">
+                  آخر 7 أيام: <strong className="text-white font-mono font-bold">{stats.last_7_days || 0}</strong>
+                </span>
+              </div>
+            </div>
+          </Link>
+        </motion.div>
+
+        {/* 2. New / Submitted (Pulse Highlight for Attention) */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, delay: 0.1 }}
+          whileHover={{ y: -3, scale: 1.015 }}
+        >
+          <Link href="/admin/applications?status=submitted" className="block h-full group focus:outline-none">
+            <div
+              className="p-6 sm:p-7 rounded-[22px] h-full flex flex-col justify-between transition-all duration-200 relative overflow-hidden"
+              style={{
+                background: "linear-gradient(155deg, rgba(28, 34, 52, 0.82) 0%, rgba(14, 18, 28, 0.94) 100%)",
+                border: "1px solid rgba(56, 189, 248, 0.16)",
+                boxShadow: "inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 14px 32px rgba(0, 0, 0, 0.35)",
+              }}
+            >
+              <div className="flex items-center justify-between">
+                <div className="relative">
+                  <div className="w-11 h-11 rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-400 flex items-center justify-center transition-transform duration-200 group-hover:scale-110">
+                    <FileText className="w-5 h-5" strokeWidth={2.2} />
+                  </div>
+                  {(stats.by_status?.submitted || 0) > 0 && (
+                    <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-sky-400 animate-ping opacity-75" />
+                  )}
+                </div>
+                <span className="text-[10px] font-mono tracking-wider text-slate-400/80 bg-white/[0.04] border border-white/[0.08] px-2 py-0.5 rounded-md">
                   NEW
                 </span>
               </div>
-              <div className="mt-3">
+              <div className="mt-5 space-y-1.5 text-right">
                 <span className="text-xs font-semibold text-slate-300 block">طلبات جديدة</span>
-                <span className="text-3xl font-bold font-mono text-purple-300 tracking-tight block mt-0.5">
-                  {stats.by_status?.submitted || 0}
+                <span className="text-4xl sm:text-5xl font-black font-mono text-sky-400 tracking-tight block leading-none">
+                  <AnimatedCounter value={stats.by_status?.submitted || 0} />
                 </span>
-                <span className="text-[11px] text-slate-400 block mt-1">بانتظار بدء المراجعة</span>
+                <span className="text-[11px] text-slate-400 block pt-1 leading-relaxed">بانتظار بدء الفرز</span>
               </div>
             </div>
           </Link>
+        </motion.div>
 
-          {/* 2. Under Review */}
-          <Link href="/admin/applications?status=under_review" className="focus:outline-none block">
-            <div className="bento-card p-5 h-full flex flex-col justify-between group">
+        {/* 3. Under Review */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, delay: 0.15 }}
+          whileHover={{ y: -3, scale: 1.015 }}
+        >
+          <Link href="/admin/applications?status=under_review" className="block h-full group focus:outline-none">
+            <div
+              className="p-6 sm:p-7 rounded-[22px] h-full flex flex-col justify-between transition-all duration-200 relative overflow-hidden"
+              style={{
+                background: "linear-gradient(155deg, rgba(28, 34, 52, 0.82) 0%, rgba(14, 18, 28, 0.94) 100%)",
+                border: "1px solid rgba(192, 132, 252, 0.16)",
+                boxShadow: "inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 14px 32px rgba(0, 0, 0, 0.35)",
+              }}
+            >
               <div className="flex items-center justify-between">
-                <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/25 text-cyan-300 flex items-center justify-center">
-                  <Search className="w-5 h-5" strokeWidth={1.8} aria-hidden="true" />
+                <div className="w-11 h-11 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center transition-transform duration-200 group-hover:scale-110">
+                  <Search className="w-5 h-5" strokeWidth={2.2} />
                 </div>
-                <span className="text-[11px] font-mono text-slate-400 bg-white/[0.04] px-2 py-0.5 rounded-md">
+                <span className="text-[10px] font-mono tracking-wider text-slate-400/80 bg-white/[0.04] border border-white/[0.08] px-2 py-0.5 rounded-md">
                   REVIEW
                 </span>
               </div>
-              <div className="mt-3">
+              <div className="mt-5 space-y-1.5 text-right">
                 <span className="text-xs font-semibold text-slate-300 block">قيد المراجعة</span>
-                <span className="text-3xl font-bold font-mono text-cyan-300 tracking-tight block mt-0.5">
-                  {stats.by_status?.under_review || 0}
+                <span className="text-4xl sm:text-5xl font-black font-mono text-purple-400 tracking-tight block leading-none">
+                  <AnimatedCounter value={stats.by_status?.under_review || 0} />
                 </span>
-                <span className="text-[11px] text-slate-400 block mt-1">يجري تقييم إجاباتهم</span>
+                <span className="text-[11px] text-slate-400 block pt-1 leading-relaxed">يجري تقييم إجاباتهم</span>
               </div>
             </div>
           </Link>
+        </motion.div>
 
-          {/* 3. Preliminary Candidate */}
-          <Link href="/admin/preliminary" className="focus:outline-none block">
-            <div className="bento-card p-5 h-full flex flex-col justify-between group">
+        {/* 4. Preliminary Candidate */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, delay: 0.2 }}
+          whileHover={{ y: -3, scale: 1.015 }}
+        >
+          <Link href="/admin/preliminary" className="block h-full group focus:outline-none">
+            <div
+              className="p-6 sm:p-7 rounded-[22px] h-full flex flex-col justify-between transition-all duration-200 relative overflow-hidden"
+              style={{
+                background: "linear-gradient(155deg, rgba(28, 34, 52, 0.82) 0%, rgba(14, 18, 28, 0.94) 100%)",
+                border: "1px solid rgba(250, 204, 21, 0.16)",
+                boxShadow: "inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 14px 32px rgba(0, 0, 0, 0.35)",
+              }}
+            >
               <div className="flex items-center justify-between">
-                <div className="w-10 h-10 rounded-xl bg-yellow-500/10 border border-yellow-500/25 text-yellow-300 flex items-center justify-center">
-                  <Star className="w-5 h-5" strokeWidth={1.8} aria-hidden="true" />
+                <div className="w-11 h-11 rounded-xl bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 flex items-center justify-center transition-transform duration-200 group-hover:scale-110">
+                  <Star className="w-5 h-5" strokeWidth={2.2} />
                 </div>
-                <span className="text-[11px] font-mono text-slate-400 bg-white/[0.04] px-2 py-0.5 rounded-md">
+                <span className="text-[10px] font-mono tracking-wider text-slate-400/80 bg-white/[0.04] border border-white/[0.08] px-2 py-0.5 rounded-md">
                   STAGE 1
                 </span>
               </div>
-              <div className="mt-3">
+              <div className="mt-5 space-y-1.5 text-right">
                 <span className="text-xs font-semibold text-slate-300 block">مرشحون مبدئيًا</span>
-                <span className="text-3xl font-bold font-mono text-yellow-300 tracking-tight block mt-0.5">
-                  {stats.by_status?.preliminary_candidate || 0}
+                <span className="text-4xl sm:text-5xl font-black font-mono text-yellow-400 tracking-tight block leading-none">
+                  <AnimatedCounter value={stats.by_status?.preliminary_candidate || 0} />
                 </span>
-                <span className="text-[11px] text-slate-400 block mt-1">مؤهلون للمفاضلة النهائية</span>
+                <span className="text-[11px] text-slate-400 block pt-1 leading-relaxed">مؤهلون للمفاضلة</span>
               </div>
             </div>
           </Link>
+        </motion.div>
 
-          {/* 4. Accepted */}
-          <Link href="/admin/accepted" className="focus:outline-none block">
-            <div className="bento-card p-5 h-full flex flex-col justify-between group">
+        {/* 5. Accepted */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, delay: 0.25 }}
+          whileHover={{ y: -3, scale: 1.015 }}
+        >
+          <Link href="/admin/accepted" className="block h-full group focus:outline-none">
+            <div
+              className="p-6 sm:p-7 rounded-[22px] h-full flex flex-col justify-between transition-all duration-200 relative overflow-hidden"
+              style={{
+                background: "linear-gradient(155deg, rgba(28, 34, 52, 0.82) 0%, rgba(14, 18, 28, 0.94) 100%)",
+                border: "1px solid rgba(74, 222, 128, 0.2)",
+                boxShadow: "inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 14px 32px rgba(0, 0, 0, 0.35)",
+              }}
+            >
               <div className="flex items-center justify-between">
-                <div className="w-10 h-10 rounded-xl bg-[#c3f937]/10 border border-[#c3f937]/25 text-[#c3f937] flex items-center justify-center">
-                  <CircleCheckBig className="w-5 h-5" strokeWidth={1.8} aria-hidden="true" />
+                <div className="w-11 h-11 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center transition-transform duration-200 group-hover:scale-110">
+                  <CircleCheckBig className="w-5 h-5" strokeWidth={2.2} />
                 </div>
-                <span className="text-[11px] font-mono text-slate-400 bg-white/[0.04] px-2 py-0.5 rounded-md">
-                  FINAL
+                <span className="text-[10px] font-mono tracking-wider text-slate-400/80 bg-white/[0.04] border border-white/[0.08] px-2 py-0.5 rounded-md">
+                  32 مقعد
                 </span>
               </div>
-              <div className="mt-3">
+              <div className="mt-5 space-y-1.5 text-right">
                 <span className="text-xs font-semibold text-slate-300 block">المقبولون نهائيًا</span>
-                <span className="text-3xl font-bold font-mono text-[#c3f937] tracking-tight block mt-0.5">
-                  {stats.by_status?.accepted || 0}
+                <span className="text-4xl sm:text-5xl font-black font-mono text-emerald-400 tracking-tight block leading-none">
+                  <AnimatedCounter value={stats.by_status?.accepted || 0} />
                 </span>
-                <span className="text-[11px] text-slate-400 block mt-1">جاهزون لتوزيع الفرق (32 مقعد)</span>
+                <span className="text-[11px] text-slate-400 block pt-1 leading-relaxed">جاهزون لتوزيع الفرق</span>
               </div>
             </div>
           </Link>
-        </div>
+        </motion.div>
       </div>
 
-      {/* ── If 0 applications, show the beautiful Empty State ─── */}
+      {/* ── If 0 applications, show Empty State ──────────────────────── */}
       {isZeroApplications && (
         <AdminEmptyState onRefresh={fetchStats} isRefreshing={loading} />
       )}
 
-      {/* ── Bento Grid Row 2: Levels Distribution & Selection Funnel ───────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        {/* Level Distribution (5 cols) */}
-        <div className="col-span-12 lg:col-span-5">
-          <div className="bento-card p-6 h-full flex flex-col justify-between">
-            <div className="space-y-1">
+      {/* ── 3. VISUAL TRACKS / LEVELS + ADMISSION FUNNEL ─────────────── */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        {/* Visual Level Distribution (5 cols) */}
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="col-span-12 lg:col-span-5"
+        >
+          <div
+            className="p-6 sm:p-7 rounded-[26px] h-full flex flex-col justify-between"
+            style={{
+              background: "linear-gradient(155deg, rgba(26, 32, 50, 0.88) 0%, rgba(14, 18, 28, 0.96) 100%)",
+              border: "1px solid rgba(255, 255, 255, 0.08)",
+              boxShadow: "inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 20px 48px rgba(0, 0, 0, 0.35)",
+            }}
+          >
+            <div className="space-y-1 text-right">
               <div className="flex items-center justify-between">
                 <h3 className="text-base font-bold text-white flex items-center gap-2">
-                  <Layers className="w-4 h-4 text-[#c3f937]" aria-hidden="true" />
-                  <span>توزيع المستويات</span>
+                  <Layers className="w-5 h-5 text-[#c3f937]" aria-hidden="true" />
+                  <span>توزيع المستويات والمسارات</span>
                 </h3>
-                <span className="text-xs font-mono text-slate-400">3 TRACKS</span>
+                <span className="text-[11px] font-mono font-bold text-[#c3f937]/90 bg-[#c3f937]/10 px-2.5 py-0.5 rounded-full border border-[#c3f937]/20">
+                  3 TRACKS
+                </span>
               </div>
-              <p className="text-xs text-slate-400">توزيع المتقدمين عبر مسارات المعسكر الثلاثة</p>
+              <p className="text-xs text-slate-300/85">نسبة المتقدمين عبر مسارات المعسكر</p>
             </div>
 
-            {/* 3 Tracks Bars */}
-            <div className="space-y-4 my-4">
+            {/* 3 Tracks Cards with Animated Smooth Progress */}
+            <div className="space-y-4 my-6">
               {/* Foundation */}
-              <div className="space-y-1.5">
-                <div className="flex justify-between text-xs">
-                  <span className="font-semibold text-slate-200">
-                    مبتدئ <span className="text-slate-400 text-[11px]">· Foundation</span>
-                  </span>
-                  <span className="font-mono text-slate-300">
-                    {fnd} ({fndPct}%)
+              <div
+                className="p-4 rounded-2xl bg-white/[0.025] border border-white/[0.06] space-y-2.5 hover:bg-white/[0.05] transition-colors"
+              >
+                <div className="flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#823419] shadow-[0_0_8px_#823419]" />
+                    <span className="font-bold text-slate-100 text-sm">مبتدئ (Foundation)</span>
+                  </div>
+                  <span className="font-mono font-bold text-orange-200">
+                    {fnd} متقدم ({fndPct}%)
                   </span>
                 </div>
-                <div className="w-full h-2.5 rounded-full bg-white/[0.05] overflow-hidden">
-                  <div
-                    className="h-full rounded-full transition-all duration-500"
-                    style={{
-                      width: `${fndPct}%`,
-                      background: "linear-gradient(90deg, #823419, #c35c39)",
-                    }}
+                <div className="w-full h-2.5 rounded-full bg-white/[0.06] overflow-hidden">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${fndPct}%` }}
+                    transition={{ duration: 1.1, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+                    className="h-full rounded-full"
+                    style={{ background: "linear-gradient(90deg, #823419, #c35c39)" }}
                   />
                 </div>
               </div>
 
               {/* Practitioner */}
-              <div className="space-y-1.5">
-                <div className="flex justify-between text-xs">
-                  <span className="font-semibold text-slate-200">
-                    ممارس <span className="text-slate-400 text-[11px]">· Practitioner</span>
-                  </span>
-                  <span className="font-mono text-[#c3f937]">
-                    {prac} ({pracPct}%)
+              <div
+                className="p-4 rounded-2xl bg-white/[0.025] border border-white/[0.06] space-y-2.5 hover:bg-white/[0.05] transition-colors"
+              >
+                <div className="flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#c3f937] shadow-[0_0_8px_#c3f937]" />
+                    <span className="font-bold text-slate-100 text-sm">ممارس (Practitioner)</span>
+                  </div>
+                  <span className="font-mono font-bold text-[#c3f937]">
+                    {prac} متقدم ({pracPct}%)
                   </span>
                 </div>
-                <div className="w-full h-2.5 rounded-full bg-white/[0.05] overflow-hidden">
-                  <div
-                    className="h-full rounded-full bg-[#c3f937] transition-all duration-500 shadow-[0_0_10px_rgba(195,249,55,0.4)]"
-                    style={{ width: `${pracPct}%` }}
+                <div className="w-full h-2.5 rounded-full bg-white/[0.06] overflow-hidden">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${pracPct}%` }}
+                    transition={{ duration: 1.1, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
+                    className="h-full rounded-full bg-[#c3f937] shadow-[0_0_12px_rgba(195,249,55,0.6)]"
                   />
                 </div>
               </div>
 
               {/* Advanced */}
-              <div className="space-y-1.5">
-                <div className="flex justify-between text-xs">
-                  <span className="font-semibold text-slate-200">
-                    متقدم <span className="text-slate-400 text-[11px]">· Advanced</span>
-                  </span>
-                  <span className="font-mono text-[#fb50c3]">
-                    {adv} ({advPct}%)
+              <div
+                className="p-4 rounded-2xl bg-white/[0.025] border border-white/[0.06] space-y-2.5 hover:bg-white/[0.05] transition-colors"
+              >
+                <div className="flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#fb50c3] shadow-[0_0_8px_#fb50c3]" />
+                    <span className="font-bold text-slate-100 text-sm">متقدم (Advanced)</span>
+                  </div>
+                  <span className="font-mono font-bold text-pink-200">
+                    {adv} متقدم ({advPct}%)
                   </span>
                 </div>
-                <div className="w-full h-2.5 rounded-full bg-white/[0.05] overflow-hidden">
-                  <div
-                    className="h-full rounded-full bg-[#fb50c3] transition-all duration-500 shadow-[0_0_10px_rgba(251,80,195,0.4)]"
-                    style={{ width: `${advPct}%` }}
+                <div className="w-full h-2.5 rounded-full bg-white/[0.06] overflow-hidden">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${advPct}%` }}
+                    transition={{ duration: 1.1, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                    className="h-full rounded-full bg-[#fb50c3] shadow-[0_0_12px_rgba(251,80,195,0.6)]"
                   />
                 </div>
               </div>
             </div>
 
-            {/* Team Environment Preference summary */}
-            <div className="pt-3 border-t border-white/[0.06] flex items-center justify-between text-xs text-slate-400">
-              <span>تفضيل بيئة الفريق:</span>
-              <span className="text-slate-200">
-                مشتركة ({stats.by_team_env?.comfortable || 0}) • نفس الجنس ({stats.by_team_env?.same_gender_only || 0})
-              </span>
+            {/* Team Environment Summary */}
+            <div className="pt-4 border-t border-white/[0.08] flex items-center justify-between text-xs text-slate-300">
+              <span>تفضيل بيئة العمل:</span>
+              <div className="flex items-center gap-2">
+                <span className="px-2.5 py-1 rounded-lg bg-white/[0.04] border border-white/[0.08] font-medium">
+                  مشتركة ({stats.by_team_env?.comfortable || 0})
+                </span>
+                <span className="px-2.5 py-1 rounded-lg bg-white/[0.04] border border-white/[0.08] font-medium">
+                  نفس الجنس ({stats.by_team_env?.same_gender_only || 0})
+                </span>
+              </div>
             </div>
           </div>
-        </div>
+        </motion.div>
 
-        {/* Selection Funnel Pipeline (7 cols) */}
-        <div className="col-span-12 lg:col-span-7">
-          <div className="bento-card p-6 h-full flex flex-col justify-between">
-            <div className="space-y-1">
+        {/* Funnel Pipeline (7 cols) */}
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.35 }}
+          className="col-span-12 lg:col-span-7"
+        >
+          <div
+            className="p-6 sm:p-7 rounded-[26px] h-full flex flex-col justify-between"
+            style={{
+              background: "linear-gradient(155deg, rgba(26, 32, 50, 0.88) 0%, rgba(14, 18, 28, 0.96) 100%)",
+              border: "1px solid rgba(255, 255, 255, 0.08)",
+              boxShadow: "inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 20px 48px rgba(0, 0, 0, 0.35)",
+            }}
+          >
+            <div className="space-y-1 text-right">
               <div className="flex items-center justify-between">
                 <h3 className="text-base font-bold text-white flex items-center gap-2">
-                  <TrendingUp className="w-4 h-4 text-[#c3f937]" aria-hidden="true" />
+                  <TrendingUp className="w-5 h-5 text-[#c3f937]" aria-hidden="true" />
                   <span>مسار مراحل الاختيار والقبول</span>
                 </h3>
-                <span className="text-xs font-mono text-slate-400">FUNNEL PIPELINE</span>
+                <span className="text-[11px] font-mono font-bold text-slate-300/80 bg-white/[0.04] px-2.5 py-0.5 rounded-full border border-white/[0.08]">
+                  PIPELINE
+                </span>
               </div>
-              <p className="text-xs text-slate-400">تسلسل انتقال المرشحين من التقديم وحتى تأكيد المقعد</p>
+              <p className="text-xs text-slate-300/85">تسلسل انتقال المرشحين من التقديم وحتى اعتماد المقعد</p>
             </div>
 
-            {/* Visual Funnel Blocks */}
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 my-4">
+            {/* Visual Funnel Cards with Breathing Padding */}
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-3.5 my-6">
               {pipelineStages.map((stage) => {
                 const pct = total > 0 ? Math.round((stage.count / total) * 100) : 0;
+                const Icon = stage.icon;
 
                 return (
                   <Link
                     key={stage.id}
                     href={stage.href}
-                    className="p-3 rounded-2xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.06] text-center space-y-1.5 transition-colors focus:outline-none"
+                    className="p-4 rounded-2xl bg-white/[0.025] hover:bg-white/[0.06] border border-white/[0.06] text-center flex flex-col justify-between gap-2.5 transition-all duration-200 hover:translate-y-[-2px] group focus:outline-none"
                   >
-                    <span className="text-[11px] font-semibold text-slate-300 block truncate">
-                      {stage.name}
-                    </span>
-                    <span
-                      className="text-2xl font-bold font-mono block"
+                    <Icon
+                      className="w-5 h-5 mx-auto transition-transform duration-200 group-hover:scale-110"
                       style={{ color: stage.color }}
-                    >
-                      {stage.count}
-                    </span>
-                    <span className="text-[10px] text-slate-400 font-mono block">
+                      aria-hidden="true"
+                    />
+                    <div>
+                      <span className="text-[11px] font-bold text-slate-200 block truncate">
+                        {stage.name}
+                      </span>
+                      <span
+                        className="text-2xl sm:text-3xl font-black font-mono block mt-1 leading-none"
+                        style={{ color: stage.color }}
+                      >
+                        {stage.count}
+                      </span>
+                    </div>
+                    <span className="text-[10px] text-slate-400 font-mono block bg-white/[0.04] py-0.5 rounded-md">
                       {pct}%
                     </span>
                   </Link>
@@ -455,101 +624,136 @@ export default function AdminDashboardPage() {
             </div>
 
             {/* Secondary Statuses Summary Bar */}
-            <div className="pt-3 border-t border-white/[0.06] flex flex-wrap items-center justify-between gap-2 text-xs">
+            <div className="pt-4 border-t border-white/[0.08] flex flex-wrap items-center justify-between gap-3 text-xs">
               <span className="text-slate-400">حالات إضافية:</span>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-4">
                 <Link
                   href="/admin/waitlist"
-                  className="inline-flex items-center gap-1.5 text-orange-400 hover:underline"
+                  className="inline-flex items-center gap-1.5 text-orange-400/90 hover:text-orange-300 font-bold transition-colors"
                 >
-                  <Clock3 className="w-3.5 h-3.5" aria-hidden="true" />
+                  <Clock3 className="w-4 h-4" aria-hidden="true" />
                   <span>قائمة الانتظار ({stats.by_status?.waitlisted || 0})</span>
                 </Link>
                 <span className="text-slate-600">•</span>
                 <Link
                   href="/admin/rejected"
-                  className="inline-flex items-center gap-1.5 text-rose-400 hover:underline"
+                  className="inline-flex items-center gap-1.5 text-rose-400/90 hover:text-rose-300 font-bold transition-colors"
                 >
-                  <CircleX className="w-3.5 h-3.5" aria-hidden="true" />
+                  <CircleX className="w-4 h-4" aria-hidden="true" />
                   <span>غير المقبولين ({stats.by_status?.rejected || 0})</span>
                 </Link>
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
 
-      {/* ── Bento Grid Row 3: Top Cities + Recent Applications ───────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+      {/* ── 4. TOP CITIES & RECENT APPLICATIONS TABLE ───────────────── */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
         {/* Top Cities (4 cols) */}
-        <div className="col-span-12 lg:col-span-4">
-          <div className="bento-card p-6 h-full flex flex-col justify-between">
-            <div className="space-y-1">
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="col-span-12 lg:col-span-4"
+        >
+          <div
+            className="p-6 sm:p-7 rounded-[26px] h-full flex flex-col justify-between"
+            style={{
+              background: "linear-gradient(155deg, rgba(26, 32, 50, 0.88) 0%, rgba(14, 18, 28, 0.96) 100%)",
+              border: "1px solid rgba(255, 255, 255, 0.08)",
+              boxShadow: "inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 20px 48px rgba(0, 0, 0, 0.35)",
+            }}
+          >
+            <div className="space-y-1 text-right">
               <h3 className="text-base font-bold text-white flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-[#c3f937]" aria-hidden="true" />
+                <MapPin className="w-5 h-5 text-[#c3f937]" aria-hidden="true" />
                 <span>أعلى المدن تسجيلاً</span>
               </h3>
-              <p className="text-xs text-slate-400">التوزيع الجغرافي للمتقدمين</p>
+              <p className="text-xs text-slate-300/85">التوزيع الجغرافي للمتقدمين</p>
             </div>
 
-            <div className="space-y-3 my-4">
+            <div className="space-y-4 my-6">
               {stats.top_cities && stats.top_cities.length > 0 ? (
                 stats.top_cities.map((c, i) => {
                   const pct = total > 0 ? Math.round((c.count / total) * 100) : 0;
                   return (
-                    <div key={i} className="space-y-1">
-                      <div className="flex justify-between text-xs">
-                        <span className="text-slate-200 font-semibold">{c.city}</span>
+                    <div key={i} className="space-y-1.5 text-right">
+                      <div className="flex justify-between text-xs font-semibold">
+                        <span className="text-slate-100 flex items-center gap-1.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#c3f937]" />
+                          <span>{c.city}</span>
+                        </span>
                         <span className="font-mono text-slate-300">
                           {c.count} ({pct}%)
                         </span>
                       </div>
-                      <div className="w-full h-1.5 rounded-full bg-white/[0.05] overflow-hidden">
-                        <div
-                          className="h-full rounded-full bg-slate-300 transition-all duration-300"
-                          style={{ width: `${pct}%` }}
+                      <div className="w-full h-2 rounded-full bg-white/[0.06] overflow-hidden">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: `${pct}%` }}
+                          transition={{ duration: 1, delay: 0.1 * i, ease: [0.16, 1, 0.3, 1] }}
+                          className="h-full rounded-full bg-gradient-to-l from-[#c3f937] to-emerald-400"
                         />
                       </div>
                     </div>
                   );
                 })
               ) : (
-                <p className="text-xs text-slate-500 py-4 text-center">لا توجد بيانات مدن مسجلة.</p>
+                <p className="text-xs text-slate-500 py-6 text-center">لا توجد بيانات مدن مسجلة حتى الآن.</p>
               )}
             </div>
 
-            <div className="pt-3 border-t border-white/[0.06] text-[11px] text-slate-400 text-center">
-              المعسكر حضوري في مدينة الرياض
+            <div className="pt-4 border-t border-white/[0.08] text-xs text-slate-400 text-center font-medium">
+              📍 المعسكر حضوري في مدينة الرياض
             </div>
           </div>
-        </div>
+        </motion.div>
 
-        {/* Recent Applications (8 cols) */}
-        <div className="col-span-12 lg:col-span-8">
-          <div className="bento-card p-6 h-full flex flex-col justify-between">
-            <div className="flex items-center justify-between pb-3 border-b border-white/[0.06]">
-              <div className="space-y-0.5">
-                <h3 className="text-base font-bold text-white">أحدث الطلبات المستلمة</h3>
-                <p className="text-xs text-slate-400">آخر المتقدمين للمعسكر</p>
+        {/* Recent Applications Modern Table (8 cols) */}
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.45 }}
+          className="col-span-12 lg:col-span-8"
+        >
+          <div
+            className="p-6 sm:p-7 rounded-[26px] h-full flex flex-col justify-between"
+            style={{
+              background: "linear-gradient(155deg, rgba(26, 32, 50, 0.88) 0%, rgba(14, 18, 28, 0.96) 100%)",
+              border: "1px solid rgba(255, 255, 255, 0.08)",
+              boxShadow: "inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 20px 48px rgba(0, 0, 0, 0.35)",
+            }}
+          >
+            <div className="flex items-center justify-between pb-4 border-b border-white/[0.08]">
+              <div className="space-y-0.5 text-right">
+                <h3 className="text-base font-bold text-white flex items-center gap-2">
+                  <Activity className="w-5 h-5 text-[#c3f937]" aria-hidden="true" />
+                  <span>أحدث الطلبات المستلمة</span>
+                </h3>
+                <p className="text-xs text-slate-300/85">قائمة آخر المتقدمين لحظيًا</p>
               </div>
               <Link
                 href="/admin/applications"
-                className="inline-flex items-center gap-1.5 text-xs text-[#c3f937] hover:underline font-semibold"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-xs text-[#c3f937] hover:text-[#c3f937] font-bold transition-all group"
               >
                 <span>مشاهدة الكل</span>
-                <ArrowLeft className="w-3.5 h-3.5" aria-hidden="true" />
+                <ChevronLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" aria-hidden="true" />
               </Link>
             </div>
 
             {/* List / Table */}
-            <div className="divide-y divide-white/[0.04] my-2">
+            <div className="divide-y divide-white/[0.05] my-2">
               {stats.recent_applications && stats.recent_applications.length > 0 ? (
                 stats.recent_applications.slice(0, 5).map((app: ApplicationListItem) => (
-                  <div
+                  <motion.div
                     key={app.id}
-                    className="py-3 flex flex-wrap items-center justify-between gap-3 hover:bg-white/[0.02] transition-colors rounded-xl px-2"
+                    whileHover={{ x: -3, backgroundColor: "rgba(255, 255, 255, 0.03)" }}
+                    transition={{ duration: 0.15 }}
+                    className="py-3.5 px-3 flex flex-wrap items-center justify-between gap-3 rounded-xl transition-all"
                   >
-                    <div className="min-w-0 space-y-0.5">
+                    <div className="min-w-0 space-y-1 text-right">
                       <Link
                         href={`/admin/applications/${app.id}`}
                         className="text-sm font-bold text-white hover:text-[#c3f937] transition-colors block truncate"
@@ -557,11 +761,13 @@ export default function AdminDashboardPage() {
                         {app.full_name}
                       </Link>
                       <div className="flex items-center gap-2 text-xs text-slate-400">
-                        <span className="font-mono text-[11px]">{app.reference_code}</span>
+                        <span className="font-mono text-[11px] text-slate-300 bg-white/[0.04] px-2 py-0.5 rounded border border-white/[0.06]">
+                          {app.reference_code}
+                        </span>
                         <span>•</span>
-                        <span>{app.city}</span>
+                        <span>{app.city || "الرياض"}</span>
                         <span>•</span>
-                        <span className="text-[#c3f937] text-[11px]">
+                        <span className="text-[#c3f937] font-bold text-[11px]">
                           {app.level === "foundation"
                             ? "مبتدئ"
                             : app.level === "practitioner"
@@ -575,26 +781,30 @@ export default function AdminDashboardPage() {
                       <AdminStatusBadge status={app.application_status} size="sm" />
                       <Link
                         href={`/admin/applications/${app.id}`}
-                        className="px-3 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/10 text-slate-200 text-xs font-semibold transition-colors"
+                        className="px-3.5 py-1.5 rounded-xl bg-white/[0.06] hover:bg-[#c3f937] hover:text-[#0c1018] text-slate-200 text-xs font-bold transition-all cursor-pointer"
                       >
                         عرض الملف
                       </Link>
                     </div>
-                  </div>
+                  </motion.div>
                 ))
               ) : (
-                <div className="py-8 text-center text-xs text-slate-500">
-                  لا توجد طلبات مستلمة بعد. ستظهر أحدث الطلبات هنا مباشرة.
+                <div className="py-10 text-center text-xs text-slate-400">
+                  لا توجد طلبات مستلمة بعد. ستظهر أحدث الطلبات هنا مباشرة فور تسجيلها.
                 </div>
               )}
             </div>
 
-            {/* Footer hint */}
-            <div className="pt-2 text-[11px] text-slate-500 text-right">
-              يتم تحديث الطلبات لحظيًا عبر Supabase Realtime
+            {/* Footer Status Hint */}
+            <div className="pt-3.5 text-[11px] text-slate-400 flex items-center justify-between border-t border-white/[0.06]">
+              <span className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span>يتم التحديث المباشر فور تسجيل أي متقدم جديد</span>
+              </span>
+              <span className="font-mono text-slate-500">BUILDx OS // v2.0</span>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

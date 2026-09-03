@@ -1,4 +1,6 @@
 import React from "react";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import { getAuthenticatedAdmin } from "@/lib/admin/auth";
 import { createServerClient } from "@/lib/supabase/server";
 import AdminSidebar from "@/components/admin/AdminSidebar";
@@ -20,11 +22,23 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const headersList = await headers();
+  const pathname = headersList.get("x-admin-pathname") || "";
+  const isLoginPage = pathname === "/admin/login";
+
   const admin = await getAuthenticatedAdmin();
 
-  // If not authenticated, let the middleware/page handle redirect
-  if (!admin) {
+  // If this is the login page:
+  if (isLoginPage) {
+    if (admin) {
+      redirect("/admin");
+    }
     return <>{children}</>;
+  }
+
+  // If NOT authenticated on any protected admin route, redirect to login
+  if (!admin) {
+    redirect("/admin/login");
   }
 
   // Fetch camp registration status
@@ -40,28 +54,28 @@ export default async function AdminLayout({
   } catch {}
 
   return (
-    <div className="admin-bg min-h-[100dvh] w-full text-[#e7edfd] font-janna relative select-none">
+    <div className="admin-bg" dir="rtl">
       {/* Realtime live application notifications */}
       <RealtimeToast />
 
       {/* Responsive Shell: Deterministic LTR Grid on Desktop, Flex Column on Mobile */}
       <div className="admin-shell">
-        {/* Desktop Sticky Sidebar (280px on physical right side) */}
-        <div className="admin-sidebar hidden lg:block">
-          <AdminSidebar user={admin} />
-        </div>
-
         {/* Main Content Area (Column 1 on desktop, full width on mobile) */}
-        <div className="admin-main flex flex-col min-w-0">
+        <div className="admin-main">
           {/* Mobile-only Header with Drawer toggle */}
           <div className="lg:hidden w-full sticky top-0 z-30">
             <AdminHeader user={admin} registrationOpen={registrationOpen} />
           </div>
 
           {/* Page Content Container */}
-          <main className="flex-1 w-full max-w-[1700px] mx-auto p-4 sm:p-6 lg:p-8 xl:p-10 pb-20">
+          <main className="admin-content">
             {children}
           </main>
+        </div>
+
+        {/* Desktop Sticky Sidebar (280px on physical right side, Column 2) */}
+        <div className="admin-sidebar hidden lg:block">
+          <AdminSidebar user={admin} />
         </div>
       </div>
     </div>

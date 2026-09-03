@@ -9,15 +9,22 @@ export function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
+  const requestHeaders = new Headers(req.headers);
+  requestHeaders.set("x-admin-pathname", pathname);
+
   // Allow login page and login API endpoint without token
   if (
     pathname === "/admin/login" ||
     pathname === "/api/admin/auth/login"
   ) {
-    return NextResponse.next();
+    return NextResponse.next({
+      request: {
+        headers: requestHeaders,
+      },
+    });
   }
 
-  const token = req.cookies.get("buildx_admin_token")?.value;
+  const token = req.cookies.get("buildx_auth_admin_session")?.value;
 
   // Protect /api/admin endpoints
   if (pathname.startsWith("/api/admin")) {
@@ -27,7 +34,11 @@ export function middleware(req: NextRequest) {
         { status: 401 }
       );
     }
-    return NextResponse.next();
+    return NextResponse.next({
+      request: {
+        headers: requestHeaders,
+      },
+    });
   }
 
   // Protect /admin pages
@@ -37,7 +48,11 @@ export function middleware(req: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  return NextResponse.next();
+  return NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    },
+  });
 }
 
 export const config = {

@@ -2,7 +2,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useLanguage } from "@/context/LanguageContext";
 import { isValidSaudiPhone, normalizePhone } from "@/lib/validation/applicationSchema";
-import type { FormState, PersonalData, LevelData, Level, TeamEnvPreference, FoundationAnswers, PractitionerAnswers, AdvancedAnswers } from "@/types/registration";
+import type { FormState, PersonalData, LevelData, Level, Gender, TeamEnvPreference, FoundationAnswers, PractitionerAnswers, AdvancedAnswers } from "@/types/registration";
 import StepIndicator from "./StepIndicator";
 import FormNavigation from "./FormNavigation";
 import Step1Personal from "./steps/Step1Personal";
@@ -25,7 +25,19 @@ function saveDraft(state: FormState) {
 function loadDraft(): FormState | null {
   try {
     const s = localStorage.getItem(DRAFT_KEY);
-    return s ? JSON.parse(s) : null;
+    if (!s) return null;
+    const parsed = JSON.parse(s);
+    return {
+      ...parsed,
+      declarations: {
+        information_accurate: false,
+        full_attendance: false,
+        application_not_acceptance: false,
+        data_processing: false,
+        laptop_commitment: false,
+        ...(parsed.declarations || {}),
+      },
+    };
   } catch { return null; }
 }
 function clearDraft() {
@@ -61,7 +73,7 @@ function makeIdempotencyKey(): string {
 }
 
 const emptyPersonal: PersonalData = {
-  full_name: "", birth_date: "", phone: "", email: "", email_confirm: "",
+  full_name: "", birth_date: "", gender: "", phone: "", email: "", email_confirm: "",
   city: "", city_other: "", organization: "", specialization: "",
   current_status: "", current_status_other: "",
 };
@@ -73,7 +85,7 @@ function makeInitialState(): FormState {
     portfolio_links: [],
     professional_links: [],
     team_env: "",
-    declarations: { information_accurate: false, full_attendance: false, application_not_acceptance: false, data_processing: false },
+    declarations: { information_accurate: false, full_attendance: false, application_not_acceptance: false, data_processing: false, laptop_commitment: false },
     currentStep: 1,
     idempotency_key: makeIdempotencyKey(),
   };
@@ -95,6 +107,7 @@ function validatePersonal(p: PersonalData, locale: string): Partial<Record<keyof
   else if (/[0-9!@#$%^&*()\[\]{};:'",<>?/\\|`~]/.test(name)) e.full_name = ar ? "الاسم يحتوي على رموز غير مسموح بها" : "Name contains invalid characters";
   if (!p.birth_date) e.birth_date = ar ? "تاريخ الميلاد مطلوب" : "Date of birth is required";
   else if (new Date(p.birth_date) >= new Date()) e.birth_date = ar ? "تاريخ الميلاد غير صالح" : "Invalid date of birth";
+  if (!p.gender) e.gender = ar ? "يرجى اختيار الجنس للمتابعة." : "Please select your gender to proceed.";
   if (!p.phone) e.phone = ar ? "رقم الجوال مطلوب" : "Mobile number is required";
   else if (!isValidSaudiPhone(p.phone)) e.phone = ar ? "رقم الجوال غير صالح. أدخل رقماً سعودياً صحيحاً" : "Invalid mobile number. Enter a valid Saudi number";
   if (!p.email) e.email = ar ? "البريد الإلكتروني مطلوب" : "Email is required";
@@ -141,6 +154,7 @@ export default function RegistrationForm() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
+  const [declarationErrors, setDeclarationErrors] = useState<Partial<Record<keyof FormState["declarations"], string>>>({});
   const [successCode, setSuccessCode] = useState<string | null>(null);
   const [draftSaved, setDraftSaved] = useState(false);
   const [pendingLevelChange, setPendingLevelChange] = useState<Level | null>(null);
@@ -273,14 +287,33 @@ export default function RegistrationForm() {
     if (isSubmitting) return;
     if (!state.levelData || !state.team_env) return;
 
-    setIsSubmitting(true);
+    if (!state.declarations.laptop_commitment) {
+      const msg = locale === "ar"
+        ? "يجب الإقرار بتوفر جهاز محمول والالتزام بإحضاره لإكمال التسجيل."
+        : "You must commit to having and bringing a laptop to complete registration.";
+      setSubmitError(msg);
+      setDeclarationErrors({ laptop_commitment: msg });
+      return;
+    }
+
+    const allChecked = Object.values(state.declarations).every(Boolean);
+    if (!allChecked) {
+      const msg = locale === "ar"
+        ? "يرجى الموافقة على جميع الإقرارات أعلاه لتفعيل زر التسليم."
+        : "Please confirm all declarations above to enable the submit button.";
+      setSubmitError(msg);
+      return;
+    }
+
     setSubmitError("");
-    submitStartTime.current = Date.now();
+    setDeclarationErrors({});
+    setIsSubmitting(true);
 
     const answers = state.levelData.answers as unknown as Record<string, string | boolean>;
     const payload = {
       full_name: state.personal.full_name.trim().replace(/\s+/g, " "),
       birth_date: state.personal.birth_date,
+      gender: state.personal.gender as Gender,
       phone: normalizePhone(state.personal.phone),
       email: state.personal.email.toLowerCase().trim(),
       city: state.personal.city_other.trim() || state.personal.city,
@@ -299,6 +332,7 @@ export default function RegistrationForm() {
       declaration_full_attendance: state.declarations.full_attendance,
       declaration_application_not_acceptance: state.declarations.application_not_acceptance,
       declaration_data_processing: state.declarations.data_processing,
+      laptop_commitment: state.declarations.laptop_commitment,
       idempotency_key: state.idempotency_key,
       honeypot: "",
       submitted_at_client: submitStartTime.current,
@@ -421,8 +455,18 @@ export default function RegistrationForm() {
         {currentStep === 6 && (
           <Step6Submit
             declarations={state.declarations}
-            onChange={(d) => update({ declarations: d })}
-            errors={{}}
+            onChange={(d) => {
+              update({ declarations: d });
+              if (submitError) setSubmitError("");
+              if (d.laptop_commitment && declarationErrors.laptop_commitment) {
+                setDeclarationErrors((prev) => {
+                  const next = { ...prev };
+                  delete next.laptop_commitment;
+                  return next;
+                });
+              }
+            }}
+            errors={declarationErrors}
             isSubmitting={isSubmitting}
             onSubmit={handleSubmit}
             submitError={submitError}

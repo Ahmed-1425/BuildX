@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import type { AuditLogEntry } from "@/types/admin";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { ScrollText, User, Clock, ChevronRight, ChevronLeft } from "lucide-react";
+import { formatDateTimeArabic, formatNumber } from "@/lib/admin/formatters";
 
 export default function AuditLogsPage() {
   const [logs, setLogs] = useState<AuditLogEntry[]>([]);
@@ -71,16 +72,9 @@ export default function AuditLogsPage() {
               </div>
 
               <div className="flex items-center gap-1.5 text-slate-400 font-mono text-xs text-left" dir="ltr">
-                <Clock className="w-3.5 h-3.5" aria-hidden="true" />
-                <span>
-                  {new Date(log.created_at).toLocaleString("ar-SA", {
-                    timeZone: "Asia/Riyadh",
-                    month: "short",
-                    day: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    second: "2-digit",
-                  })}
+                <Clock className="w-3.5 h-3.5 text-[#c3f937]" aria-hidden="true" />
+                <span className="numeric-value">
+                  {formatDateTimeArabic(log.created_at)}
                 </span>
               </div>
             </div>
@@ -90,7 +84,7 @@ export default function AuditLogsPage() {
 
       {/* Pagination */}
       <div className="flex justify-between items-center text-sm text-slate-400">
-        <span>صفحة {page}</span>
+        <span className="numeric-value">صفحة {formatNumber(page)}</span>
         <div className="flex gap-2">
           <button
             type="button"

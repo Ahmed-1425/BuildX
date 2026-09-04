@@ -20,9 +20,12 @@ export async function GET(req: NextRequest) {
 
     const supabase = createServerClient();
 
+    const { data: adminUsers } = await supabase.from("admin_users").select("id, full_name");
+    const adminMap = new Map((adminUsers || []).map((u) => [u.id, u.full_name]));
+
     const { data: logs, count, error } = await supabase
       .from("admin_audit_logs")
-      .select("*, admin_users!actor_id(full_name)", { count: "exact" })
+      .select("*", { count: "exact" })
       .order("created_at", { ascending: false })
       .range(offset, offset + limit - 1);
 
@@ -33,7 +36,7 @@ export async function GET(req: NextRequest) {
 
     const formatted = (logs || []).map((l: any) => ({
       ...l,
-      actor_name: l.admin_users?.full_name || "النظام",
+      actor_name: adminMap.get(l.actor_id) || "النظام",
     }));
 
     return NextResponse.json({

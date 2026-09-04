@@ -30,7 +30,7 @@ export async function POST(
         note: note.trim(),
         is_pinned: Boolean(is_pinned),
       })
-      .select("*, admin_users!author_id(full_name)")
+      .select("*")
       .single();
 
     if (error) {

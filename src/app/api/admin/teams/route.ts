@@ -26,7 +26,7 @@ export async function GET() {
     // 2. Fetch all team members with application details
     const { data: membersData, error: membersErr } = await supabase
       .from("team_members")
-      .select("id, team_id, application_id, role_in_team, applications(id, full_name, level, city, team_environment_preference)");
+      .select("id, team_id, application_id, role_in_team, applications(id, full_name, level, gender, city, specialization, team_environment_preference, application_status)");
 
     const teamMembersMap: Record<string, TeamMemberItem[]> = {};
     const assignedAppIds = new Set<string>();
@@ -42,8 +42,11 @@ export async function GET() {
           application_id: m.application_id,
           full_name: m.applications?.full_name || "عضو",
           level: m.applications?.level || "foundation",
+          gender: m.applications?.gender || null,
           city: m.applications?.city || "الرياض",
+          specialization: m.applications?.specialization || "تقنية",
           team_env: m.applications?.team_environment_preference || "comfortable",
+          application_status: m.applications?.application_status || "accepted",
           role_in_team: m.role_in_team,
         });
       }
@@ -59,7 +62,7 @@ export async function GET() {
     // 3. Fetch eligible accepted/confirmed candidates who are not assigned yet
     const { data: eligibleCandidates } = await supabase
       .from("applications")
-      .select("id, full_name, level, city, team_environment_preference, application_status")
+      .select("id, full_name, level, gender, city, specialization, team_environment_preference, application_status")
       .in("application_status", ["accepted", "confirmed"])
       .order("submitted_at", { ascending: true });
 
@@ -69,7 +72,9 @@ export async function GET() {
         id: c.id,
         full_name: c.full_name,
         level: c.level,
+        gender: c.gender || null,
         city: c.city,
+        specialization: c.specialization || "تقنية",
         team_env: c.team_environment_preference,
         application_status: c.application_status,
       }));

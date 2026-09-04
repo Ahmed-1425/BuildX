@@ -2,6 +2,7 @@
 import React from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { toLatinDigits, formatNumber } from "@/lib/admin/formatters";
 
 interface Props {
   title: string;
@@ -11,7 +12,7 @@ interface Props {
   icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
   accentColor?: "lime" | "pink" | "purple" | "cyan" | "gold";
   href?: string;
-  featured?: boolean; // Large card for Total Applications
+  featured?: boolean;
   subValueText?: string;
 }
 
@@ -59,10 +60,13 @@ export default function AdminStatCard({
     },
   }[accentColor];
 
+  // Enforce English Latin Digits
+  const formattedValue = typeof value === "number" ? formatNumber(value) : toLatinDigits(String(value));
+
   const content = (
     <div
-      className={`bento-card group flex flex-col justify-between p-5 sm:p-6 ${
-        featured ? "h-full min-h-[190px]" : "min-h-[135px]"
+      className={`bento-card metric-card group relative transition-all duration-200 ${
+        featured ? "border-white/20 bg-gradient-to-br from-white/[0.06] to-white/[0.02]" : ""
       }`}
       dir="rtl"
     >
@@ -71,65 +75,65 @@ export default function AdminStatCard({
 
       {/* Ambient Corner Aura */}
       <div
-        className={`absolute -top-10 -right-10 w-28 h-28 rounded-full blur-2xl pointer-events-none ${accentStyles.cornerGlow} opacity-60`}
+        className={`absolute -top-12 -right-12 w-32 h-32 rounded-full blur-2xl pointer-events-none ${accentStyles.cornerGlow} opacity-50`}
         aria-hidden="true"
       />
 
-      {/* Top Row: Icon & Badge/Link */}
-      <div className="flex items-center justify-between gap-3 relative z-10 mb-2">
-        <div
-          className={`w-11 h-11 rounded-xl border flex items-center justify-center shrink-0 transition-transform group-hover:scale-105 ${accentStyles.iconBg}`}
-        >
-          <Icon className="w-5 h-5" strokeWidth={1.8} aria-hidden="true" />
+      {/* ── 1. Top Row: Icon, Title & Optional Badge/Arrow ─────────────────── */}
+      <div className="flex items-center justify-between gap-3 relative z-10">
+        <div className="flex items-center gap-3 min-w-0">
+          <div
+            className={`w-11 h-11 rounded-xl border flex items-center justify-center shrink-0 transition-transform group-hover:scale-105 ${accentStyles.iconBg}`}
+          >
+            <Icon className="w-5 h-5" strokeWidth={1.8} aria-hidden="true" />
+          </div>
+          <h2 className="text-[17px] font-bold text-white tracking-tight truncate">
+            {title}
+          </h2>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           {badge && (
-            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold bg-white/5 border border-white/10 text-slate-300">
-              {badge}
+            <span className="px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-white/5 border border-white/10 text-slate-300 numeric-value">
+              {toLatinDigits(badge)}
             </span>
           )}
           {href && (
-            <div className="w-7 h-7 rounded-lg bg-white/[0.04] text-slate-400 group-hover:text-white group-hover:bg-white/10 transition-colors flex items-center justify-center">
-              <ArrowLeft className="w-3.5 h-3.5" aria-hidden="true" />
+            <div className="w-8 h-8 rounded-xl bg-white/[0.04] text-slate-400 group-hover:text-white group-hover:bg-white/10 transition-colors flex items-center justify-center">
+              <ArrowLeft className="w-4 h-4" aria-hidden="true" />
             </div>
           )}
         </div>
       </div>
 
-      {/* Middle/Bottom: Number and Title */}
-      <div className="relative z-10 space-y-1">
-        <span className="text-xs sm:text-sm font-semibold text-slate-300 block">
-          {title}
-        </span>
-
-        <div className="flex items-baseline gap-2 pt-1">
+      {/* ── 2. Middle Row: Number in Independent Area ─────────────────────── */}
+      <div className="relative z-10 my-auto py-1">
+        <div className="flex items-baseline gap-2.5">
           <span
-            className={`font-mono font-bold tracking-tight ${accentStyles.text} ${
-              featured ? "text-4xl sm:text-5xl" : "text-3xl sm:text-4xl"
-            }`}
+            className={`numeric-value font-mono font-bold tracking-tight text-[42px] sm:text-[46px] leading-none ${accentStyles.text}`}
           >
-            {value}
+            {formattedValue}
           </span>
           {subValueText && (
-            <span className="text-xs text-slate-400 font-normal">
-              {subValueText}
+            <span className="text-xs text-slate-400 font-medium numeric-value">
+              {toLatinDigits(subValueText)}
             </span>
           )}
         </div>
+      </div>
 
-        {description && (
-          <p className="text-[11px] sm:text-xs text-slate-400 leading-relaxed pt-1 line-clamp-1">
-            {description}
-          </p>
-        )}
+      {/* ── 3. Bottom Row: Description ────────────────────────────────────── */}
+      <div className="relative z-10 pt-1 border-t border-white/[0.04]">
+        <p className="text-[14px] text-slate-300 leading-[1.7] line-clamp-2">
+          {description || "مؤشر أداء معتمد"}
+        </p>
       </div>
     </div>
   );
 
   if (href) {
     return (
-      <Link href={href} className="block focus:outline-none" aria-label={title}>
+      <Link href={href} className="block focus:outline-none h-full" aria-label={title}>
         {content}
       </Link>
     );

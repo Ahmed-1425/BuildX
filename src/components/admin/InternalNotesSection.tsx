@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import type { ApplicationNote } from "@/types/admin";
 import { Pin, Trash2, Send } from "lucide-react";
+import { formatDateTimeArabic } from "@/lib/admin/formatters";
 
 interface Props {
   applicationId: string;
@@ -126,12 +127,8 @@ export default function InternalNotesSection({
                   <div className="flex items-center gap-2">
                     {n.is_pinned && <Pin className="w-3.5 h-3.5 text-yellow-400" aria-hidden="true" />}
                     <span className="text-xs font-bold text-white">{n.author_name}</span>
-                    <span className="text-[10px] text-slate-500" dir="ltr">
-                      {new Date(n.created_at).toLocaleDateString("ar-SA", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        timeZone: "Asia/Riyadh",
-                      })}
+                    <span className="text-xs text-slate-400 font-mono numeric-value" dir="ltr">
+                      {formatDateTimeArabic(n.created_at)}
                     </span>
                   </div>
                   {canDelete && (

@@ -1,0 +1,470 @@
+.applicantOverlay {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 2147483640 !important;
+
+  width: 100vw !important;
+  height: 100dvh !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  padding: 24px !important;
+  box-sizing: border-box !important;
+
+  background: rgba(4, 7, 12, 0.8) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  animation: modalFadeIn 0.2s ease-out;
+}
+
+.applicantDialog {
+  position: relative !important;
+  inset: auto !important;
+  top: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  left: auto !important;
+  transform: none !important;
+
+  width: min(960px, calc(100vw - 48px)) !important;
+  max-width: 960px !important;
+  height: auto !important;
+  max-height: calc(100dvh - 48px) !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  direction: rtl;
+
+  background:
+    radial-gradient(
+      circle at 90% 0%,
+      rgba(195, 249, 55, 0.07),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 10% 100%,
+      rgba(251, 80, 195, 0.06),
+      transparent 30%
+    ),
+    linear-gradient(
+      145deg,
+      rgba(30, 31, 49, 0.99),
+      rgba(12, 16, 24, 0.99)
+    ) !important;
+
+  border: 1px solid rgba(231, 237, 253, 0.14) !important;
+  border-radius: 24px !important;
+
+  box-shadow:
+    0 42px 120px rgba(0, 0, 0, 0.72),
+    0 0 50px rgba(52, 21, 95, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+  animation: modalScaleIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalScaleIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.applicantHeader {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+
+  padding: 24px 28px;
+  border-bottom: 1px solid rgba(231, 237, 253, 0.1);
+}
+
+.headerCopy {
+  min-width: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.eyebrow {
+  width: fit-content;
+  color: #c3f937;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.applicantName {
+  margin: 0;
+  color: #e7edfd;
+  font-family: var(--font-janna);
+  font-size: clamp(26px, 3vw, 36px);
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.applicantMeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  color: rgba(231, 237, 253, 0.7);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.metaItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.metaChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 8px;
+  background: rgba(231, 237, 253, 0.06);
+  border: 1px solid rgba(231, 237, 253, 0.12);
+  font-size: 13px;
+  color: #e7edfd;
+}
+
+.closeButton {
+  width: 46px;
+  height: 46px;
+  flex: 0 0 46px;
+
+  display: grid;
+  place-items: center;
+
+  color: #e7edfd;
+  background: rgba(231, 237, 253, 0.06);
+  border: 1px solid rgba(231, 237, 253, 0.12);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.closeButton:hover {
+  color: #0c1018;
+  background: #c3f937;
+  border-color: #c3f937;
+}
+
+.applicantBody {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  padding: 26px 28px 30px;
+  overscroll-behavior: contain;
+}
+
+.sectionsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.profileSection {
+  min-width: 0;
+  padding: 22px;
+
+  display: grid;
+  align-content: start;
+  gap: 18px;
+
+  background: rgba(231, 237, 253, 0.035);
+  border: 1px solid rgba(231, 237, 253, 0.09);
+  border-radius: 18px;
+}
+
+.fullWidthSection {
+  margin-top: 20px;
+  min-width: 0;
+  padding: 22px;
+
+  display: grid;
+  align-content: start;
+  gap: 18px;
+
+  background: rgba(231, 237, 253, 0.035);
+  border: 1px solid rgba(231, 237, 253, 0.09);
+  border-radius: 18px;
+}
+
+.sectionHeading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  margin: 0;
+  color: #e7edfd;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.sectionHeadingIcon {
+  color: #c3f937;
+  display: flex;
+  align-items: center;
+}
+
+.fieldsList {
+  display: grid;
+  gap: 16px;
+}
+
+.profileField {
+  min-width: 0;
+  display: grid;
+  gap: 5px;
+}
+
+.fieldLabel {
+  color: rgba(231, 237, 253, 0.58);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.fieldValue {
+  color: #e7edfd;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.ltrField {
+  direction: ltr;
+  unicode-bidi: isolate;
+  text-align: right;
+  font-family: monospace, monospace;
+}
+
+.contactActionsRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.contactActionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-decoration: none;
+}
+
+.whatsappBtn {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.whatsappBtn:hover {
+  background: rgba(16, 185, 129, 0.28);
+  color: #6ee7b7;
+}
+
+.emailBtn {
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+.emailBtn:hover {
+  background: rgba(56, 189, 248, 0.28);
+  color: #7dd3fc;
+}
+
+.copyBtn {
+  background: rgba(231, 237, 253, 0.06);
+  color: rgba(231, 237, 253, 0.8);
+  border: 1px solid rgba(231, 237, 253, 0.14);
+}
+
+.copyBtn:hover {
+  background: rgba(231, 237, 253, 0.12);
+  color: #ffffff;
+}
+
+.linksList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+}
+
+.linkItemCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(231, 237, 253, 0.04);
+  border: 1px solid rgba(231, 237, 253, 0.08);
+}
+
+.linkInfo {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.linkType {
+  font-size: 12px;
+  color: rgba(231, 237, 253, 0.6);
+}
+
+.linkUrl {
+  font-size: 13px;
+  color: #38bdf8;
+  direction: ltr;
+  unicode-bidi: isolate;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.linkActions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.emptyStateNotice {
+  padding: 20px;
+  text-align: center;
+  color: rgba(231, 237, 253, 0.5);
+  font-size: 14px;
+  background: rgba(231, 237, 253, 0.02);
+  border-radius: 12px;
+  border: 1px dashed rgba(231, 237, 253, 0.1);
+}
+
+.applicantFooter {
+  flex: 0 0 auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 12px;
+
+  padding: 18px 28px;
+
+  border-top: 1px solid rgba(231, 237, 253, 0.1);
+  background: rgba(12, 16, 24, 0.72);
+}
+
+.primaryButton,
+.secondaryButton {
+  min-height: 48px;
+  padding: 0 22px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  font-family: var(--font-janna);
+  font-size: 15px;
+  font-weight: 700;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.primaryButton {
+  color: #0c1018;
+  background: #c3f937;
+  border: 1px solid #c3f937;
+}
+
+.primaryButton:hover {
+  background: #b2e82e;
+  border-color: #b2e82e;
+}
+
+.secondaryButton {
+  color: #e7edfd;
+  background: rgba(231, 237, 253, 0.05);
+  border: 1px solid rgba(231, 237, 253, 0.13);
+}
+
+.secondaryButton:hover {
+  background: rgba(231, 237, 253, 0.1);
+  color: #ffffff;
+}
+
+@media (max-width: 640px) {
+  .applicantOverlay {
+    padding: 0 !important;
+    align-items: flex-end !important;
+  }
+
+  .applicantDialog {
+    width: 100% !important;
+    max-width: none !important;
+    max-height: 94dvh !important;
+    border-radius: 24px 24px 0 0 !important;
+  }
+
+  .sectionsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .applicantHeader,
+  .applicantBody,
+  .applicantFooter {
+    padding-inline: 18px;
+  }
+
+  .applicantFooter {
+    padding-bottom:
+      calc(18px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    width: 100%;
+  }
+
+  .linksList {
+    grid-template-columns: 1fr;
+  }
+}

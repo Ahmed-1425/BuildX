@@ -2,7 +2,8 @@
 // BUILDx Admin Dashboard — TypeScript Types
 // ═══════════════════════════════════════════════════════════════
 
-import type { Level, TeamEnvPreference, FoundationAnswers, PractitionerAnswers, AdvancedAnswers } from "./registration";
+import type { Level, TeamEnvPreference, Gender } from "./registration";
+export { getGenderLabel, type Gender } from "./registration";
 
 export type AdminRole = "super_admin" | "admin" | "reviewer";
 
@@ -94,7 +95,10 @@ export interface TeamMemberItem {
   full_name: string;
   level: Level;
   city: string;
+  specialization?: string;
+  gender?: Gender | null;
   team_env: TeamEnvPreference;
+  application_status?: ExtendedApplicationStatus;
   role_in_team?: string | null;
 }
 
@@ -112,6 +116,7 @@ export interface ApplicationListItem {
   email: string;
   phone: string;
   birth_date: string;
+  gender?: Gender | null;
   city: string;
   organization: string;
   specialization: string;
@@ -120,6 +125,7 @@ export interface ApplicationListItem {
   level: Level;
   application_status: ExtendedApplicationStatus;
   team_environment_preference: TeamEnvPreference;
+  laptop_commitment?: boolean | null;
   submitted_at: string;
   updated_at: string;
   reviews_count: number;
@@ -161,6 +167,11 @@ export interface DashboardStats {
     comfortable: number;
     same_gender_only: number;
   };
+  by_gender: {
+    male: number;
+    female: number;
+    unspecified: number;
+  };
   top_cities: { city: string; count: number }[];
   unreviewed_count: number;
   avg_score_overall: number | null;
@@ -173,6 +184,7 @@ export interface FilterParams {
   level?: string;
   status?: string;
   city?: string;
+  gender?: "all" | "male" | "female" | "unspecified";
   current_status?: string;
   team_env?: string;
   reviewed?: "reviewed" | "unreviewed" | "reviewed_by_me" | "not_reviewed_by_me";

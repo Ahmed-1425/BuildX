@@ -15,6 +15,7 @@ export async function GET(req: NextRequest) {
     const level = searchParams.get("level");
     const status = searchParams.get("status");
     const city = searchParams.get("city");
+    const gender = searchParams.get("gender");
     const currentStatus = searchParams.get("current_status");
     const teamEnv = searchParams.get("team_env");
     const hasVideo = searchParams.get("has_video");
@@ -30,13 +31,20 @@ export async function GET(req: NextRequest) {
     let query = supabase
       .from("applications")
       .select(
-        "id, reference_code, full_name, email, phone, birth_date, city, organization, specialization, current_status, current_status_other, level, application_status, team_environment_preference, advanced_video_url, submitted_at, updated_at",
+        "id, reference_code, full_name, email, phone, birth_date, gender, city, organization, specialization, current_status, current_status_other, level, level_answers, application_status, team_environment_preference, advanced_video_url, submitted_at, updated_at",
         { count: "exact" }
       );
 
     // Filters
     if (level) query = query.eq("level", level);
     if (status) query = query.eq("application_status", status);
+    if (gender && gender !== "all") {
+      if (gender === "unspecified") {
+        query = query.is("gender", null);
+      } else {
+        query = query.eq("gender", gender);
+      }
+    }
     if (city) query = query.ilike("city", `%${city}%`);
     if (currentStatus) query = query.eq("current_status", currentStatus);
     if (teamEnv) query = query.eq("team_environment_preference", teamEnv);
@@ -49,7 +57,7 @@ export async function GET(req: NextRequest) {
 
     if (search) {
       query = query.or(
-        `full_name.ilike.%${search}%,reference_code.ilike.%${search}%,email.ilike.%${search}%,phone.ilike.%${search}%,organization.ilike.%${search}%,specialization.ilike.%${search}%`
+        `full_name.ilike.%${search}%,reference_code.ilike.%${search}%,email.ilike.%${search}%,phone.ilike.%${search}%,city.ilike.%${search}%,organization.ilike.%${search}%,specialization.ilike.%${search}%`
       );
     }
 
@@ -112,6 +120,7 @@ export async function GET(req: NextRequest) {
         email: r.email,
         phone: r.phone,
         birth_date: r.birth_date,
+        gender: r.gender || null,
         city: r.city,
         organization: r.organization,
         specialization: r.specialization,
@@ -120,6 +129,7 @@ export async function GET(req: NextRequest) {
         level: r.level,
         application_status: r.application_status,
         team_environment_preference: r.team_environment_preference,
+        laptop_commitment: (r.level_answers as any)?.laptop_commitment ?? true,
         submitted_at: r.submitted_at,
         updated_at: r.updated_at,
         reviews_count: revStat?.count || 0,

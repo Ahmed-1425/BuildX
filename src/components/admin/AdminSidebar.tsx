@@ -90,7 +90,7 @@ export default function AdminSidebar({ user }: Props) {
 
   return (
     <aside
-      className="w-[280px] h-[100dvh] flex flex-col justify-between select-none relative z-40 font-janna"
+      className="w-[270px] h-[100dvh] flex flex-col justify-between select-none relative z-40 font-janna"
       style={{
         background: "linear-gradient(180deg, rgba(14, 18, 28, 0.95) 0%, rgba(10, 13, 20, 0.98) 100%)",
         backdropFilter: "blur(28px)",
@@ -99,7 +99,7 @@ export default function AdminSidebar({ user }: Props) {
       }}
       dir="rtl"
     >
-      {/* Top Brand Header with Friendly Mascot Flare */}
+      {/* Top Brand Header */}
       <div className="p-6 pb-4 flex flex-col gap-3">
         <div className="flex items-center justify-between">
           <Link
@@ -111,36 +111,16 @@ export default function AdminSidebar({ user }: Props) {
               <Image
                 src="/assets/logos/logo-white-glow.png"
                 alt="BUILDx"
-                width={140}
-                height={48}
-                className="w-[135px] h-auto object-contain drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)]"
+                width={135}
+                height={46}
+                className="w-[130px] h-auto object-contain drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)]"
                 priority
               />
             </div>
           </Link>
-
-          {/* Small Friendly Pixel Mascot Icon */}
-          <motion.div
-            animate={{ y: [0, -3, 0] }}
-            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-            className="w-8 h-8 rounded-xl bg-[#c3f937]/10 border border-[#c3f937]/30 flex items-center justify-center relative shadow-[0_0_12px_rgba(195,249,55,0.2)]"
-            title="BUILDx Companion"
-          >
-            <Image
-              src="/assets/characters/ready.png"
-              alt="Mascot"
-              width={24}
-              height={24}
-              className="w-5 h-5 object-contain image-pixelated"
-            />
-          </motion.div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-[#c3f937]/10 text-[#c3f937] border border-[#c3f937]/30 shadow-[0_0_12px_rgba(195,249,55,0.15)]">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#c3f937] animate-ping" />
-            <Shield className="w-3 h-3 text-[#c3f937]" aria-hidden="true" />
-            <span>لوحة الإدارة المركزية</span>
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-[#c3f937]/10 text-[#c3f937] border border-[#c3f937]/30">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#c3f937]" />
+            <span>لوحة الإدارة</span>
           </span>
         </div>
 

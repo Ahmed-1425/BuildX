@@ -78,6 +78,10 @@ export const applicationSchema = z
       .regex(/^\d{4}-\d{2}-\d{2}$/, "تاريخ الميلاد غير صالح")
       .refine((d) => new Date(d) < new Date(), { message: "لا يمكن أن يكون تاريخ الميلاد في المستقبل" }),
 
+    gender: z.enum(["male", "female"], {
+      error: "يرجى اختيار الجنس للمتابعة.",
+    }),
+
     phone: z
       .string()
       .transform(normalizePhone)
@@ -122,6 +126,9 @@ export const applicationSchema = z
     declaration_full_attendance: z.literal(true),
     declaration_application_not_acceptance: z.literal(true),
     declaration_data_processing: z.literal(true),
+    laptop_commitment: z.literal(true, {
+      error: "يجب الإقرار بتوفر جهاز محمول والالتزام بإحضاره لإكمال التسجيل.",
+    }),
 
     idempotency_key: z.string().uuid(),
 

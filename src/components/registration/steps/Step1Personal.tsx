@@ -4,8 +4,8 @@ import FormField from "../fields/FormField";
 import SearchableSelect from "../fields/SearchableSelect";
 import RadioCards from "../fields/RadioCards";
 import type { PersonalData } from "@/types/registration";
-import { isValidSaudiPhone } from "@/lib/validation/applicationSchema";
 import Image from "next/image";
+import { User, UserRound } from "lucide-react";
 
 const SAUDI_CITIES = [
   "الرياض","جدة","مكة المكرمة","المدينة المنورة","الدمام","الخبر","الظهران","الطائف","تبوك","بريدة",
@@ -71,6 +71,76 @@ export default function Step1Personal({ data, onChange, errors }: Props) {
         <FormField label={ar ? "تاريخ الميلاد" : "Date of Birth"} required error={errors.birth_date} htmlFor="birth_date">
           <input id="birth_date" type="date" value={data.birth_date} onChange={(e) => set("birth_date", e.target.value)} max={new Date().toISOString().split("T")[0]} className={`reg-input ${errors.birth_date ? "reg-input--error" : ""}`} />
         </FormField>
+
+        {/* Gender */}
+        <div className="col-span-2">
+          <FormField
+            label={ar ? "الجنس" : "Gender"}
+            required
+            hint={
+              ar
+                ? "اختر الجنس كما هو مسجل في بياناتك الرسمية. يُستخدم هذا الحقل لأغراض تنظيم المشاركين وتكوين الفرق."
+                : "Select your gender as registered in your official documents. Used for organizing participants and team formation."
+            }
+            error={errors.gender}
+            htmlFor="gender"
+          >
+            <div
+              id="gender"
+              className="grid grid-cols-1 sm:grid-cols-2 gap-3"
+              role="radiogroup"
+              aria-label={ar ? "الجنس" : "Gender"}
+            >
+              {[
+                { value: "male" as const, label: ar ? "ذكر" : "Male", icon: User },
+                { value: "female" as const, label: ar ? "أنثى" : "Female", icon: UserRound },
+              ].map((opt) => {
+                const isSelected = data.gender === opt.value;
+                const Icon = opt.icon;
+                return (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    role="radio"
+                    aria-checked={isSelected}
+                    onClick={() => set("gender", opt.value)}
+                    className={`relative flex items-center justify-between p-4 rounded-2xl border transition-all text-right cursor-pointer group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c3f937] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0c1018] ${
+                      isSelected
+                        ? "border-[#c3f937] bg-[#c3f937]/10 shadow-[0_0_20px_-3px_rgba(195,249,55,0.25)] text-white"
+                        : "border-white/10 bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04] text-slate-300"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div
+                        className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
+                          isSelected
+                            ? "bg-[#c3f937] text-[#0c1018]"
+                            : "bg-white/5 text-slate-400 group-hover:text-white group-hover:bg-white/10"
+                        }`}
+                      >
+                        <Icon className="w-5 h-5" />
+                      </div>
+                      <span className="font-bold text-base sm:text-lg">
+                        {opt.label}
+                      </span>
+                    </div>
+
+                    <div
+                      className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${
+                        isSelected
+                          ? "border-[#c3f937] bg-[#c3f937]"
+                          : "border-white/30 bg-transparent group-hover:border-white/50"
+                      }`}
+                      aria-hidden="true"
+                    >
+                      {isSelected && <div className="w-2 h-2 rounded-full bg-[#0c1018]" />}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </FormField>
+        </div>
 
         {/* Phone */}
         <FormField label={ar ? "رقم الجوال" : "Mobile Number"} required hint={ar ? "يرجى إدخال رقم جوال فعّال، حيث سيتم استخدامه للتواصل عبر WhatsApp." : "Enter a valid Saudi mobile number for WhatsApp contact."} error={errors.phone} htmlFor="phone">

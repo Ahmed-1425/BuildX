@@ -1,7 +1,9 @@
 "use client";
 import { useLanguage } from "@/context/LanguageContext";
 import type { FormState } from "@/types/registration";
+import { getGenderLabel } from "@/types/registration";
 import Image from "next/image";
+import { AlertTriangle, Laptop, CircleCheck } from "lucide-react";
 
 interface Props {
   formState: FormState;
@@ -111,16 +113,20 @@ export default function Step5Review({ formState, onEdit }: Props) {
         </div>
       </div>
 
-      <div className="review-warning">
-        ⚠️ {ar
-          ? "راجع بياناتك وإجاباتك بعناية قبل تسليم الطلب. لن تتمكن من تعديل الطلب بعد إرساله."
-          : "Review your data and answers carefully before submitting. You won't be able to edit your application after submission."}
+      <div className="review-warning flex items-center gap-2">
+        <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
+        <span>
+          {ar
+            ? "راجع بياناتك وإجاباتك بعناية قبل تسليم الطلب. لن تتمكن من تعديل الطلب بعد إرساله."
+            : "Review your data and answers carefully before submitting. You won't be able to edit your application after submission."}
+        </span>
       </div>
 
       {/* Personal */}
       <ReviewSection title={ar ? "البيانات الشخصية" : "Personal Information"} onEdit={onEdit} step={1}>
         <ReviewRow label={ar ? "الاسم" : "Name"} value={personal.full_name} />
         <ReviewRow label={ar ? "تاريخ الميلاد" : "Date of Birth"} value={personal.birth_date} />
+        <ReviewRow label={ar ? "الجنس" : "Gender"} value={getGenderLabel(personal.gender)} />
         <ReviewRow label={ar ? "الجوال" : "Mobile"} value={personal.phone} />
         <ReviewRow label={ar ? "البريد الإلكتروني" : "Email"} value={personal.email} />
         <ReviewRow label={ar ? "المدينة" : "City"} value={personal.city_other || personal.city} />
@@ -181,6 +187,20 @@ export default function Step5Review({ formState, onEdit }: Props) {
           <ReviewRow label={ar ? "التفضيل" : "Preference"} value={teamLabels[team_env]} />
         </ReviewSection>
       )}
+
+      {/* Laptop Commitment */}
+      <ReviewSection title={ar ? "الجهاز المحمول والتجهيزات" : "Laptop & Equipment"} onEdit={onEdit} step={6}>
+        <div className="review-row flex items-center justify-between py-1">
+          <span className="review-row__label flex items-center gap-2">
+            <Laptop className="w-4 h-4 text-[#c3f937]" />
+            <span>{ar ? "توفر الجهاز المحمول:" : "Laptop Availability:"}</span>
+          </span>
+          <span className="review-row__value flex items-center gap-1.5 text-emerald-400 font-semibold">
+            <CircleCheck className="w-4 h-4 text-emerald-400" />
+            <span>{ar ? "تم الإقرار والالتزام بإحضاره" : "Acknowledged & Committed to bring"}</span>
+          </span>
+        </div>
+      </ReviewSection>
     </div>
   );
 }

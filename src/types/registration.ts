@@ -6,6 +6,13 @@ export type Level = "foundation" | "practitioner" | "advanced";
 export type TeamEnvPreference = "comfortable" | "same_gender_only";
 export type ApplicationStatus = "submitted" | "under_review" | "accepted" | "waitlisted" | "rejected";
 export type CurrentStatus = "student" | "graduate" | "employed" | "job_seeker" | "other";
+export type Gender = "male" | "female";
+
+export function getGenderLabel(gender: Gender | "" | null | undefined | string): string {
+  if (gender === "male") return "ذكر";
+  if (gender === "female") return "أنثى";
+  return "غير محدد";
+}
 
 // ── Level Answers ──────────────────────────────────────────────
 
@@ -54,6 +61,7 @@ export type LevelData =
 export interface PersonalData {
   full_name: string;
   birth_date: string;
+  gender: Gender | "";
   phone: string;
   email: string;
   email_confirm: string;
@@ -76,6 +84,7 @@ export interface FormState {
     full_attendance: boolean;
     application_not_acceptance: boolean;
     data_processing: boolean;
+    laptop_commitment: boolean;
   };
   currentStep: number;
   idempotency_key: string;
@@ -86,6 +95,7 @@ export interface FormState {
 export interface ApplicationPayload {
   full_name: string;
   birth_date: string;
+  gender: Gender;
   phone: string;
   email: string;
   city: string;
@@ -104,6 +114,7 @@ export interface ApplicationPayload {
   declaration_full_attendance: boolean;
   declaration_application_not_acceptance: boolean;
   declaration_data_processing: boolean;
+  laptop_commitment: boolean;
   idempotency_key: string;
   honeypot?: string;
   submitted_at_client?: number;

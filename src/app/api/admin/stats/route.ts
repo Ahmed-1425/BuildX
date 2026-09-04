@@ -15,7 +15,7 @@ export async function GET() {
     // 1. Fetch applications overview
     const { data: apps, error: appsErr } = await supabase
       .from("applications")
-      .select("id, reference_code, full_name, level, application_status, city, team_environment_preference, current_status, submitted_at, updated_at")
+      .select("id, reference_code, full_name, level, gender, application_status, city, team_environment_preference, current_status, submitted_at, updated_at")
       .order("submitted_at", { ascending: false });
 
     if (appsErr || !apps) {
@@ -43,6 +43,7 @@ export async function GET() {
 
     const byLevel = { foundation: 0, practitioner: 0, advanced: 0 };
     const byTeamEnv = { comfortable: 0, same_gender_only: 0 };
+    const byGender = { male: 0, female: 0, unspecified: 0 };
     const cityCountMap: Record<string, number> = {};
 
     for (const app of apps) {
@@ -60,6 +61,15 @@ export async function GET() {
       // Level count
       if (app.level === "foundation" || app.level === "practitioner" || app.level === "advanced") {
         byLevel[app.level as keyof typeof byLevel]++;
+      }
+
+      // Gender count
+      if (app.gender === "male") {
+        byGender.male++;
+      } else if (app.gender === "female") {
+        byGender.female++;
+      } else {
+        byGender.unspecified++;
       }
 
       // Team env
@@ -102,15 +112,18 @@ export async function GET() {
     const avgScoreOverall = reviews && reviews.length > 0 ? parseFloat((totalScoreSum / reviews.length).toFixed(1)) : null;
 
     // 3. Fetch recent activities (audit logs)
+    const { data: adminUsers } = await supabase.from("admin_users").select("id, full_name");
+    const adminMap = new Map((adminUsers || []).map((u) => [u.id, u.full_name]));
+
     const { data: recentLogs } = await supabase
       .from("admin_audit_logs")
-      .select("*, admin_users!actor_id(full_name)")
+      .select("*")
       .order("created_at", { ascending: false })
       .limit(8);
 
     const formattedLogs = (recentLogs || []).map((l: any) => ({
       ...l,
-      actor_name: l.admin_users?.full_name || "النظام",
+      actor_name: adminMap.get(l.actor_id) || "النظام",
     }));
 
     const stats: DashboardStats = {
@@ -128,6 +141,7 @@ export async function GET() {
       by_level: byLevel,
       by_status: byStatus,
       by_team_env: byTeamEnv,
+      by_gender: byGender,
       top_cities: topCities,
       unreviewed_count: unreviewedCount,
       avg_score_overall: avgScoreOverall,

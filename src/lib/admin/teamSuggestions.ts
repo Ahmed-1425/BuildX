@@ -1,11 +1,14 @@
-import type { TeamItem, TeamMemberItem } from "@/types/admin";
+import type { TeamItem, ExtendedApplicationStatus } from "@/types/admin";
 
-interface CandidateForTeam {
+export interface CandidateForTeam {
   id: string;
   full_name: string;
   level: "foundation" | "practitioner" | "advanced";
+  gender?: "male" | "female" | null;
   city: string;
+  specialization?: string;
   team_env: "comfortable" | "same_gender_only";
+  application_status?: ExtendedApplicationStatus;
 }
 
 export function generateSuggestedTeams(
@@ -36,8 +39,11 @@ export function generateSuggestedTeams(
         application_id: c.id,
         full_name: c.full_name,
         level: c.level,
+        gender: c.gender || null,
         city: c.city,
+        specialization: c.specialization,
         team_env: c.team_env,
+        application_status: c.application_status,
         role_in_team: "متقدم (Advanced Lead)",
       });
     }
@@ -54,8 +60,11 @@ export function generateSuggestedTeams(
         application_id: c.id,
         full_name: c.full_name,
         level: c.level,
+        gender: c.gender || null,
         city: c.city,
+        specialization: c.specialization,
         team_env: c.team_env,
+        application_status: c.application_status,
         role_in_team: "ممارس (Practitioner)",
       });
     }
@@ -73,8 +82,11 @@ export function generateSuggestedTeams(
           application_id: c.id,
           full_name: c.full_name,
           level: c.level,
+          gender: c.gender || null,
           city: c.city,
+          specialization: c.specialization,
           team_env: c.team_env,
+          application_status: c.application_status,
           role_in_team: `مبتدئ ${slot + 1} (Foundation)`,
         });
       }

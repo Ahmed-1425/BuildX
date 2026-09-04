@@ -54,9 +54,10 @@ export default function AdminHeader({ user }: Props) {
 
   // Get active page title
   function getPageTitle(path: string): string {
-    if (path === "/admin") return "لوحة التحكم";
-    if (path.startsWith("/admin/applications/")) return "تفاصيل المتقدم";
-    if (path === "/admin/applications") return "جميع الطلبات";
+    if (path === "/admin") return "لوحة قيادة BUILDx";
+    if (path.includes("/review")) return "مراجعة طلب المتقدم";
+    if (path.startsWith("/admin/applications/")) return "ملف المتقدم";
+    if (path === "/admin/applications") return "طلبات التسجيل";
     if (path === "/admin/preliminary") return "المرشحون مبدئيًا";
     if (path === "/admin/accepted") return "المقبولون";
     if (path === "/admin/waitlist") return "قائمة الانتظار";
@@ -119,7 +120,7 @@ export default function AdminHeader({ user }: Props) {
           <button
             type="button"
             onClick={() => setOpenDrawer(true)}
-            className="p-2 rounded-xl text-slate-200 hover:text-white hover:bg-white/[0.08] border border-white/10 transition-colors focus:outline-none cursor-pointer"
+            className="w-11 h-11 flex items-center justify-center rounded-xl text-slate-200 hover:text-white hover:bg-white/[0.08] border border-white/10 transition-colors focus:outline-none cursor-pointer"
             aria-label="فتح القائمة الجانبية"
           >
             <Menu className="w-5 h-5" aria-hidden="true" />

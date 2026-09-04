@@ -1,6 +1,7 @@
 "use client";
 import type { StatusHistoryEntry } from "@/types/admin";
 import StatusBadge from "./StatusBadge";
+import { formatDateTimeArabic } from "@/lib/admin/formatters";
 
 interface Props {
   history: StatusHistoryEntry[];
@@ -25,14 +26,8 @@ export default function AuditTimeline({ history }: Props) {
                 <span className="text-xs text-slate-400">غيّر الحالة إلى:</span>
                 <StatusBadge status={entry.new_status} size="sm" />
               </div>
-              <span className="text-[10px] text-slate-400" dir="ltr">
-                {new Date(entry.created_at).toLocaleString("ar-SA", {
-                  timeZone: "Asia/Riyadh",
-                  month: "short",
-                  day: "numeric",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
+              <span className="text-xs text-slate-400 font-mono numeric-value" dir="ltr">
+                {formatDateTimeArabic(entry.created_at)}
               </span>
             </div>
 

@@ -1,12 +1,14 @@
 "use client";
 import { useLanguage } from "@/context/LanguageContext";
 import Image from "next/image";
+import { Laptop } from "lucide-react";
 
 interface Declarations {
   information_accurate: boolean;
   full_attendance: boolean;
   application_not_acceptance: boolean;
   data_processing: boolean;
+  laptop_commitment: boolean;
 }
 
 interface Props {
@@ -23,10 +25,17 @@ export default function Step6Submit({ declarations, onChange, errors, isSubmitti
   const ar = locale === "ar";
 
   function toggle(key: keyof Declarations) {
-    onChange({ ...declarations, [key]: !declarations[key] });
+    onChange({ ...declarations, [key]: !Boolean(declarations[key]) });
   }
 
-  const checks: { key: keyof Declarations; labelAr: string; labelEn: string }[] = [
+  const checks: {
+    key: keyof Declarations;
+    labelAr: string;
+    labelEn: string;
+    descAr?: string;
+    descEn?: string;
+    icon?: React.ReactNode;
+  }[] = [
     {
       key: "information_accurate",
       labelAr: "أقر بأن جميع البيانات والإجابات الواردة في هذا الطلب صحيحة وتمثل خبرتي الفعلية.",
@@ -36,6 +45,14 @@ export default function Step6Submit({ declarations, onChange, errors, isSubmitti
       key: "full_attendance",
       labelAr: "ألتزم بحضور جميع أيام المعسكر والهاكاثون والحفل الختامي في حال قبولي.",
       labelEn: "I commit to attending all camp days, the hackathon, and the closing ceremony if accepted.",
+    },
+    {
+      key: "laptop_commitment",
+      labelAr: "أقر بأن لدي جهاز كمبيوتر محمول (Laptop) صالح للاستخدام، وألتزم بإحضاره معي طوال أيام معسكر وهاكاثون BUILDx.",
+      labelEn: "I confirm that I have a functional laptop and commit to bringing it with me throughout all days of the BUILDx camp and hackathon.",
+      descAr: "الجهاز المحمول متطلب أساسي لتنفيذ التطبيقات والمهام العملية والمشاركة في بناء مشروع الفريق.",
+      descEn: "A laptop is an essential requirement for hands-on tasks and participating in team project development.",
+      icon: <Laptop className="w-5 h-5 text-[#c3f937] shrink-0 mt-0.5" aria-hidden="true" />,
     },
     {
       key: "application_not_acceptance",
@@ -62,17 +79,42 @@ export default function Step6Submit({ declarations, onChange, errors, isSubmitti
       </div>
 
       <div className="reg-declarations">
-        {checks.map((c) => (
-          <label key={c.key} className={`reg-declaration-row ${declarations[c.key] ? "reg-declaration-row--checked" : ""} ${errors[c.key] ? "reg-declaration-row--error" : ""}`}>
-            <input
-              type="checkbox"
-              checked={declarations[c.key]}
-              onChange={() => toggle(c.key)}
-              className="reg-checkbox"
-            />
-            <span className="reg-declaration-label">{ar ? c.labelAr : c.labelEn}</span>
-          </label>
-        ))}
+        {checks.map((c) => {
+          const isChecked = Boolean(declarations?.[c.key]);
+          return (
+            <label
+              key={c.key}
+              className={`reg-declaration-row ${
+                isChecked ? "reg-declaration-row--checked" : ""
+              } ${errors[c.key] ? "reg-declaration-row--error" : ""}`}
+            >
+              <input
+                type="checkbox"
+                checked={isChecked}
+                onChange={() => toggle(c.key)}
+                className="reg-checkbox mt-1"
+              />
+              <div className="flex-1 space-y-1">
+                <div className="flex items-start gap-2.5">
+                  {c.icon && <span>{c.icon}</span>}
+                  <span className="reg-declaration-label font-medium text-slate-100 text-sm leading-relaxed">
+                    {ar ? c.labelAr : c.labelEn}
+                  </span>
+                </div>
+                {c.descAr && (
+                  <p className="text-xs text-slate-400 leading-normal ps-0 sm:ps-7">
+                    {ar ? c.descAr : c.descEn}
+                  </p>
+                )}
+                {errors[c.key] && (
+                  <p className="text-xs text-rose-400 font-semibold pt-0.5">
+                    {errors[c.key]}
+                  </p>
+                )}
+              </div>
+            </label>
+          );
+        })}
       </div>
 
       {submitError && (
@@ -85,7 +127,7 @@ export default function Step6Submit({ declarations, onChange, errors, isSubmitti
         <button
           type="button"
           onClick={onSubmit}
-          disabled={!allChecked || isSubmitting}
+          disabled={isSubmitting}
           className={`reg-submit-btn ${allChecked && !isSubmitting ? "reg-submit-btn--ready" : ""}`}
           aria-busy={isSubmitting}
         >

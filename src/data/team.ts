@@ -272,8 +272,7 @@ export const teamMembers: TeamMember[] = [
     id: "turki-alreshidi",
     nameAr: "تركي الرشيدي",
     nameEn: "Turki Alreshidi",
-    imageSrc: "/assets/team/ahmed-alrashid.png",
-    imageIsTemporary: true,
+    imageSrc: "/assets/team/turki-alreshidi.png",
     links: {
       linkedin: "https://www.linkedin.com/in/turki-alreshidi-95914b316",
     },

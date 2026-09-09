@@ -1,25 +1,40 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { useLanguage } from "@/context/LanguageContext";
 import LanguageSwitcher from "./LanguageSwitcher";
 import Image from "next/image";
 import Link from "next/link";
 
 const NAV_SECTIONS = [
-  { key: "about", id: "about" },
-  { key: "objectives", id: "objectives" },
-  { key: "trainer", id: "trainer" },
-  { key: "journey", id: "journey" },
+  { key: "home", id: "home", href: "/" },
+  { key: "about", id: "about", href: "/#about" },
+  { key: "objectives", id: "objectives", href: "/#objectives" },
+  { key: "trainer", id: "trainer", href: "/#trainer" },
+  { key: "journey", id: "journey", href: "/#journey" },
 ] as const;
 
 export default function Header() {
   const { t, locale } = useLanguage();
-  const [activeSection, setActiveSection] = useState("");
+  const pathname = usePathname();
+  const router = useRouter();
+  const isTeamPage = pathname === "/team";
+  const [activeSection, setActiveSection] = useState(() => {
+    if (typeof window !== "undefined" && window.location.pathname === "/team") {
+      return "team";
+    }
+    return "";
+  });
 
   useEffect(() => {
+    if (pathname === "/team") {
+      setActiveSection("team");
+      return;
+    }
+
     const handleScroll = () => {
-      const sections = NAV_SECTIONS.map((s) => s.id);
+      const sections = ["about", "objectives", "trainer", "journey"];
       for (let i = sections.length - 1; i >= 0; i--) {
         const el = document.getElementById(sections[i]);
         if (el) {
@@ -30,17 +45,31 @@ export default function Header() {
           }
         }
       }
-      setActiveSection("");
+      if (window.scrollY < 200) {
+        setActiveSection("home");
+      } else {
+        setActiveSection("");
+      }
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [pathname]);
 
-  const scrollToSection = (id: string) => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth" });
+  const handleNavClick = (e: React.MouseEvent, id: string) => {
+    if (typeof window === "undefined") return;
+    if (pathname === "/") {
+      e.preventDefault();
+      if (id === "home") {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        setActiveSection("home");
+        return;
+      }
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth" });
+        setActiveSection(id);
+      }
     }
   };
 
@@ -301,21 +330,58 @@ export default function Header() {
             aria-label="Main navigation"
           >
             {NAV_SECTIONS.map((section) => (
-              <button
+              <Link
                 key={section.key}
-                type="button"
-                onClick={() => scrollToSection(section.id)}
+                href={section.href}
+                onClick={(e) => handleNavClick(e, section.id)}
                 className={`nav-link ${
                   activeSection === section.id ? "active" : ""
                 }`}
               >
                 {t.nav[section.key as keyof typeof t.nav]}
-              </button>
+              </Link>
             ))}
+            <Link
+              href="/team"
+              className={`nav-link ${activeSection === "team" ? "active" : ""}`}
+            >
+              {t.nav.team}
+            </Link>
           </nav>
 
           {/* Header Actions (Language switch + Register button) */}
           <div className="header-actions">
+            {isTeamPage && (
+              <button
+                type="button"
+                onClick={() => {
+                  if (typeof window !== "undefined" && window.history.length > 1) {
+                    router.back();
+                  } else {
+                    router.push("/");
+                  }
+                }}
+                className="header-team-back-button"
+                aria-label={locale === "ar" ? "رجوع للصفحة السابقة" : "Back to previous page"}
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  style={{
+                    transform: locale === "ar" ? "rotate(180deg)" : "rotate(0deg)",
+                  }}
+                >
+                  <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                <span>{locale === "ar" ? "رجوع" : "Back"}</span>
+              </button>
+            )}
             <LanguageSwitcher />
             <Link href="/register" className="header-register-button">
               {t.nav.register}

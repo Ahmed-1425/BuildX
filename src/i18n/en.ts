@@ -18,6 +18,7 @@ export const en = {
     register: "Register",
     home: "Home",
     aboutCamp: "About",
+    team: "Team",
   },
   hero: {
     camp: "BUILDx Camp",
@@ -335,11 +336,14 @@ export const en = {
     },
     email: {
       label: "Email",
-      address: "buildx.info@gmail.com",
+      address: "buildx.info0@gmail.com",
       action: "Tap to compose an email",
-      link: "mailto:buildx.info@gmail.com?subject=Inquiry%20about%20BUILDx%20Camp",
+      link: "mailto:buildx.info0@gmail.com?subject=Inquiry%20about%20BUILDx%20Camp",
     },
     rights: "All Rights Reserved",
+    partners: {
+      title: "Our Partners",
+    },
   },
   chatBubbles: {
     think: "Think.",
@@ -347,5 +351,28 @@ export const en = {
     test: "Test.",
     develop: "Improve.",
     ready: "Product ready.",
+  },
+  teamPage: {
+    badge: "The People Behind the Experience",
+    heroTitle: "BUILDx Team",
+    heroDescription:
+      "A multidisciplinary team bringing together project management, execution, media, public relations, mentorship, facilitation, and judging to deliver the BUILDx experience.",
+    sectionIndex: "Section Index",
+    members: "Members",
+    member: "Member",
+  },
+  meetTeam: {
+    title: "Meet the Team",
+    description:
+      "Meet the team leading, building, and organizing the BUILDx experience.",
+    button: "Meet the Team",
+  },
+  partnersSection: {
+    title: "Success Partners",
+  },
+  teamMeta: {
+    title: "BUILDx Team",
+    description:
+      "Meet the BUILDx team across project management, execution, media, public relations, mentorship, facilitation, and judging.",
   },
 };

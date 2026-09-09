@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import Header from "@/components/Header";
 import MobileHeader, {
@@ -18,13 +18,45 @@ import CampTimeline from "@/components/CampTimeline";
 import FinalCTA from "@/components/FinalCTA";
 import Footer from "@/components/Footer";
 import ProgressBar from "@/components/ProgressBar";
+import PartnersMarquee from "@/components/PartnersMarquee";
+import MeetTeamSection from "@/components/MeetTeamSection";
 
 const SplashScreen = dynamic(() => import("@/components/SplashScreen"), {
   ssr: false,
 });
 
 export default function HomePage() {
-  const [splashDone, setSplashDone] = useState(false);
+  const [splashDone, setSplashDone] = useState(() => {
+    if (typeof window !== "undefined") {
+      return sessionStorage.getItem("buildx-splash-seen") === "true";
+    }
+    return false;
+  });
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const scrollToHash = () => {
+      const hash = window.location.hash.replace("#", "");
+      if (hash) {
+        const el = document.getElementById(hash);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth" });
+        }
+      }
+    };
+
+    if (splashDone) {
+      const t1 = setTimeout(scrollToHash, 80);
+      const t2 = setTimeout(scrollToHash, 350);
+      window.addEventListener("hashchange", scrollToHash);
+      return () => {
+        clearTimeout(t1);
+        clearTimeout(t2);
+        window.removeEventListener("hashchange", scrollToHash);
+      };
+    }
+  }, [splashDone]);
 
   return (
     <>
@@ -65,7 +97,15 @@ export default function HomePage() {
 
             <div className="section-divider" />
 
+            <PartnersMarquee />
+
+            <div className="section-divider" />
+
             <TrainerSection />
+
+            <div className="section-divider" />
+
+            <MeetTeamSection />
 
             <div className="section-divider" />
 

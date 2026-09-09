@@ -11,7 +11,7 @@ export default function RegistrationSupport() {
       : "Hello BUILDx team, I need assistance with the registration form."
   )}`;
 
-  const emailLink = `mailto:buildx.info@gmail.com?subject=${encodeURIComponent(
+  const emailLink = `mailto:buildx.info0@gmail.com?subject=${encodeURIComponent(
     ar ? "مساعدة في تسجيل معسكر BUILDx" : "BUILDx Camp Registration Assistance"
   )}`;
 
@@ -66,7 +66,7 @@ export default function RegistrationSupport() {
           </div>
           <div className="reg-support-info">
             <span className="reg-support-channel">{ar ? "البريد الإلكتروني" : "Direct Email"}</span>
-            <span className="reg-support-val" dir="ltr">buildx.info@gmail.com</span>
+            <span className="reg-support-val" dir="ltr">buildx.info0@gmail.com</span>
             <span className="reg-support-action">{ar ? "اضغط لمراسلتنا الآن ←" : "Tap to send an email →"}</span>
           </div>
         </a>

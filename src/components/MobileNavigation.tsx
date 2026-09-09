@@ -1,13 +1,19 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { useLanguage } from "@/context/LanguageContext";
 import Image from "next/image";
 import Link from "next/link";
 import LanguageSwitcher from "./LanguageSwitcher";
 
 export default function MobileHeader() {
+  const { locale } = useLanguage();
+  const pathname = usePathname();
+  const router = useRouter();
   const [scrolled, setScrolled] = useState(false);
+  const isOnTeamPage = pathname === "/team";
+  const isRTL = locale === "ar";
 
   useEffect(() => {
     const handleScroll = () => {
@@ -35,7 +41,7 @@ export default function MobileHeader() {
       <Link
         href="/"
         onClick={(e) => {
-          if (window.location.pathname === "/") {
+          if (pathname === "/") {
             e.preventDefault();
             window.scrollTo({ top: 0, behavior: "smooth" });
           }
@@ -52,7 +58,89 @@ export default function MobileHeader() {
         />
       </Link>
 
-      <div className="flex items-center">
+      <div className="flex items-center gap-2">
+        {isOnTeamPage ? (
+          <>
+            <button
+              type="button"
+              onClick={() => {
+                if (typeof window !== "undefined" && window.history.length > 1) {
+                  router.back();
+                } else {
+                  router.push("/");
+                }
+              }}
+              className="mobile-header-back-btn"
+              aria-label={isRTL ? "رجوع للصفحة السابقة" : "Back to previous page"}
+            >
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                style={{ transform: isRTL ? "rotate(180deg)" : "rotate(0deg)" }}
+              >
+                <path d="M19 12H5M12 19l-7-7 7-7" />
+              </svg>
+              <span>{isRTL ? "رجوع" : "Back"}</span>
+            </button>
+
+            <Link
+              href="/"
+              className="mobile-header-home-btn"
+              aria-label={isRTL ? "الرئيسية" : "Home"}
+            >
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z" />
+              </svg>
+              <span>{isRTL ? "الرئيسية" : "Home"}</span>
+            </Link>
+          </>
+        ) : (
+          <Link
+            href="/team"
+            className="mobile-team-link"
+            aria-label={locale === "ar" ? "فريق العمل" : "Team"}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "40px",
+              height: "40px",
+              color: "#e7edfd",
+              opacity: 0.8,
+            }}
+          >
+            <svg
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+          </Link>
+        )}
         <LanguageSwitcher />
       </div>
     </header>
@@ -77,13 +165,34 @@ function getNavigationCharacter(progress: number): "ready" | "thinking" | "build
 
 export function MobileBottomNavigation() {
   const { t, locale } = useLanguage();
+  const pathname = usePathname();
+  const router = useRouter();
   const [navMode, setNavMode] = useState<"expanded" | "compact">("expanded");
   const [characterState, setCharacterState] = useState<"ready" | "thinking" | "building" | "loading" | "success">("ready");
-  const [activeSection, setActiveSection] = useState("home");
+  const [activeSection, setActiveSection] = useState(() => {
+    if (typeof window !== "undefined") {
+      if (window.location.pathname === "/register") return "register";
+      if (window.location.pathname === "/team") return "team";
+    }
+    return "home";
+  });
   const lastScrollY = useRef(0);
   const idleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const keepExpandedUntil = useRef(0);
   const lastCharSwitch = useRef(0);
+
+  useEffect(() => {
+    if (pathname === "/team") {
+      setActiveSection("team");
+      setNavMode("expanded");
+    } else if (pathname === "/register") {
+      setActiveSection("register");
+    } else if (pathname === "/") {
+      if (window.scrollY < 180) {
+        setActiveSection("home");
+      }
+    }
+  }, [pathname]);
 
   useEffect(() => {
     const checkHash = () => {
@@ -106,17 +215,19 @@ export function MobileBottomNavigation() {
   }, []);
 
   useEffect(() => {
-    // Initial active section based on URL
-    if (typeof window !== "undefined" && window.location.pathname === "/register") {
-      setActiveSection("register");
-    }
-
     const handleScroll = () => {
+      // 1. If on /team, keep bottom nav always expanded and active
+      if (pathname === "/team") {
+        setActiveSection("team");
+        setNavMode("expanded");
+        return;
+      }
+
       const currentY = window.scrollY;
       const delta = currentY - lastScrollY.current;
 
-      // 1. Active section detection on homepage
-      if (window.location.pathname === "/register") {
+      // Active section detection on homepage / subpages
+      if (pathname === "/register") {
         setActiveSection("register");
       } else {
         const scrollHeight = document.documentElement.scrollHeight;
@@ -190,32 +301,38 @@ export function MobileBottomNavigation() {
         clearTimeout(idleTimer.current);
       }
     };
-  }, []);
+  }, [pathname]);
 
-  const handleItemClick = (key: string, href: string) => {
+  const handleItemClick = (e: React.MouseEvent, key: string, href: string) => {
     setNavMode("expanded");
     keepExpandedUntil.current = Date.now() + 1000;
 
-    if (key === "register") {
-      window.location.href = href;
-      return;
-    }
-
-    if (window.location.pathname !== "/") {
-      window.location.href = href;
-      return;
-    }
-
-    if (key === "home") {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-      setActiveSection("home");
-      return;
-    }
-
-    const targetEl = document.getElementById(key);
-    if (targetEl) {
-      targetEl.scrollIntoView({ behavior: "smooth" });
-      setActiveSection(key);
+    if (pathname === "/") {
+      if (key === "home") {
+        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        setActiveSection("home");
+        return;
+      }
+      if (key !== "register" && key !== "team") {
+        e.preventDefault();
+        const targetEl = document.getElementById(key);
+        if (targetEl) {
+          targetEl.scrollIntoView({ behavior: "smooth" });
+          setActiveSection(key);
+        }
+      }
+    } else {
+      if (key === "team" && pathname === "/team") {
+        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        return;
+      }
+      if (key === "home") {
+        e.preventDefault();
+        router.push("/");
+        return;
+      }
     }
   };
 
@@ -315,6 +432,41 @@ export function MobileBottomNavigation() {
         </svg>
       ),
     },
+    {
+      key: "team",
+      label: locale === "ar" ? "فريق العمل" : "Team",
+      href: "/team",
+      icon: (
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="2" />
+          <path
+            d="M22 21v-2a4 4 0 0 0-3-3.87"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M16 3.13a4 4 0 0 1 0 7.75"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      ),
+    },
   ];
 
   return (
@@ -331,16 +483,16 @@ export function MobileBottomNavigation() {
               const isActive = activeSection === item.key;
 
               return (
-                <button
+                <Link
                   key={item.key}
-                  type="button"
-                  onClick={() => handleItemClick(item.key, item.href)}
+                  href={item.href}
+                  onClick={(e) => handleItemClick(e, item.key, item.href)}
                   className={`game-nav-item ${isActive ? "is-active" : ""}`}
                   aria-current={isActive ? "page" : undefined}
                 >
                   {item.icon}
                   <span>{item.label}</span>
-                </button>
+                </Link>
               );
             })}
           </div>

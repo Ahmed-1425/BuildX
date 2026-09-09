@@ -1,0 +1,77 @@
+@import "tailwindcss";
+
+:root {
+  --buildx-void: #0c1018;
+  --buildx-lime: #c3f937;
+  --buildx-pink: #fb50c3;
+  --buildx-purple: #34155f;
+  --buildx-violet: #a855f7;
+  --buildx-terracotta: #823419;
+  --buildx-orange: #e05d2b;
+  --buildx-text: #e7edfd;
+  --buildx-muted: rgba(231, 237, 253, 0.72);
+
+  --font-arabic: 'Janna LT', 'Cairo', system-ui, -apple-system, sans-serif;
+  --font-tech: 'Arapix', 'Chakra Petch', 'JetBrains Mono', monospace;
+  --font-display: 'Bauhaus 93', 'Chakra Petch', Impact, sans-serif;
+}
+
+body {
+  font-family: var(--font-arabic);
+  background-color: var(--buildx-void);
+  color: var(--buildx-text);
+  letter-spacing: 0.01em;
+}
+
+.font-tech {
+  font-family: var(--font-tech);
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-arabic {
+  font-family: var(--font-arabic);
+}
+
+.score-value,
+.team-code,
+.numeric-value {
+  direction: ltr;
+  unicode-bidi: isolate;
+  font-variant-numeric: tabular-nums;
+  font-family: var(--font-tech);
+}
+
+/* Glass panel */
+.buildx-glass {
+  background: rgba(18, 24, 38, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(231, 237, 253, 0.08);
+}
+
+.buildx-glass-glow {
+  background: rgba(18, 24, 38, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(195, 249, 55, 0.25);
+  box-shadow: 0 0 25px rgba(195, 249, 55, 0.08);
+}
+
+/* Custom subtle scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(12, 16, 24, 0.9);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(231, 237, 253, 0.18);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(195, 249, 55, 0.4);
+}

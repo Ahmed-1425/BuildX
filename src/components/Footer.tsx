@@ -2,6 +2,7 @@
 
 import { useLanguage } from "@/context/LanguageContext";
 import Image from "next/image";
+import { partners } from "@/data/team";
 
 export default function Footer() {
   const { t, locale } = useLanguage();
@@ -129,7 +130,31 @@ export default function Footer() {
         </div>
 
         {/* ======================================================== */}
-        {/* 4. Copyright                                             */}
+        {/* 4. Partners                                              */}
+        {/* ======================================================== */}
+        <div className="footer-partners">
+          <h4
+            className="footer-partners-title font-arapix"
+          >
+            {t.footer.partners.title}
+          </h4>
+          <div className="footer-partners-logos">
+            {partners.map((partner) => (
+              <Image
+                key={partner.id}
+                src={partner.logoSrc}
+                alt={isRTL ? partner.nameAr : partner.nameEn}
+                width={100}
+                height={40}
+                className="footer-partner-logo"
+                sizes="100px"
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* ======================================================== */}
+        {/* 5. Copyright                                             */}
         {/* ======================================================== */}
         <div className="footer-bottom">
           <p className="text-xs text-light/40 font-arapix tracking-wider">

@@ -18,6 +18,7 @@ export const ar = {
     register: "التسجيل",
     home: "الرئيسية",
     aboutCamp: "عن المعسكر",
+    team: "فريق العمل",
   },
   hero: {
     camp: "معسكر BUILDx",
@@ -334,11 +335,14 @@ export const ar = {
     },
     email: {
       label: "البريد الإلكتروني",
-      address: "buildx.info@gmail.com",
+      address: "buildx.info0@gmail.com",
       action: "اضغط لإرسال رسالة",
-      link: "mailto:buildx.info@gmail.com?subject=استفسار%20عن%20معسكر%20BUILDx",
+      link: "mailto:buildx.info0@gmail.com?subject=استفسار%20عن%20معسكر%20BUILDx",
     },
     rights: "جميع الحقوق محفوظة",
+    partners: {
+      title: "شركاؤنا",
+    },
   },
   chatBubbles: {
     think: "فكّر.",
@@ -346,5 +350,28 @@ export const ar = {
     test: "اختبر.",
     develop: "طوّر.",
     ready: "المنتج جاهز.",
+  },
+  teamPage: {
+    badge: "الأشخاص خلف التجربة",
+    heroTitle: "فريق BUILDx",
+    heroDescription:
+      "فريق يجمع إدارة المشروع والتنفيذ والإعلام والعلاقات والإرشاد والتيسير والتحكيم لصناعة تجربة BUILDx من الفكرة حتى الحفل الختامي.",
+    sectionIndex: "فهرس الأقسام",
+    members: "أعضاء",
+    member: "عضو",
+  },
+  meetTeam: {
+    title: "تعرّف على فريق العمل",
+    description:
+      "تعرّف على الفريق الذي يقود ويصنع وينظم تجربة BUILDx.",
+    button: "تعرّف على الفريق",
+  },
+  partnersSection: {
+    title: "شركاء النجاح",
+  },
+  teamMeta: {
+    title: "فريق العمل | BUILDx",
+    description:
+      "تعرّف على فريق BUILDx في إدارة المشروع والتنفيذ والإعلام والعلاقات العامة والإرشاد والتيسير والتحكيم.",
   },
 };

@@ -1,0 +1,375 @@
+@import "tailwindcss";
+
+:root {
+  --buildx-bg: #0c1018;
+  --buildx-lime: #c3f937;
+  --buildx-pink: #fb50c3;
+  --buildx-purple: #34155f;
+  --buildx-violet: #a855f7;
+  --buildx-warm: #823419;
+  --buildx-orange: #e05d2b;
+  --buildx-text: #e7edfd;
+  --buildx-muted: rgba(231, 237, 253, 0.74);
+
+  --font-janna: 'Janna LT', 'Readex Pro', 'IBM Plex Sans Arabic', system-ui, -apple-system, sans-serif;
+  --font-arapix: 'Arapix', 'Silkscreen', 'Press Start 2P', monospace;
+  --font-bauhaus: 'Bauhaus 93', 'Rajdhani', sans-serif;
+}
+
+body {
+  font-family: var(--font-janna);
+  background-color: var(--buildx-bg);
+  color: var(--buildx-text);
+  overflow-x: hidden;
+}
+
+.font-pixel {
+  font-family: var(--font-arapix);
+}
+
+.font-display {
+  font-family: var(--font-bauhaus);
+}
+
+.font-body {
+  font-family: var(--font-janna);
+}
+
+.judging-bg {
+  background:
+    radial-gradient(circle at 15% 20%, rgba(52, 21, 95, 0.22), transparent 28%),
+    radial-gradient(circle at 85% 8%, rgba(195, 249, 55, 0.07), transparent 25%),
+    radial-gradient(circle at 70% 70%, rgba(251, 80, 195, 0.055), transparent 28%),
+    #0c1018;
+}
+
+.buildx-glass {
+  background: linear-gradient(145deg, rgba(32, 33, 53, 0.88), rgba(17, 22, 34, 0.78));
+  border: 1px solid rgba(231, 237, 253, 0.10);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.30), inset 0 1px 0 rgba(255, 255, 255, 0.045);
+  backdrop-filter: blur(18px);
+}
+
+.buildx-glass-subtle {
+  background: linear-gradient(145deg, rgba(26, 29, 44, 0.75), rgba(14, 18, 28, 0.65));
+  border: 1px solid rgba(231, 237, 253, 0.08);
+  backdrop-filter: blur(14px);
+}
+
+.judging-container {
+  width: min(1360px, calc(100% - 48px));
+  margin-inline: auto;
+}
+
+@media (max-width: 1024px) {
+  .judging-container {
+    width: min(1100px, calc(100% - 32px));
+    margin-inline: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .judging-container {
+    width: calc(100% - 32px);
+    margin-inline: auto;
+  }
+}
+
+.stage-anchor {
+  scroll-margin-top: 100px;
+}
+
+.tracks-container {
+  width: min(1320px, calc(100% - 48px));
+  margin-inline: auto;
+}
+
+@media (max-width: 768px) {
+  .tracks-container {
+    width: calc(100% - 32px);
+    margin-inline: auto;
+  }
+}
+
+.track-anchor {
+  scroll-margin-top: 130px;
+}
+
+/* Hide scrollbar for chrome, safari and opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* =========================================================
+   BUILDx Mobile Morphing Game HUD
+   ========================================================= */
+
+:root {
+  --hud-void: #0c1018;
+  --hud-lime: #c3f937;
+  --hud-pink: #fb50c3;
+  --hud-purple: #34155f;
+  --hud-warm: #823419;
+  --hud-text: #e7edfd;
+  --hud-muted: rgba(231, 237, 253, 0.62);
+}
+
+.hud-stage {
+  position: fixed;
+  z-index: 9500;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 8px 12px calc(8px + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  pointer-events: none;
+}
+
+.game-hud {
+  pointer-events: auto;
+  position: relative;
+  transition:
+    width 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    height 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    min-height 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    clip-path 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    background 300ms ease,
+    box-shadow 300ms ease;
+}
+
+/* Expanded State */
+.game-hud-expanded {
+  width: min(calc(100vw - 32px), 340px);
+  min-height: 68px;
+  height: 68px;
+  background: linear-gradient(
+    145deg,
+    rgba(231, 237, 253, 0.15),
+    rgba(12, 16, 24, 0.78) 38%,
+    rgba(52, 21, 95, 0.52)
+  );
+  border: 1px solid rgba(231, 237, 253, 0.20);
+  backdrop-filter: blur(24px) saturate(150%);
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
+  box-shadow:
+    inset 0 1px 0 rgba(231, 237, 253, 0.15),
+    0 -12px 34px rgba(0, 0, 0, 0.28),
+    0 0 24px rgba(130, 52, 25, 0.20);
+  clip-path: polygon(
+    14px 0,
+    calc(100% - 14px) 0,
+    100% 14px,
+    100% calc(100% - 14px),
+    calc(100% - 14px) 100%,
+    14px 100%,
+    0 calc(100% - 14px),
+    0 14px
+  );
+}
+
+/* Neon Top Lime Highlight */
+.game-hud-expanded::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 16px;
+  left: 16px;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(195, 249, 55, 0.72),
+    transparent
+  );
+  pointer-events: none;
+}
+
+/* Neon Bottom Pink Highlight */
+.game-hud-expanded::after {
+  content: "";
+  position: absolute;
+  right: 16px;
+  bottom: 0;
+  left: 16px;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(251, 80, 195, 0.64),
+    transparent
+  );
+  pointer-events: none;
+}
+
+/* Compact State Capsule */
+.game-hud-compact {
+  width: 66px;
+  height: 66px;
+  min-height: 66px;
+  background: linear-gradient(
+    145deg,
+    rgba(231, 237, 253, 0.18),
+    rgba(12, 16, 24, 0.90) 45%,
+    rgba(52, 21, 95, 0.65)
+  );
+  border: 1px solid rgba(195, 249, 55, 0.35);
+  backdrop-filter: blur(24px) saturate(150%);
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
+  box-shadow:
+    0 0 20px rgba(195, 249, 55, 0.25),
+    0 -8px 24px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(231, 237, 253, 0.25);
+  clip-path: polygon(
+    10px 0,
+    calc(100% - 10px) 0,
+    100% 10px,
+    100% calc(100% - 10px),
+    calc(100% - 10px) 100%,
+    10px 100%,
+    0 calc(100% - 10px),
+    0 10px
+  );
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.game-hud-compact:active {
+  transform: scale(0.96);
+}
+
+/* Tabs Grid */
+.hud-tabs {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: center;
+  padding: 0 8px;
+  gap: 8px;
+}
+
+/* Individual Nav Item */
+.hud-nav-item {
+  position: relative;
+  min-width: 0;
+  min-height: 58px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  color: rgba(231, 237, 253, 0.62);
+  transition: color 200ms ease, transform 150ms ease;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.hud-nav-item:active {
+  transform: scale(0.96);
+}
+
+.hud-nav-item-label {
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.1;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+}
+
+/* Active Item with 4 Pixel Brackets around icon */
+.hud-nav-item-active {
+  color: #c3f937;
+  filter: drop-shadow(0 0 8px rgba(195, 249, 55, 0.4));
+}
+
+.hud-nav-item-active::before {
+  content: "";
+  position: absolute;
+  top: 3px;
+  width: 38px;
+  height: 38px;
+  z-index: -1;
+  background:
+    linear-gradient(#c3f937, #c3f937) 0 0 / 4px 4px no-repeat,
+    linear-gradient(#c3f937, #c3f937) 100% 0 / 4px 4px no-repeat,
+    linear-gradient(#c3f937, #c3f937) 0 100% / 4px 4px no-repeat,
+    linear-gradient(#c3f937, #c3f937) 100% 100% / 4px 4px no-repeat;
+  background-color: rgba(195, 249, 55, 0.08);
+  pointer-events: none;
+}
+
+/* 2-Pixel Active Indicator below label */
+.hud-active-indicator {
+  width: 18px;
+  height: 2px;
+  background-color: #c3f937;
+  border-radius: 9999px;
+  box-shadow: 0 0 6px rgba(195, 249, 55, 0.8);
+}
+
+/* Expanded Top Status Node Mascot */
+.hud-expanded-status-node {
+  position: absolute;
+  top: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 44px;
+  height: 44px;
+  pointer-events: none;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 -4px 10px rgba(195, 249, 55, 0.35));
+}
+
+/* Pixel Mascot CSS Fallback Grid (When PNG image is pending upload) */
+.pixel-mascot-fallback {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  gap: 1.5px;
+  width: 32px;
+  height: 32px;
+  padding: 3px;
+  border-radius: 6px;
+  background: rgba(12, 16, 24, 0.7);
+  box-shadow: 0 0 8px rgba(195, 249, 55, 0.3);
+}
+
+.pixel-dot-active {
+  background-color: #c3f937;
+  border-radius: 1px;
+}
+
+.pixel-dot-pink {
+  background-color: #fb50c3;
+  border-radius: 1px;
+}
+
+.pixel-dot-dim {
+  background-color: rgba(231, 237, 253, 0.12);
+  border-radius: 1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .game-hud {
+    transition: none !important;
+  }
+}
+

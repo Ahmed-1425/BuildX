@@ -30,8 +30,8 @@ export default function PartnersMarquee() {
   );
   const trackRef = useRef<HTMLDivElement>(null);
 
-  // Repeat logos enough times for seamless loop
-  const repetitions = 8;
+  // Repeat logos enough times for seamless loop (4 is sufficient, reduced from 8)
+  const repetitions = 4;
   const repeatedPartners = Array.from({ length: repetitions }, () => partners).flat();
 
   return (

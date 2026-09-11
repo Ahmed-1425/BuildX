@@ -18,18 +18,16 @@ export default function HeroSection() {
   const { t, locale } = useLanguage();
   const isRTL = locale === "ar";
 
-  // Mouse Parallax tracking
+  // Mouse Parallax tracking (reduced from 6 springs to 2 for performance)
   const containerRef = useRef<HTMLElement>(null);
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
-  // Smooth springs with varying stiffness for depth separation
-  const smoothXSlow = useSpring(mouseX, { stiffness: 45, damping: 25 });
-  const smoothYSlow = useSpring(mouseY, { stiffness: 45, damping: 25 });
-  const smoothXMid = useSpring(mouseX, { stiffness: 75, damping: 20 });
-  const smoothYMid = useSpring(mouseY, { stiffness: 75, damping: 20 });
-  const smoothXFast = useSpring(mouseX, { stiffness: 110, damping: 15 });
-  const smoothYFast = useSpring(mouseY, { stiffness: 110, damping: 15 });
+  // Only 2 springs: slow for background elements, fast for character
+  const smoothXSlow = useSpring(mouseX, { stiffness: 50, damping: 25 });
+  const smoothYSlow = useSpring(mouseY, { stiffness: 50, damping: 25 });
+  const smoothXFast = useSpring(mouseX, { stiffness: 100, damping: 18 });
+  const smoothYFast = useSpring(mouseY, { stiffness: 100, damping: 18 });
 
   // Interactive character state & XP particle effect
   const [charIndex, setCharIndex] = useState(1);
@@ -65,11 +63,11 @@ export default function HeroSection() {
     ]);
   };
 
-  // Automatically cycle character expressions every 2 seconds
+  // Automatically cycle character expressions every 5 seconds (reduced from 2s for perf)
   useEffect(() => {
     const autoCycleTimer = setInterval(() => {
       setCharIndex((prev) => (prev + 1) % CHARACTER_STATES.length);
-    }, 2000);
+    }, 5000);
 
     return () => clearInterval(autoCycleTimer);
   }, []);
@@ -158,13 +156,9 @@ export default function HeroSection() {
       {/* 2. DEEP PARALLAX PIXEL ARTIFACTS (SPACED ACROSS THE CANVAS)  */}
       {/* ============================================================ */}
 
-      {/* Far Background: Faint Pixel Star (Top Center-Right) */}
+      {/* Far Background: Faint Pixel Star (Top Center-Right) — CSS animation only, no spring */}
       <motion.div
         className="absolute top-24 right-1/3 hidden md:block pointer-events-none z-0"
-        style={{
-          x: smoothXSlow.get() * -25,
-          y: smoothYSlow.get() * -25,
-        }}
         animate={{ y: [0, -10, 0], opacity: [0.2, 0.4, 0.2] }}
         transition={{ duration: 7.2, repeat: Infinity, ease: "easeInOut" }}
       >
@@ -177,13 +171,9 @@ export default function HeroSection() {
         />
       </motion.div>
 
-      {/* Far Background: Volt Pixel (Bottom Left Edge) */}
+      {/* Far Background: Volt Pixel (Bottom Left Edge) — CSS animation only */}
       <motion.div
         className="absolute bottom-28 left-12 hidden lg:block pointer-events-none z-0"
-        style={{
-          x: smoothXSlow.get() * -20,
-          y: smoothYSlow.get() * -20,
-        }}
         animate={{ y: [0, 8, 0], rotate: [0, 90, 0] }}
         transition={{ duration: 8.5, repeat: Infinity, ease: "easeInOut" }}
       >
@@ -196,13 +186,9 @@ export default function HeroSection() {
         />
       </motion.div>
 
-      {/* Mid-field: Neon Pink Gem (Top Far Left) */}
+      {/* Mid-field: Neon Pink Gem (Top Far Left) — CSS animation only */}
       <motion.div
         className="absolute top-36 left-16 hidden lg:block pointer-events-none z-0"
-        style={{
-          x: smoothXMid.get() * 35,
-          y: smoothYMid.get() * 35,
-        }}
         animate={{ y: [0, -12, 0], rotate: [0, -45, 0] }}
         transition={{ duration: 5.4, repeat: Infinity, ease: "easeInOut" }}
       >
@@ -215,13 +201,9 @@ export default function HeroSection() {
         />
       </motion.div>
 
-      {/* Mid-field: Yellow Pixel Challenge Indicator (Bottom Right) */}
+      {/* Mid-field: Yellow Pixel Challenge Indicator (Bottom Right) — CSS animation only */}
       <motion.div
         className="absolute bottom-20 right-16 hidden lg:block pointer-events-none z-0"
-        style={{
-          x: smoothXMid.get() * 30,
-          y: smoothYMid.get() * 30,
-        }}
         animate={{ y: [0, -8, 0] }}
         transition={{ duration: 6.1, repeat: Infinity, ease: "easeInOut" }}
       >
@@ -433,10 +415,6 @@ export default function HeroSection() {
             {/* Decorative Element 1: Magic Wand (Subtle on corners) */}
             <motion.div
               className="absolute -top-6 left-4 lg:-top-10 lg:left-1/2 lg:-translate-x-1/2 z-10 pointer-events-none opacity-40 lg:opacity-75"
-              style={{
-                x: smoothXSlow.get() * 25,
-                y: smoothYSlow.get() * 25,
-              }}
               animate={{ y: [0, -8, 0], rotate: [0, 6, 0] }}
               transition={{ duration: 5.2, repeat: Infinity, ease: "easeInOut" }}
             >
@@ -453,10 +431,6 @@ export default function HeroSection() {
 
             {/* Main Floating Character (Centered, proportional on mobile) */}
             <motion.div
-              style={{
-                x: smoothXFast.get() * 40,
-                y: smoothYFast.get() * 40,
-              }}
               animate={{ y: [0, -10, 0] }}
               transition={{ duration: 4.8, repeat: Infinity, ease: "easeInOut" }}
               className="relative z-20 flex flex-col items-center w-full max-w-[260px] sm:max-w-[290px] lg:max-w-none my-2 lg:my-0"
@@ -525,10 +499,6 @@ export default function HeroSection() {
             {/* Floating 3D Bubble with {X} (Edge decoration, desktop only or unobtrusive) */}
             <motion.div
               className="hidden lg:block absolute top-2 -left-8 sm:-left-6 z-30 pointer-events-none"
-              style={{
-                x: smoothXMid.get() * -30,
-                y: smoothYMid.get() * -30,
-              }}
               animate={{ y: [0, -10, 0], rotate: [-5, 3, -5] }}
               transition={{ duration: 4.2, repeat: Infinity, ease: "easeInOut" }}
             >
@@ -552,10 +522,6 @@ export default function HeroSection() {
             {/* Diamond Icon (Desktop only) */}
             <motion.div
               className="hidden lg:block absolute bottom-8 -left-6 sm:left-0 z-25 pointer-events-none"
-              style={{
-                x: smoothXFast.get() * -20,
-                y: smoothYFast.get() * -20,
-              }}
               animate={{ y: [0, -7, 0], rotate: [0, 10, 0] }}
               transition={{ duration: 4.6, repeat: Infinity, ease: "easeInOut" }}
             >
@@ -573,10 +539,6 @@ export default function HeroSection() {
             {/* Retro Prompt/Code Window (Desktop positioned on corner; Mobile positioned naturally below character) */}
             <motion.div
               className="relative lg:absolute lg:-bottom-8 lg:-right-4 xl:right-2 z-30 pointer-events-none w-full max-w-[340px] sm:max-w-[400px] lg:max-w-[270px] mt-4 lg:mt-0"
-              style={{
-                x: smoothXMid.get() * 45,
-                y: smoothYMid.get() * 45,
-              }}
               animate={{ y: [0, 8, 0] }}
               transition={{ duration: 5.6, repeat: Infinity, ease: "easeInOut" }}
             >
@@ -634,10 +596,6 @@ export default function HeroSection() {
             {/* Stars Pair decoration (Desktop only) */}
             <motion.div
               className="hidden lg:block absolute -top-4 -right-2 sm:right-6 z-15 pointer-events-none"
-              style={{
-                x: smoothXSlow.get() * 30,
-                y: smoothYSlow.get() * 30,
-              }}
               animate={{ y: [0, -6, 0], rotate: [0, -8, 0] }}
               transition={{ duration: 4.8, repeat: Infinity, ease: "easeInOut" }}
             >

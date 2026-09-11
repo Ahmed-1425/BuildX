@@ -9,17 +9,19 @@ import MobileHeader, {
 import HeroSection from "@/components/HeroSection";
 import StatsSection from "@/components/StatsSection";
 import VibeCodingSection from "@/components/VibeCodingSection";
-import VisionMissionSection from "@/components/VisionMissionSection";
-import ObjectivesSection from "@/components/ObjectivesSection";
-import OutcomesSection from "@/components/OutcomesSection";
-import TargetAudienceSection from "@/components/TargetAudienceSection";
-import TrainerSection from "@/components/TrainerSection";
-import CampTimeline from "@/components/CampTimeline";
-import FinalCTA from "@/components/FinalCTA";
-import Footer from "@/components/Footer";
 import ProgressBar from "@/components/ProgressBar";
-import PartnersMarquee from "@/components/PartnersMarquee";
-import MeetTeamSection from "@/components/MeetTeamSection";
+
+// Lazy-load below-fold sections to reduce initial JS bundle and mount cost
+const VisionMissionSection = dynamic(() => import("@/components/VisionMissionSection"));
+const ObjectivesSection = dynamic(() => import("@/components/ObjectivesSection"));
+const OutcomesSection = dynamic(() => import("@/components/OutcomesSection"));
+const TargetAudienceSection = dynamic(() => import("@/components/TargetAudienceSection"));
+const TrainerSection = dynamic(() => import("@/components/TrainerSection"));
+const CampTimeline = dynamic(() => import("@/components/CampTimeline"));
+const FinalCTA = dynamic(() => import("@/components/FinalCTA"));
+const Footer = dynamic(() => import("@/components/Footer"));
+const PartnersMarquee = dynamic(() => import("@/components/PartnersMarquee"));
+const MeetTeamSection = dynamic(() => import("@/components/MeetTeamSection"));
 
 const SplashScreen = dynamic(() => import("@/components/SplashScreen"), {
   ssr: false,

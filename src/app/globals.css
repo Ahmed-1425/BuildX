@@ -109,6 +109,70 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* ============================================================
+   PERFORMANCE OPTIMIZATIONS: Mobile & Tablet
+   Reduce expensive blur/backdrop-filter on lower-powered devices,
+   promote animated layers to GPU, and defer off-screen rendering.
+   ============================================================ */
+
+/* Reduce blur radii on mobile/tablet — the #1 cause of jank.
+   Desktop keeps full blur; mobile uses smaller, cheaper radii. */
+@media (max-width: 1023px) {
+  /* Ambient glow blobs: cap blur at 60px instead of 120-170px */
+  .hero-section > .pointer-events-none[class*="blur-"],
+  section > .pointer-events-none[class*="blur-"] {
+    filter: blur(60px) !important;
+    -webkit-filter: blur(60px) !important;
+  }
+
+  /* Reduce backdrop-filter intensity on headers/cards */
+  .mobile-header,
+  .game-bottom-nav,
+  .stat-card,
+  .stats-featured-card,
+  .objective-node,
+  .audience-card {
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+  }
+}
+
+/* Promote sections with heavy animation to their own compositing layer */
+.hero-section,
+.stats-section,
+.objectives-section,
+.audience-section,
+.trainer-section,
+.journey-section,
+.partners-marquee-track {
+  will-change: auto;
+  contain: layout style;
+}
+
+/* Use content-visibility for sections below the fold.
+   This tells the browser to skip rendering them until they approach viewport. */
+.stats-section,
+.objectives-section,
+.audience-section,
+.trainer-section,
+.journey-section,
+.partners-section {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 800px;
+}
+
+/* Reduce ping animation overhead on mobile (replace with simpler opacity pulse) */
+@media (max-width: 1023px) {
+  .animate-ping {
+    animation: mobilePing 2s cubic-bezier(0, 0, 0.2, 1) infinite !important;
+  }
+
+  @keyframes mobilePing {
+    0% { opacity: 1; }
+    75%, 100% { opacity: 0; transform: scale(1.5); }
+  }
+}
+
 /* Fix dark mode autofill background */
 input:-webkit-autofill,
 input:-webkit-autofill:hover, 

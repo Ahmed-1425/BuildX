@@ -279,6 +279,7 @@ export const en = {
       hackathon: {
         num: "03",
         name: "Collaborative Hackathon",
+        badge: "In Person — Riyadh",
         events: [
           {
             date: "Oct 4",
@@ -297,6 +298,7 @@ export const en = {
       closing: {
         num: "04",
         name: "Closing Ceremony",
+        badge: "In Person — Riyadh",
         events: [
           {
             date: "Oct 6",

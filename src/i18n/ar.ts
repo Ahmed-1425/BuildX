@@ -279,6 +279,7 @@ export const ar = {
       hackathon: {
         num: "03",
         name: "الهاكاثون الجماعي",
+        badge: "حضوريًا في الرياض",
         events: [
           {
             date: "4 أكتوبر",
@@ -297,6 +298,7 @@ export const ar = {
       closing: {
         num: "04",
         name: "الحفل الختامي",
+        badge: "حضوريًا في الرياض",
         events: [
           {
             date: "6 أكتوبر",

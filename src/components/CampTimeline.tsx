@@ -226,7 +226,7 @@ export default function CampTimeline() {
                       >
                         {phase.name}
                       </h3>
-                      {isCamp && phase.badge && (
+                      {phase.badge && (
                         <div className="location-badge location-badge--compact">
                           <Image src="/assets/icons/location-white.png" alt="" width={14} height={14} className="w-3.5 h-3.5 object-contain shrink-0" />
                           <span className="font-arapix text-xs tracking-wider font-medium">{phase.badge}</span>

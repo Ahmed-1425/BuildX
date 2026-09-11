@@ -137,6 +137,80 @@ body {
   }
 }
 
+/* ============================================================
+   SAFARI PERFORMANCE FIXES
+   Safari/WebKit handles backdrop-filter and blur() far worse
+   than Blink browsers. These rules force GPU compositing and
+   reduce blur radii specifically for WebKit to prevent jank.
+   ============================================================ */
+
+/* Force GPU acceleration on ALL elements using backdrop-blur.
+   Safari defaults to CPU rendering for backdrop-filter, which
+   causes severe scroll lag. translate3d forces the GPU path. */
+[class*="backdrop-blur"],
+[style*="backdrop-filter"] {
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* Safari-specific: reduce backdrop-blur values across the site.
+   Safari selector hack: only WebKit renders _::-webkit-full-page-media */
+@supports (-webkit-touch-callout: none) {
+  /* Sticky headers & nav — reduce blur from md/xl to minimal */
+  .mobile-header,
+  .game-bottom-nav,
+  [class*="backdrop-blur-xl"],
+  [class*="backdrop-blur-2xl"] {
+    -webkit-backdrop-filter: blur(8px) !important;
+    backdrop-filter: blur(8px) !important;
+  }
+
+  [class*="backdrop-blur-md"] {
+    -webkit-backdrop-filter: blur(6px) !important;
+    backdrop-filter: blur(6px) !important;
+  }
+
+  [class*="backdrop-blur-sm"] {
+    -webkit-backdrop-filter: blur(3px) !important;
+    backdrop-filter: blur(3px) !important;
+  }
+
+  /* Large ambient glow blobs — cap blur on Safari */
+  .hero-section > .pointer-events-none[class*="blur-"],
+  section > .pointer-events-none[class*="blur-"] {
+    filter: blur(50px) !important;
+    -webkit-filter: blur(50px) !important;
+  }
+
+  /* Reduce large inline blur values used on ambient elements */
+  [class*="blur-[120px]"],
+  [class*="blur-[130px]"],
+  [class*="blur-[140px]"],
+  [class*="blur-[150px]"],
+  [class*="blur-[160px]"],
+  [class*="blur-[170px]"],
+  [class*="blur-3xl"] {
+    filter: blur(50px) !important;
+    -webkit-filter: blur(50px) !important;
+  }
+
+  [class*="blur-[100px]"] {
+    filter: blur(40px) !important;
+    -webkit-filter: blur(40px) !important;
+  }
+
+  /* Reduce drop-shadow complexity on Safari */
+  [class*="drop-shadow-[0_0_20px"],
+  [class*="drop-shadow-[0_0_25px"],
+  [class*="drop-shadow-[0_15px_30px"],
+  [class*="drop-shadow-[0_20px_40px"] {
+    filter: none !important;
+    -webkit-filter: none !important;
+  }
+}
+
 /* Promote sections with heavy animation to their own compositing layer */
 .hero-section,
 .stats-section,
@@ -147,6 +221,8 @@ body {
 .partners-marquee-track {
   will-change: auto;
   contain: layout style;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
 }
 
 /* Use content-visibility for sections below the fold.

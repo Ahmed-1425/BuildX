@@ -206,18 +206,12 @@ export default function AdminDashboardPage() {
       {/* ── 1. EXECUTIVE PAGE HEADER ───────────────────────────────── */}
       <header className="page-header pb-6 border-b border-white/[0.08]">
         <div className="page-header-copy">
-          <div className="flex flex-wrap items-center gap-3">
-            <h1 className="admin-title font-bold text-white tracking-tight">
-              لوحة قيادة BUILDx
-            </h1>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#c3f937]/10 text-[#c3f937] border border-[#c3f937]/30">
-              <span className="w-2 h-2 rounded-full bg-[#c3f937] animate-pulse" />
-              <span>مباشر</span>
-            </span>
-          </div>
+          <h1 className="admin-title font-bold text-white tracking-tight">
+            لوحة قيادة BUILDx
+          </h1>
 
           <p className="body-text text-slate-300 leading-relaxed max-w-3xl">
-            تابع طلبات التسجيل، تقدّم المراجعة، وقرارات القبول من مساحة واحدة بأرقام لاتينية مباشرة ومؤشرات تفاعلية.
+            متابعة طلبات التسجيل، تقدم المراجعة، وقرارات القبول من مساحة واحدة.
           </p>
 
           {lastUpdated && (
@@ -327,11 +321,10 @@ export default function AdminDashboardPage() {
         </div>
       </section>
 
-      {/* ── 3. DASHBOARD SECTIONS: ADMISSION PIPELINE & LEVELS ───────── */}
-      <div className="dashboard-sections">
-        <div className="dashboard-row">
-          {/* Admission Pipeline Panel */}
-          <div className="dashboard-panel bento-card flex flex-col justify-between">
+      {/* ── 3. DASHBOARD BENTO GRID (12-column system) ──────────────── */}
+      <div className="dashboard-bento-grid">
+        {/* Admission Pipeline Panel (7 cols) */}
+        <div className="dashboard-panel bento-card col-span-12 lg:col-span-7 flex flex-col justify-between">
             <div>
               <div className="panel-header">
                 <div>
@@ -424,8 +417,8 @@ export default function AdminDashboardPage() {
             </div>
           </div>
 
-          {/* Level Distribution Panel */}
-          <div className="dashboard-panel bento-card flex flex-col justify-between">
+        {/* Level Distribution Panel (5 cols) */}
+        <div className="dashboard-panel bento-card col-span-12 lg:col-span-5 flex flex-col justify-between">
             <div>
               <div className="panel-header">
                 <div>
@@ -516,12 +509,10 @@ export default function AdminDashboardPage() {
               </div>
             </div>
           </div>
-        </div>
 
-        {/* ── 4. REVIEW PROGRESS & ACTION ALERTS ──────────────────────── */}
-        <div className="dashboard-row">
-          {/* Reviewer Progress */}
-          <div className="dashboard-panel bento-card flex flex-col justify-between">
+        {/* ── 4. REVIEW PROGRESS & ACTION ALERTS (6 cols each) ──────── */}
+        {/* Reviewer Progress */}
+        <div className="dashboard-panel bento-card col-span-12 lg:col-span-6 flex flex-col justify-between">
             <div>
               <div className="panel-header">
                 <div>
@@ -572,8 +563,8 @@ export default function AdminDashboardPage() {
             </div>
           </div>
 
-          {/* Action Alerts */}
-          <div className="dashboard-panel bento-card flex flex-col justify-between">
+          {/* Action Alerts (6 cols) */}
+          <div className="dashboard-panel bento-card col-span-12 lg:col-span-6 flex flex-col justify-between">
             <div>
               <div className="panel-header">
                 <div>
@@ -649,12 +640,10 @@ export default function AdminDashboardPage() {
               </Link>
             </div>
           </div>
-        </div>
 
-        {/* ── 5. GENDER DISTRIBUTION & TOP CITIES ─────────────────────── */}
-        <div className="dashboard-row">
-          {/* Gender Distribution Section */}
-          <div className="dashboard-panel bento-card flex flex-col justify-between">
+        {/* ── 5. GENDER DISTRIBUTION & TOP CITIES (6 cols each) ──────── */}
+        {/* Gender Distribution Section */}
+        <div className="dashboard-panel bento-card col-span-12 lg:col-span-6 flex flex-col justify-between">
             <div>
               <div className="panel-header">
                 <div>
@@ -767,8 +756,8 @@ export default function AdminDashboardPage() {
             </div>
           </div>
 
-          {/* Top Cities */}
-          <div className="dashboard-panel bento-card flex flex-col justify-between">
+          {/* Top Cities (6 cols) */}
+          <div className="dashboard-panel bento-card col-span-12 lg:col-span-6 flex flex-col justify-between">
             <div>
               <div className="panel-header">
                 <div>
@@ -817,10 +806,9 @@ export default function AdminDashboardPage() {
               <span>المعسكر حضوري في مدينة الرياض</span>
             </div>
           </div>
-        </div>
 
-        {/* ── 6. RECENT APPLICATIONS SECTION ─────────────────────── */}
-        <div className="dashboard-panel bento-card">
+        {/* ── 6. RECENT APPLICATIONS SECTION (12 cols) ─────────────── */}
+        <div className="dashboard-panel bento-card col-span-12">
           <div className="panel-header">
             <div>
               <h2 className="section-title font-bold text-white flex items-center gap-2">

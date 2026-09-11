@@ -60,12 +60,29 @@
   --space-8: 32px;
   --space-10: 40px;
   --space-12: 48px;
+  --buildx-bg: #0c1018;
+  --buildx-surface: #151a27;
+  --buildx-surface-raised: #1d2032;
+  --buildx-lime: #c3f937;
+  --buildx-pink: #fb50c3;
+  --buildx-purple: #34155f;
+  --buildx-warm: #823419;
+  --buildx-text: #e7edfd;
+  --buildx-muted: rgba(231, 237, 253, 0.68);
+  --buildx-border: rgba(231, 237, 253, 0.10);
   --mobile-header-height: 84px;
   --font-janna: "JannaLT", Tahoma, Arial, sans-serif;
   --font-janna-bold: "JannaLTBold", Tahoma, Arial, sans-serif;
   --font-news-almstqbl: "BNewsAlmstqbl", "JannaLTBold", Tahoma, sans-serif;
   --font-arapix: "Arapix", "JannaLT", monospace;
   --font-bauhaus: "Bauhaus93", Impact, sans-serif;
+}
+
+/* Hide Next.js floating dev indicator (the black N badge) */
+nextjs-portal,
+[data-nextjs-toast],
+[data-nextjs-dev-indicator] {
+  display: none !important;
 }
 
 @media (max-width: 1023px) {
@@ -440,7 +457,20 @@ input:-webkit-autofill:active {
   gap: 18px;
 }
 
-/* ── Dashboard Sections & Panels ────────────────────────────────── */
+/* ── Dashboard Sections & Bento Grid ────────────────────────────── */
+.dashboard-bento-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 20px;
+  margin-top: 24px;
+}
+
+@media (max-width: 1024px) {
+  .dashboard-bento-grid {
+    gap: 16px;
+  }
+}
+
 .dashboard-sections {
   display: grid;
   gap: 24px;

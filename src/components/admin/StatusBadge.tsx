@@ -39,7 +39,7 @@ export const STATUS_CONFIG: Record<ExtendedApplicationStatus, StatusConfig> = {
     icon: Search,
   },
   preliminary_candidate: {
-    label: "مرشح مبدئي",
+    label: "مرشح مبدئيًا",
     dotColor: "#facc15",
     bgClass: "bg-yellow-500/10",
     textClass: "text-yellow-400",
@@ -71,7 +71,7 @@ export const STATUS_CONFIG: Record<ExtendedApplicationStatus, StatusConfig> = {
     icon: XCircle,
   },
   confirmed: {
-    label: "تم تأكيد القبول",
+    label: "مؤكد الحضور",
     dotColor: "#c3f937",
     bgClass: "bg-[#c3f937]/15",
     textClass: "text-[#c3f937] font-bold",

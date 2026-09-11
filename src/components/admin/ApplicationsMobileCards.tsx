@@ -4,7 +4,7 @@ import Link from "next/link";
 import type { ApplicationListItem } from "@/types/admin";
 import AdminStatusBadge from "./StatusBadge";
 import { GenderBadge } from "./ApplicationsTable";
-import { Star, ChevronLeft, MapPin, Building2, CheckCircle2, Clock } from "lucide-react";
+import { Star, ChevronLeft, MapPin, Building2, CheckCircle2, Clock, MoreHorizontal } from "lucide-react";
 import {
   formatDateArabic,
   formatTimeArabic,
@@ -17,7 +17,7 @@ interface Props {
   onQuickStatusChange: (app: ApplicationListItem) => void;
 }
 
-export default function ApplicationsMobileCards({ items }: Props) {
+export default function ApplicationsMobileCards({ items, onQuickStatusChange }: Props) {
   const levelBadges = {
     foundation: {
       text: "مبتدئ",
@@ -118,15 +118,25 @@ export default function ApplicationsMobileCards({ items }: Props) {
               </span>
             </div>
 
-            {/* Action button (52px on mobile for easy tapping) */}
-            <div className="pt-1">
+            {/* Action buttons (52px on mobile for easy tapping) */}
+            <div className="pt-1 flex items-center gap-2.5">
               <Link
                 href={`/admin/applications/${item.id}/review`}
-                className="w-full btn-admin-lg bg-[#c3f937] text-[#0c1018] hover:bg-[#c3f937]/90 transition-all shadow-md shadow-[#c3f937]/20 text-center font-bold"
+                className="flex-1 btn-admin-lg bg-[#c3f937] text-[#0c1018] hover:bg-[#c3f937]/90 transition-all shadow-md shadow-[#c3f937]/20 text-center font-bold justify-center"
               >
                 <span>مراجعة الطلب</span>
                 <ChevronLeft className="w-4 h-4" aria-hidden="true" />
               </Link>
+
+              <button
+                type="button"
+                onClick={() => onQuickStatusChange(item)}
+                className="w-[52px] h-[52px] rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 text-slate-300 hover:text-white flex items-center justify-center transition-colors cursor-pointer shrink-0"
+                title="تغيير الحالة السريعة"
+                aria-label="تغيير الحالة السريعة"
+              >
+                <MoreHorizontal className="w-5 h-5" />
+              </button>
             </div>
           </div>
         );

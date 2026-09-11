@@ -61,10 +61,11 @@ interface Props {
   reviewerName: string;
   onReviewSaved: (savedReview: ApplicationReview) => void;
   onValidationFailed?: (missing: string[]) => void;
+  showFooter?: boolean;
 }
 
 const ReviewerEvaluationPanel = forwardRef<ReviewerPanelHandle, Props>(function ReviewerEvaluationPanel(
-  { applicationId, initialReview, reviewerName, onReviewSaved, onValidationFailed },
+  { applicationId, initialReview, reviewerName, onReviewSaved, onValidationFailed, showFooter = false },
   ref
 ) {
   // Scores for the 9 criteria
@@ -509,9 +510,9 @@ const ReviewerEvaluationPanel = forwardRef<ReviewerPanelHandle, Props>(function 
             <textarea
               value={rejectionReason}
               onChange={(e) => setRejectionReason(e.target.value)}
-              rows={2}
+              rows={3}
               placeholder="اكتب أسباب عدم التوصية بقبول المتقدم..."
-              className="w-full p-2.5 rounded-lg bg-black/40 border border-rose-500/30 text-white text-xs placeholder-rose-300/40 focus:outline-none focus:border-rose-400"
+              className="w-full p-2.5 rounded-lg bg-black/40 border border-rose-500/30 text-white text-xs placeholder-rose-300/40 focus:outline-none focus:border-rose-400 min-h-[88px] resize-y"
             />
           </div>
         )}
@@ -523,9 +524,9 @@ const ReviewerEvaluationPanel = forwardRef<ReviewerPanelHandle, Props>(function 
             <textarea
               value={strengths}
               onChange={(e) => setStrengths(e.target.value)}
-              rows={2}
+              rows={3}
               placeholder="أبرز ما يميز المتقدم وإجاباته..."
-              className="w-full p-2.5 rounded-xl bg-white/[0.04] border border-white/10 text-white text-xs placeholder-slate-500 focus:outline-none focus:border-[#c3f937]"
+              className="w-full p-2.5 rounded-xl bg-white/[0.04] border border-white/10 text-white text-xs placeholder-slate-500 focus:outline-none focus:border-[#c3f937] min-h-[88px] resize-y"
             />
           </div>
 
@@ -534,9 +535,9 @@ const ReviewerEvaluationPanel = forwardRef<ReviewerPanelHandle, Props>(function 
             <textarea
               value={concerns}
               onChange={(e) => setConcerns(e.target.value)}
-              rows={2}
+              rows={3}
               placeholder="أي تحفظات أو استيضاحات إضافية..."
-              className="w-full p-2.5 rounded-xl bg-white/[0.04] border border-white/10 text-white text-xs placeholder-slate-500 focus:outline-none focus:border-[#c3f937]"
+              className="w-full p-2.5 rounded-xl bg-white/[0.04] border border-white/10 text-white text-xs placeholder-slate-500 focus:outline-none focus:border-[#c3f937] min-h-[88px] resize-y"
             />
           </div>
 
@@ -545,36 +546,38 @@ const ReviewerEvaluationPanel = forwardRef<ReviewerPanelHandle, Props>(function 
             <textarea
               value={internalNotes}
               onChange={(e) => setInternalNotes(e.target.value)}
-              rows={2}
+              rows={3}
               placeholder="أي ملاحظات إضافية للجنة التحكيم..."
-              className="w-full p-2.5 rounded-xl bg-white/[0.04] border border-white/10 text-white text-xs placeholder-slate-500 focus:outline-none focus:border-[#c3f937]"
+              className="w-full p-2.5 rounded-xl bg-white/[0.04] border border-white/10 text-white text-xs placeholder-slate-500 focus:outline-none focus:border-[#c3f937] min-h-[88px] resize-y"
             />
           </div>
         </div>
       </div>
 
-      {/* ── Fixed Panel Footer ───────────────────────────────────────── */}
-      <div className="p-4 border-t border-white/10 bg-[#0e1320] flex items-center gap-2.5">
-        <button
-          type="button"
-          onClick={() => executeSubmit(false)}
-          disabled={saving}
-          className="flex-1 h-11 inline-flex items-center justify-center gap-2 px-3 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 text-xs font-bold text-slate-200 hover:text-white transition-all cursor-pointer disabled:opacity-50"
-        >
-          <Save size={16} />
-          <span>حفظ المسودة</span>
-        </button>
+      {/* ── Fixed Panel Footer (Only rendered when showFooter=true, e.g. in mobile drawer) ── */}
+      {showFooter && (
+        <div className="p-4 border-t border-white/10 bg-[#0e1320] flex items-center gap-2.5">
+          <button
+            type="button"
+            onClick={() => executeSubmit(false)}
+            disabled={saving}
+            className="flex-1 h-11 inline-flex items-center justify-center gap-2 px-3 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 text-xs font-bold text-slate-200 hover:text-white transition-all cursor-pointer disabled:opacity-50"
+          >
+            <Save size={16} />
+            <span>حفظ المسودة</span>
+          </button>
 
-        <button
-          type="button"
-          onClick={() => executeSubmit(true)}
-          disabled={saving}
-          className="flex-1 h-11 inline-flex items-center justify-center gap-2 px-3 rounded-xl bg-[#c3f937] hover:bg-[#b2e82e] text-[#0c1018] text-xs font-bold transition-all shadow-md shadow-[#c3f937]/20 cursor-pointer disabled:opacity-50"
-        >
-          <Send size={16} />
-          <span>{saving ? "جارٍ الحفظ..." : "إنهاء وإرسال التقييم"}</span>
-        </button>
-      </div>
+          <button
+            type="button"
+            onClick={() => executeSubmit(true)}
+            disabled={saving}
+            className="flex-1 h-11 inline-flex items-center justify-center gap-2 px-3 rounded-xl bg-[#c3f937] hover:bg-[#b2e82e] text-[#0c1018] text-xs font-bold transition-all shadow-md shadow-[#c3f937]/20 cursor-pointer disabled:opacity-50"
+          >
+            <Send size={16} />
+            <span>{saving ? "جارٍ الحفظ..." : "إنهاء وإرسال التقييم"}</span>
+          </button>
+        </div>
+      )}
     </div>
   );
 });

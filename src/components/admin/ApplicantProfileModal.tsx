@@ -14,6 +14,9 @@ import {
   ExternalLink,
   MessageCircle,
   Video,
+  AlertTriangle,
+  CheckCircle2,
+  Clock,
 } from "lucide-react";
 import type { ApplicationDetailItem } from "@/types/admin";
 import { getGenderLabel } from "@/types/admin";
@@ -57,11 +60,16 @@ const LEVEL_CONFIG: Record<string, { label: string; desc: string }> = {
 
 const APP_STATUS_LABELS: Record<string, string> = {
   submitted: "طلب جديد",
+  under_review: "قيد المراجعة",
   in_review: "قيد المراجعة",
-  shortlisted: "مرشح مبدئي",
-  accepted: "مقبول نهائيًا",
-  rejected: "مستبعد",
+  preliminary_candidate: "مرشح مبدئيًا",
+  shortlisted: "مرشح مبدئيًا",
+  accepted: "مقبول",
+  confirmed: "مؤكد الحضور",
+  waitlisted: "قائمة الانتظار",
   waitlist: "قائمة الانتظار",
+  rejected: "غير مقبول",
+  withdrawn: "منسحب",
 };
 
 export function ApplicantProfileModal({
@@ -154,18 +162,22 @@ export function ApplicantProfileModal({
     setTimeout(() => setCopiedKey(null), 2000);
   }
 
-  // Calculate age safely
-  const calculatedAge = useMemo(() => {
-    if (!applicant?.birth_date) return null;
+  // Calculate age safely with validation
+  const { calculatedAge, isBirthDateInvalid } = useMemo(() => {
+    if (!applicant?.birth_date) return { calculatedAge: null, isBirthDateInvalid: false };
     const birth = new Date(applicant.birth_date);
-    if (isNaN(birth.getTime())) return null;
+    if (isNaN(birth.getTime())) return { calculatedAge: null, isBirthDateInvalid: true };
     const today = new Date();
+    if (birth > today) return { calculatedAge: null, isBirthDateInvalid: true };
     let age = today.getFullYear() - birth.getFullYear();
     const m = today.getMonth() - birth.getMonth();
     if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
       age--;
     }
-    return age >= 0 ? age : null;
+    if (age <= 0 || age > 115) {
+      return { calculatedAge: null, isBirthDateInvalid: true };
+    }
+    return { calculatedAge: age, isBirthDateInvalid: false };
   }, [applicant?.birth_date]);
 
   // Extract professional links
@@ -283,9 +295,16 @@ export function ApplicantProfileModal({
                 <div className={styles.profileField}>
                   <span className={styles.fieldLabel}>العمر</span>
                   <span className={styles.fieldValue}>
-                    {calculatedAge !== null
-                      ? `${toLatinDigits(calculatedAge)} سنة`
-                      : "غير محدد"}
+                    {calculatedAge !== null ? (
+                      `${toLatinDigits(calculatedAge)} سنة`
+                    ) : (
+                      <span className="text-slate-400 font-normal">غير متاح</span>
+                    )}
+                    {isBirthDateInvalid && (
+                      <span className="text-[11px] text-amber-400 font-normal mr-2">
+                        (تاريخ غير صالح)
+                      </span>
+                    )}
                   </span>
                 </div>
 
@@ -423,50 +442,67 @@ export function ApplicantProfileModal({
               </h3>
 
               <div className={styles.fieldsList}>
+                {/* Team preference */}
                 <div className={styles.profileField}>
                   <span className={styles.fieldLabel}>بيئة الفريق</span>
                   <span className={styles.fieldValue}>
                     {applicant.team_environment_preference === "comfortable"
-                      ? "يناسبني تمامًا العمل ضمن فريق مختلط (ذكور وإناث)"
+                      ? "يناسبني تمامًا العمل ضمن فريق مشترك (ذكور وإناث)"
                       : applicant.team_environment_preference === "same_gender_only"
                       ? "أفضل العمل مع فريق من نفس الجنس فقط"
                       : "غير محدد"}
                   </span>
                 </div>
 
+                {/* Attendance commitment */}
                 <div className={styles.profileField}>
                   <span className={styles.fieldLabel}>الالتزام بالحضور</span>
-                  <span className={styles.fieldValue} style={{ color: "#34d399" }}>
-                    أقر بالالتزام والتفرغ التام للحضور والمشاركة الفعالة
-                  </span>
+                  <div className="flex items-center gap-2 pt-0.5">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <span className="text-slate-200 text-sm font-medium">
+                      أقر بالالتزام والتفرغ التام للحضور والمشاركة الفعالة
+                    </span>
+                  </div>
                 </div>
 
+                {/* Laptop commitment */}
                 <div className={styles.profileField}>
                   <span className={styles.fieldLabel}>توفر وإحضار جهاز محمول (Laptop)</span>
-                  <span
-                    className={styles.fieldValue}
-                    style={{
-                      color:
-                        applicant.laptop_commitment === true
-                          ? "#34d399"
-                          : applicant.laptop_commitment === false
-                          ? "#fb7185"
-                          : "rgba(231, 237, 253, 0.7)",
-                    }}
-                  >
-                    {applicant.laptop_commitment === true
-                      ? "أقر بتوفر جهاز محمول صالح للاستخدام والالتزام بإحضاره"
-                      : applicant.laptop_commitment === false
-                      ? "لم يتم الإقرار"
-                      : "غير محدد (لم يكن مطلوبًا وقت التسجيل)"}
-                  </span>
+                  <div className="flex items-center gap-2 pt-0.5">
+                    {applicant.laptop_commitment === true ? (
+                      <>
+                        <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                        <span className="text-slate-200 text-sm font-medium">
+                          أقر بتوفر جهاز محمول صالح للاستخدام والالتزام بإحضاره
+                        </span>
+                      </>
+                    ) : applicant.laptop_commitment === false ? (
+                      <>
+                        <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
+                        <span className="text-rose-300 text-sm font-medium">
+                          لم يتم الإقرار بتوفر جهاز محمول
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <Clock className="w-4 h-4 text-slate-400 shrink-0" />
+                        <span className="text-slate-400 text-sm font-normal">
+                          غير متاح (لم يكن مطلوبًا في الطلبات السابقة)
+                        </span>
+                      </>
+                    )}
+                  </div>
                 </div>
 
+                {/* Terms acceptance */}
                 <div className={styles.profileField}>
                   <span className={styles.fieldLabel}>الموافقة على الشروط</span>
-                  <span className={styles.fieldValue} style={{ color: "#34d399" }}>
-                    تمت الموافقة على صحة البيانات والشروط ومعالجة البيانات
-                  </span>
+                  <div className="flex items-center gap-2 pt-0.5">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <span className="text-slate-200 text-sm font-medium">
+                      تمت الموافقة على صحة البيانات والشروط وسياسة الخصوصية
+                    </span>
+                  </div>
                 </div>
               </div>
             </article>

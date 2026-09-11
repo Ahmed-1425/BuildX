@@ -119,6 +119,23 @@ export default function ApplicantAnswerCard({
     return rawItems.map(parseApplicantLink);
   }, [isLinkType, rawAnswer, answerString]);
 
+  // Word count of answer
+  const wordCount = useMemo(() => {
+    if (!answerString || isLinkType || isVideoType) return 0;
+    return answerString.trim().split(/\s+/).filter(Boolean).length;
+  }, [answerString, isLinkType, isVideoType]);
+
+  // Detect code snippet or system prompt in text
+  const hasCodeOrPrompt = useMemo(() => {
+    if (!answerString || isLinkType || isVideoType) return false;
+    return (
+      answerString.includes("```") ||
+      /(\b(const|let|var|function|import|export|class|def|return|select|insert|update|delete)\b)/i.test(answerString) ||
+      answerString.includes("System Prompt:") ||
+      answerString.includes("User:")
+    );
+  }, [answerString, isLinkType, isVideoType]);
+
   function handleCopy(text: string) {
     if (!text) return;
     navigator.clipboard.writeText(text);
@@ -295,28 +312,69 @@ export default function ApplicantAnswerCard({
                   <p className="text-xs text-slate-500 py-2">لم يقم المتقدم بإرفاق رابط فيديو.</p>
                 )}
               </div>
-            ) : (
-              <div className="applicant-answer">
-                {displayedAnswerText || (
-                  <span className="text-slate-500 italic">لم يقدم المتقدم إجابة على هذا السؤال.</span>
-                )}
-
-                {/* Truncation Toggle Button */}
-                {isLongAnswer && (
-                  <div className="pt-3 mt-3 border-t border-white/[0.08] flex items-center justify-between">
+            ) : hasCodeOrPrompt ? (
+              <div className="applicant-answer space-y-3">
+                <div className="flex items-center justify-between text-xs text-slate-400 pb-1">
+                  <span className="flex items-center gap-1.5 text-cyan-300 font-mono">
+                    <Code2 size={14} />
+                    <span>محتوى برمجي / برومبت (LTR)</span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleCopy(answerString)}
+                    className="text-xs text-[#c3f937] hover:underline flex items-center gap-1 cursor-pointer"
+                  >
+                    {copied ? <Check size={13} /> : <Copy size={13} />}
+                    <span>{copied ? "تم النسخ" : "نسخ الكود"}</span>
+                  </button>
+                </div>
+                <pre
+                  dir="ltr"
+                  className="p-4 rounded-xl bg-[#080d16] border border-white/10 text-emerald-300 font-mono text-xs leading-relaxed overflow-x-auto whitespace-pre-wrap select-text"
+                >
+                  {displayedAnswerText}
+                </pre>
+                {/* Word count & truncation toggle */}
+                <div className="pt-2 flex items-center justify-between text-xs text-slate-400 border-t border-white/[0.06]">
+                  <span className="font-mono numeric-value">
+                    عدد الكلمات: {toLatinDigits(wordCount)} كلمة
+                  </span>
+                  {isLongAnswer && (
                     <button
                       type="button"
                       onClick={() => setShowFullText(!showFullText)}
-                      className="text-xs font-bold text-[#c3f937] hover:underline inline-flex items-center gap-1 cursor-pointer"
+                      className="font-bold text-[#c3f937] hover:underline inline-flex items-center gap-1 cursor-pointer"
                     >
                       <span>{showFullText ? "طي الإجابة" : "عرض الإجابة كاملة"}</span>
                       {showFullText ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                     </button>
-                    <span className="text-xs text-slate-400 font-mono">
-                      {answerString.split("\n").length} أسطر
-                    </span>
-                  </div>
-                )}
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className="applicant-answer">
+                <div className="text-[17px] leading-[2] text-[#e7edfd] select-text">
+                  {displayedAnswerText || (
+                    <span className="text-slate-500 italic">لم يقدم المتقدم إجابة على هذا السؤال.</span>
+                  )}
+                </div>
+
+                {/* Metadata Row: Word Count & Truncation Toggle */}
+                <div className="pt-3 mt-3 border-t border-white/[0.08] flex items-center justify-between text-xs text-slate-400">
+                  <span className="font-mono numeric-value">
+                    عدد الكلمات: {toLatinDigits(wordCount)} كلمة
+                  </span>
+                  {isLongAnswer && (
+                    <button
+                      type="button"
+                      onClick={() => setShowFullText(!showFullText)}
+                      className="font-bold text-[#c3f937] hover:underline inline-flex items-center gap-1 cursor-pointer"
+                    >
+                      <span>{showFullText ? "طي الإجابة" : "عرض الإجابة كاملة"}</span>
+                      {showFullText ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                    </button>
+                  )}
+                </div>
               </div>
             )}
           </div>

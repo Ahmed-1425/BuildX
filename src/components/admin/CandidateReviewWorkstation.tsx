@@ -854,14 +854,14 @@ export default function CandidateReviewWorkstation({ id }: Props) {
             <span className="hidden sm:inline">حفظ المسودة</span>
           </button>
 
-          {/* Final Submit Review */}
+          {/* Final Submit Review - Single Primary Lime CTA */}
           <button
             type="button"
             onClick={handleFinalSubmitAttempt}
             className="h-10 px-4 rounded-xl bg-[#c3f937] hover:bg-[#b2e82e] text-[#0c1018] text-xs font-bold cursor-pointer inline-flex items-center gap-1.5 shadow-md shadow-[#c3f937]/20"
           >
             <Send size={15} />
-            <span>إنهاء التقييم</span>
+            <span>إنهاء وإرسال التقييم</span>
           </button>
         </div>
       </footer>
@@ -900,6 +900,7 @@ export default function CandidateReviewWorkstation({ id }: Props) {
                 applicationId={candidate.id}
                 initialReview={myReview}
                 reviewerName={currentUser?.full_name || "المحكم"}
+                showFooter={true}
                 onReviewSaved={() => {
                   reloadData();
                   setShowMobileEvalModal(false);

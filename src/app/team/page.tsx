@@ -11,7 +11,7 @@ export const metadata: Metadata = {
       "Meet the BUILDx team across project management, execution, media, public relations, mentorship, facilitation, and judging.",
     images: [
       {
-        url: "/assets/logos/logo-white-slogan.png",
+        url: "/assets/og-image.png",
         width: 1200,
         height: 630,
         alt: "BUILDx Team",

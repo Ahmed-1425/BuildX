@@ -3,9 +3,10 @@ import "./globals.css";
 import { LanguageProvider } from "@/context/LanguageContext";
 
 export const metadata: Metadata = {
-  title: "BUILDx | معسكر Vibe Coding — Vibe Coding Camp",
+  metadataBase: new URL("https://bulidx.tiqanah.org"),
+  title: "BUILDx | معسكر الـ Vibe Coding الأول — من برومبت يُقال إلى منتج فعّال",
   description:
-    "تجربة تدريبية تطبيقية مكثفة تحوّل الأفكار والبرومبتات إلى منتجات رقمية فعّالة باستخدام الذكاء الاصطناعي. An intensive hands-on experience that transforms ideas and prompts into functional AI-powered digital products.",
+    "معسكر تدريبي تطبيقي وهاكاثون مكثف في الرياض يحوّل أفكارك وبرومبتاتك إلى منتجات رقمية متكاملة بالذكاء الاصطناعي. التسجيل متاح الآن — انضم وابدأ رحلة البناء!",
   keywords: [
     "BUILDx",
     "Vibe Coding",
@@ -17,30 +18,34 @@ export const metadata: Metadata = {
     "هاكاثون",
     "digital products",
     "منتجات رقمية",
+    "تقانة",
+    "Riyadh",
+    "الرياض",
   ],
   openGraph: {
-    title: "BUILDx | Vibe Coding Camp",
+    title: "BUILDx | معسكر الـ Vibe Coding الأول — من برومبت يُقال إلى منتج فعّال",
     description:
-      "An intensive hands-on experience that transforms ideas and prompts into functional AI-powered digital products.",
+      "معسكر تدريبي تطبيقي وهاكاثون مكثف في الرياض يحوّل أفكارك وبرومبتاتك إلى منتجات رقمية متكاملة بالذكاء الاصطناعي. التسجيل متاح الآن — انضم وابدأ رحلة البناء!",
+    url: "https://bulidx.tiqanah.org",
+    siteName: "BUILDx",
     images: [
       {
-        url: "/assets/logos/logo-white-slogan.png",
+        url: "/assets/og-image.png",
         width: 1200,
         height: 630,
-        alt: "BUILDx - From a prompt you say to a product that works",
+        alt: "BUILDx - من برومبت يُقال... إلى منتج فعّال",
       },
     ],
     type: "website",
     locale: "ar_SA",
     alternateLocale: "en_US",
-    siteName: "BUILDx",
   },
   twitter: {
     card: "summary_large_image",
-    title: "BUILDx | Vibe Coding Camp",
+    title: "BUILDx | معسكر الـ Vibe Coding الأول — من برومبت يُقال إلى منتج فعّال",
     description:
-      "An intensive hands-on experience that transforms ideas and prompts into functional AI-powered digital products.",
-    images: ["/assets/logos/logo-white-slogan.png"],
+      "معسكر تدريبي تطبيقي وهاكاثون مكثف في الرياض يحوّل أفكارك وبرومبتاتك إلى منتجات رقمية متكاملة بالذكاء الاصطناعي. التسجيل متاح الآن — انضم وابدأ رحلة البناء!",
+    images: ["/assets/og-image.png"],
   },
   icons: {
     icon: "/assets/characters/ready.png",

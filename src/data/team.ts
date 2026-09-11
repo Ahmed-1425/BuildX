@@ -204,7 +204,6 @@ export const teamMembers: TeamMember[] = [
     nameAr: "عبدالمجيد الشمري",
     nameEn: "Abdulmajeed Alshammari",
     imageSrc: "/assets/team/abdulmajeed-alshammari.png",
-    imageIsTemporary: true,
     links: {},
   },
   {

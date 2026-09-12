@@ -22,6 +22,7 @@ const FinalCTA = dynamic(() => import("@/components/FinalCTA"));
 const Footer = dynamic(() => import("@/components/Footer"));
 const PartnersMarquee = dynamic(() => import("@/components/PartnersMarquee"));
 const MeetTeamSection = dynamic(() => import("@/components/MeetTeamSection"));
+const VideoShowcase = dynamic(() => import("@/components/VideoShowcase"));
 
 const SplashScreen = dynamic(() => import("@/components/SplashScreen"), {
   ssr: false,
@@ -77,6 +78,10 @@ export default function HomePage() {
             <div className="section-divider" />
 
             <VibeCodingSection />
+
+            <div className="section-divider" />
+
+            <VideoShowcase />
 
             <div className="section-divider" />
 

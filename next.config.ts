@@ -5,6 +5,13 @@ const nextConfig: NextConfig = {
   images: {
     formats: ["image/webp", "image/avif"],
     deviceSizes: [390, 430, 640, 768, 1024, 1280, 1440, 1920],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "img.youtube.com",
+        pathname: "/vi/**",
+      },
+    ],
   },
   async headers() {
     return [

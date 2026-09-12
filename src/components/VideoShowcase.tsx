@@ -6,7 +6,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import Image from "next/image";
 
 // ─── YouTube Video ID ───────────────────────────────────────────────────────
-const YOUTUBE_VIDEO_ID = "a1oLKhzsxtY";
+const YOUTUBE_VIDEO_ID = "WsXyH-z36wg";
 
 // ─── Floating Pixel Particle ────────────────────────────────────────────────
 function FloatingPixel({
@@ -238,7 +238,7 @@ export default function VideoShowcase() {
                     transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
                   >
                     <iframe
-                      src={`https://www.youtube.com/embed/${YOUTUBE_VIDEO_ID}?autoplay=1&rel=0&modestbranding=1&start=548`}
+                      src={`https://www.youtube.com/embed/${YOUTUBE_VIDEO_ID}?autoplay=1&rel=0&modestbranding=1`}
                       title={
                         isRTL
                           ? "فيديو BUILDx التوضيحي"

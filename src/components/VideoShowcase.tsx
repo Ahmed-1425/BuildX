@@ -124,13 +124,13 @@ export default function VideoShowcase() {
           >
             {isRTL ? (
               <>
-                ناظر{" "}
-                <span className="video-showcase__title-accent">للتوضيح</span>
+                شاهد{" "}
+                <span className="video-showcase__title-accent">التجربة</span>
               </>
             ) : (
               <>
-                Watch the{" "}
-                <span className="video-showcase__title-accent">Explainer</span>
+                Experience{" "}
+                <span className="video-showcase__title-accent">BUILDx</span>
               </>
             )}
           </h2>
@@ -141,8 +141,8 @@ export default function VideoShowcase() {
             style={{ fontFamily: "var(--font-janna)" }}
           >
             {isRTL
-              ? "اكتشف تجربة BUILDx في دقائق — من الفكرة إلى المنتج."
-              : "Discover the BUILDx experience in minutes — from idea to product."}
+              ? "تعرّف على معسكر BUILDx وأسلوبه التدريبي في فيديو توضيحي واحد."
+              : "Learn about the BUILDx camp and its training approach in one explainer video."}
           </p>
 
           {/* Accent line */}

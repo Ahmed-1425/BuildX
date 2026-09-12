@@ -81,10 +81,6 @@ export default function HomePage() {
 
             <div className="section-divider" />
 
-            <VideoShowcase />
-
-            <div className="section-divider" />
-
             <StatsSection />
 
             <div className="section-divider" />
@@ -117,6 +113,10 @@ export default function HomePage() {
             <div className="section-divider" />
 
             <CampTimeline />
+
+            <div className="section-divider" />
+
+            <VideoShowcase />
 
             <div className="section-divider" />
 

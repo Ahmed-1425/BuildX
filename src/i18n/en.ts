@@ -213,22 +213,22 @@ export const en = {
         name: "Registration & Acceptance",
         events: [
           {
-            date: "Sep 17",
-            title: "Registration Opens",
+            date: "Sep 18",
+            title: "Registration Announcement",
             desc: "Applications for the BUILDx experience officially open.",
           },
           {
-            date: "Sep 20",
+            date: "Sep 21",
             title: "Registration Closes",
             desc: "Applications close and the review process begins.",
           },
           {
-            date: "Sep 22",
+            date: "Sep 23",
             title: "Acceptance Announcement",
             desc: "Selected participants are notified.",
           },
           {
-            date: "Sep 23",
+            date: "Sep 24",
             title: "Acceptance Confirmation",
             desc: "Selected participants confirm attendance and complete onboarding.",
           },

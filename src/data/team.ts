@@ -605,6 +605,38 @@ export const partners: Partner[] = [
     typeEn: "Success Partner",
     logoSrc: "/assets/partners/t2-business.png",
   },
+  {
+    id: "jal-alwadi",
+    nameAr: "جال الوادي",
+    nameEn: "Jal Alwadi",
+    typeAr: "راعي الضيافة الذهبي",
+    typeEn: "Golden Hospitality Sponsor",
+    logoSrc: "/assets/partners/jal-alwadi.png",
+  },
+  {
+    id: "dawar-alsaada",
+    nameAr: "دوار السعادة",
+    nameEn: "Dawar Al Saada",
+    typeAr: "راعي ضيافة",
+    typeEn: "Hospitality Sponsor",
+    logoSrc: "/assets/partners/dawar-alsaada.png",
+  },
+  {
+    id: "moreine",
+    nameAr: "مورين",
+    nameEn: "Moreine",
+    typeAr: "راعي ضيافة",
+    typeEn: "Hospitality Sponsor",
+    logoSrc: "/assets/partners/moreine.png",
+  },
+  {
+    id: "meta-cafe",
+    nameAr: "ميتا كافيه",
+    nameEn: "Meta Cafe",
+    typeAr: "راعي ضيافة",
+    typeEn: "Hospitality Sponsor",
+    logoSrc: "/assets/partners/meta-cafe.png",
+  },
 ];
 
 // ---------------------------------------------------------------------------

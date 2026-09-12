@@ -5786,7 +5786,9 @@ button.reg-team-card {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-wrap: wrap;
   gap: 32px;
+  row-gap: 16px;
 }
 
 .footer-partner-logo {

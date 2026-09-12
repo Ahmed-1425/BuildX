@@ -113,7 +113,7 @@ export default function CampTimeline() {
   const { phases } = t.timeline;
 
   const phaseRanges: Record<string, string> = {
-    reg: isRTL ? "17 ── 23 سبتمبر" : "17 ── 23 Sep",
+    reg: isRTL ? "18 ── 24 سبتمبر" : "18 ── 24 Sep",
     camp: isRTL ? "27 سبتمبر ── 1 أكتوبر" : "27 Sep ── 1 Oct",
     hackathon: isRTL ? "4 ── 5 أكتوبر" : "4 ── 5 Oct",
     closing: isRTL ? "6 أكتوبر" : "6 Oct",

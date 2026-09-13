@@ -46,6 +46,19 @@ export default function Footer() {
               className="footer-tiqanah-logo"
             />
           </div>
+          <span className="footer-brand-divider" />
+          <div className="footer-partner-wrap">
+            <span className="footer-initiative-label font-arapix">
+              {isRTL ? "بالشراكة مع" : "In Partnership With"}
+            </span>
+            <Image
+              src="/assets/logos/partnership-logo.png"
+              alt={isRTL ? "أنماء وشراكة" : "Inmaa wa Sharaka"}
+              width={80}
+              height={88}
+              className="footer-partner-logo"
+            />
+          </div>
         </div>
 
         {/* ======================================================== */}

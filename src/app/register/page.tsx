@@ -51,23 +51,7 @@ export default function RegisterPage() {
           </Link>
         </div>
 
-        <div className="flex items-center gap-2.5 sm:gap-3">
-          <LanguageSwitcher />
-          <div className="w-[1px] h-6 bg-white/20" aria-hidden="true" />
-          <div
-            className="flex items-center justify-center shrink-0"
-            title={ar ? "شعار الشراكة — أنماء وشراكة" : "Partnership Logo — Inmaa wa Sharaka"}
-          >
-            <Image
-              src="/assets/logos/partnership-logo.png"
-              alt={ar ? "شعار الشراكة — أنماء وشراكة" : "Partnership Logo — Inmaa wa Sharaka"}
-              width={38}
-              height={42}
-              className="h-8 sm:h-9 w-auto object-contain"
-              priority
-            />
-          </div>
-        </div>
+        <LanguageSwitcher />
       </header>
 
       {/* Main content */}

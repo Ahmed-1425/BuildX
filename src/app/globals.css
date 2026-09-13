@@ -3480,6 +3480,26 @@ section {
   object-fit: contain;
 }
 
+.footer-partner-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.footer-partner-logo {
+  display: block;
+  width: auto;
+  height: clamp(58px, 5.5vw, 76px);
+  object-fit: contain;
+  transition: transform 200ms ease, filter 200ms ease;
+}
+
+.footer-partner-logo:hover {
+  transform: scale(1.06);
+  filter: drop-shadow(0 0 16px rgba(195, 249, 55, 0.4));
+}
+
 /* Contact title */
 .footer-contact-title {
   margin-top: 32px;
@@ -3671,6 +3691,10 @@ section {
 
   .footer-tiqanah-logo {
     width: min(44vw, 175px);
+  }
+
+  .footer-partner-logo {
+    height: min(15vw, 64px);
   }
 
   .footer-contact-title {

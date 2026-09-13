@@ -142,20 +142,6 @@ export default function MobileHeader() {
           </Link>
         )}
         <LanguageSwitcher />
-        <div className="mobile-partner-divider" aria-hidden="true" />
-        <div
-          className="mobile-partner-badge"
-          title={isRTL ? "شعار الشراكة — أنماء وشراكة" : "Partnership Logo — Inmaa wa Sharaka"}
-        >
-          <Image
-            src="/assets/logos/partnership-logo.png"
-            alt={isRTL ? "شعار الشراكة — أنماء وشراكة" : "Partnership Logo — Inmaa wa Sharaka"}
-            width={40}
-            height={44}
-            className="mobile-partner-img"
-            priority
-          />
-        </div>
       </div>
     </header>
   );

@@ -236,38 +236,6 @@ export default function Header() {
           box-shadow: 2px 2px 0 #823419;
         }
 
-        .header-partner-divider {
-          width: 1px;
-          height: 34px;
-          background: rgba(231, 237, 253, 0.18);
-          margin-inline: 2px;
-          flex-shrink: 0;
-        }
-
-        .header-partner-badge {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          flex-shrink: 0;
-          cursor: pointer;
-          transition:
-            transform 200ms cubic-bezier(0.16, 1, 0.3, 1),
-            filter 200ms ease;
-        }
-
-        .header-partner-badge:hover {
-          transform: translateY(-2px) scale(1.06);
-          filter: drop-shadow(0 0 14px rgba(195, 249, 55, 0.45));
-        }
-
-        .header-partner-img {
-          display: block;
-          width: auto;
-          height: 50px;
-          max-width: 52px;
-          object-fit: contain;
-        }
-
         /* Desktop responsiveness (1024px to 1200px) */
         @media (min-width: 1024px) and (max-width: 1200px) {
           .header-inner {
@@ -298,10 +266,6 @@ export default function Header() {
             height: 44px;
             padding-inline: 16px;
             font-size: 14px;
-          }
-
-          .header-partner-img {
-            height: 42px;
           }
         }
 
@@ -422,20 +386,6 @@ export default function Header() {
             <Link href="/register" className="header-register-button">
               {t.nav.register}
             </Link>
-            <div className="header-partner-divider" aria-hidden="true" />
-            <div
-              className="header-partner-badge"
-              title={locale === "ar" ? "شعار الشراكة — أنماء وشراكة" : "Partnership Logo — Inmaa wa Sharaka"}
-            >
-              <Image
-                src="/assets/logos/partnership-logo.png"
-                alt={locale === "ar" ? "شعار الشراكة — أنماء وشراكة" : "Partnership Logo — Inmaa wa Sharaka"}
-                width={50}
-                height={55}
-                className="header-partner-img"
-                priority
-              />
-            </div>
           </div>
         </div>
       </header>

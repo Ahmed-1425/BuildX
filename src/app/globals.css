@@ -3484,13 +3484,13 @@ section {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
 }
 
 .footer-partner-logo {
   display: block;
   width: auto;
-  height: clamp(58px, 5.5vw, 76px);
+  height: clamp(74px, 7vw, 95px);
   object-fit: contain;
   transition: transform 200ms ease, filter 200ms ease;
 }
@@ -3694,7 +3694,7 @@ section {
   }
 
   .footer-partner-logo {
-    height: min(15vw, 64px);
+    height: min(18vw, 75px);
   }
 
   .footer-contact-title {

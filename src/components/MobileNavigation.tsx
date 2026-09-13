@@ -46,14 +46,14 @@ export default function MobileHeader() {
             window.scrollTo({ top: 0, behavior: "smooth" });
           }
         }}
-        className="flex items-center"
+        className="flex items-center shrink-0"
       >
         <Image
           src="/assets/logos/logo-white-glow.png"
           alt="BUILDx"
-          width={130}
-          height={38}
-          className="object-contain"
+          width={125}
+          height={36}
+          className="object-contain w-24 min-[370px]:w-28 sm:w-32 h-auto"
           priority
         />
       </Link>
@@ -142,6 +142,20 @@ export default function MobileHeader() {
           </Link>
         )}
         <LanguageSwitcher />
+        <div className="mobile-partner-divider" aria-hidden="true" />
+        <div
+          className="mobile-partner-badge"
+          title={isRTL ? "شعار الشراكة — أنماء وشراكة" : "Partnership Logo — Inmaa wa Sharaka"}
+        >
+          <Image
+            src="/assets/logos/partnership-logo.png"
+            alt={isRTL ? "شعار الشراكة — أنماء وشراكة" : "Partnership Logo — Inmaa wa Sharaka"}
+            width={40}
+            height={44}
+            className="mobile-partner-img"
+            priority
+          />
+        </div>
       </div>
     </header>
   );

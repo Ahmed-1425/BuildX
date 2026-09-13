@@ -91,9 +91,9 @@ export default function Header() {
           min-height: 88px;
           margin-inline: auto;
           display: grid;
-          grid-template-columns: minmax(190px, 1fr) auto minmax(290px, 1fr);
+          grid-template-columns: minmax(170px, auto) 1fr auto;
           align-items: center;
-          column-gap: clamp(32px, 4vw, 72px);
+          column-gap: clamp(24px, 3vw, 56px);
         }
 
         .header-brand {
@@ -114,7 +114,7 @@ export default function Header() {
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: clamp(24px, 2.2vw, 42px);
+          gap: clamp(20px, 2vw, 40px);
           white-space: nowrap;
         }
 
@@ -125,7 +125,7 @@ export default function Header() {
           min-height: 44px;
           padding: 8px 0;
           color: #e7edfd;
-          font-size: clamp(15px, 1.05vw, 18px);
+          font-size: clamp(14px, 1.02vw, 18px);
           font-weight: 700;
           line-height: 1;
           text-decoration: none;
@@ -168,7 +168,7 @@ export default function Header() {
           display: flex;
           align-items: center;
           justify-content: flex-end;
-          gap: 20px;
+          gap: clamp(12px, 1.4vw, 20px);
           white-space: nowrap;
         }
 
@@ -236,16 +236,48 @@ export default function Header() {
           box-shadow: 2px 2px 0 #823419;
         }
 
+        .header-partner-divider {
+          width: 1px;
+          height: 34px;
+          background: rgba(231, 237, 253, 0.18);
+          margin-inline: 2px;
+          flex-shrink: 0;
+        }
+
+        .header-partner-badge {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+          cursor: pointer;
+          transition:
+            transform 200ms cubic-bezier(0.16, 1, 0.3, 1),
+            filter 200ms ease;
+        }
+
+        .header-partner-badge:hover {
+          transform: translateY(-2px) scale(1.06);
+          filter: drop-shadow(0 0 14px rgba(195, 249, 55, 0.45));
+        }
+
+        .header-partner-img {
+          display: block;
+          width: auto;
+          height: 50px;
+          max-width: 52px;
+          object-fit: contain;
+        }
+
         /* Desktop responsiveness (1024px to 1200px) */
         @media (min-width: 1024px) and (max-width: 1200px) {
           .header-inner {
-            width: min(100% - 36px, 1160px);
-            grid-template-columns: 150px minmax(0, 1fr) 260px;
-            gap: 20px;
+            width: min(100% - 32px, 1160px);
+            grid-template-columns: auto 1fr auto;
+            gap: 16px;
           }
 
           .desktop-navigation {
-            gap: 18px;
+            gap: 14px;
           }
 
           .nav-link {
@@ -253,19 +285,23 @@ export default function Header() {
           }
 
           .header-logo {
-            width: 150px;
+            width: 140px;
           }
 
           .language-switch {
-            width: 96px;
+            width: 92px;
             height: 42px;
           }
 
           .header-register-button {
-            min-width: 120px;
-            height: 46px;
-            padding-inline: 18px;
-            font-size: 15px;
+            min-width: 110px;
+            height: 44px;
+            padding-inline: 16px;
+            font-size: 14px;
+          }
+
+          .header-partner-img {
+            height: 42px;
           }
         }
 
@@ -386,6 +422,20 @@ export default function Header() {
             <Link href="/register" className="header-register-button">
               {t.nav.register}
             </Link>
+            <div className="header-partner-divider" aria-hidden="true" />
+            <div
+              className="header-partner-badge"
+              title={locale === "ar" ? "شعار الشراكة — أنماء وشراكة" : "Partnership Logo — Inmaa wa Sharaka"}
+            >
+              <Image
+                src="/assets/logos/partnership-logo.png"
+                alt={locale === "ar" ? "شعار الشراكة — أنماء وشراكة" : "Partnership Logo — Inmaa wa Sharaka"}
+                width={50}
+                height={55}
+                className="header-partner-img"
+                priority
+              />
+            </div>
           </div>
         </div>
       </header>

@@ -6476,6 +6476,44 @@ button.reg-team-card {
   border-color: rgba(195, 249, 55, 0.4);
 }
 
+/* Mobile Header Partner Logo & Divider */
+.mobile-partner-divider {
+  width: 1px;
+  height: 28px;
+  background: rgba(231, 237, 253, 0.18);
+  margin-inline: 4px;
+  flex-shrink: 0;
+}
+
+.mobile-partner-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.mobile-partner-img {
+  width: auto;
+  height: 38px;
+  max-width: 44px;
+  object-fit: contain;
+  transition: transform 180ms ease, filter 180ms ease;
+}
+
+.mobile-partner-badge:active .mobile-partner-img {
+  transform: scale(0.95);
+}
+
+@media (max-width: 380px) {
+  .mobile-partner-divider {
+    height: 22px;
+    margin-inline: 2px;
+  }
+  .mobile-partner-img {
+    height: 32px;
+  }
+}
+
 /* Desktop Header Back Button */
 .header-team-back-button {
   display: inline-flex;

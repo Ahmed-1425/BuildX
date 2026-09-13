@@ -51,7 +51,23 @@ export default function RegisterPage() {
           </Link>
         </div>
 
-        <LanguageSwitcher />
+        <div className="flex items-center gap-2.5 sm:gap-3">
+          <LanguageSwitcher />
+          <div className="w-[1px] h-6 bg-white/20" aria-hidden="true" />
+          <div
+            className="flex items-center justify-center shrink-0"
+            title={ar ? "شعار الشراكة — أنماء وشراكة" : "Partnership Logo — Inmaa wa Sharaka"}
+          >
+            <Image
+              src="/assets/logos/partnership-logo.png"
+              alt={ar ? "شعار الشراكة — أنماء وشراكة" : "Partnership Logo — Inmaa wa Sharaka"}
+              width={38}
+              height={42}
+              className="h-8 sm:h-9 w-auto object-contain"
+              priority
+            />
+          </div>
+        </div>
       </header>
 
       {/* Main content */}
@@ -87,7 +103,17 @@ export default function RegisterPage() {
             </div>
           </div>
         ) : (
-          <RegistrationForm />
+          <>
+            <div className="mb-6 mx-auto max-w-xl flex items-center justify-center gap-2.5 px-4 py-2.5 rounded-2xl bg-lime/10 border border-lime/30 text-lime text-xs sm:text-sm font-bold text-center shadow-[0_0_15px_rgba(195,249,55,0.08)]">
+              <span className="w-2 h-2 rounded-full bg-lime animate-ping shrink-0" />
+              <span>
+                {ar
+                  ? "تنويه: يُغلق باب التسجيل يوم 21 سبتمبر في تمام الساعة 6:00 مساءً"
+                  : "Notice: Registration closes on September 21 at 6:00 PM"}
+              </span>
+            </div>
+            <RegistrationForm />
+          </>
         )}
         <RegistrationSupport />
       </main>

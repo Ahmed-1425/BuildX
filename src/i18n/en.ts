@@ -218,9 +218,9 @@ export const en = {
             desc: "Applications for the BUILDx experience officially open.",
           },
           {
-            date: "Sep 21",
+            date: "Sep 21 — 6:00 PM",
             title: "Registration Closes",
-            desc: "Applications close and the review process begins.",
+            desc: "Registration closes at 6:00 PM and the application review process begins.",
           },
           {
             date: "Sep 23",

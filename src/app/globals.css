@@ -3450,7 +3450,7 @@ section {
 
 .footer-brand-divider {
   width: 1px;
-  height: 72px;
+  height: 84px;
   background: linear-gradient(
     180deg,
     transparent,
@@ -3460,19 +3460,6 @@ section {
   flex-shrink: 0;
 }
 
-.footer-tiqanah-wrap {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-
-.footer-initiative-label {
-  font-size: 10px;
-  color: rgba(231, 237, 253, 0.4);
-  letter-spacing: 0.06em;
-}
-
 .footer-tiqanah-logo {
   display: block;
   width: clamp(150px, 14vw, 205px);
@@ -3480,24 +3467,17 @@ section {
   object-fit: contain;
 }
 
-.footer-partner-wrap {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-}
-
 .footer-partner-logo {
   display: block;
   width: auto;
-  height: clamp(74px, 7vw, 95px);
+  height: clamp(95px, 9vw, 130px);
   object-fit: contain;
   transition: transform 200ms ease, filter 200ms ease;
 }
 
 .footer-partner-logo:hover {
   transform: scale(1.06);
-  filter: drop-shadow(0 0 16px rgba(195, 249, 55, 0.4));
+  filter: drop-shadow(0 0 18px rgba(195, 249, 55, 0.45));
 }
 
 /* Contact title */
@@ -3694,7 +3674,7 @@ section {
   }
 
   .footer-partner-logo {
-    height: min(18vw, 75px);
+    height: min(22vw, 95px);
   }
 
   .footer-contact-title {

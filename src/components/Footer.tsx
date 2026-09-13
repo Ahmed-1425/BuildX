@@ -22,7 +22,7 @@ export default function Footer() {
         {/* ======================================================== */}
         {/* 1. Brand Logos Row: BUILDx | Tiqanah                     */}
         {/* ======================================================== */}
-        <div className="footer-brands">
+          <div className="footer-brands">
           <Image
             src="/assets/logos/logo-white-slogan.png"
             alt="BUILDx"
@@ -32,33 +32,21 @@ export default function Footer() {
             priority={false}
           />
           <span className="footer-brand-divider" />
-          <div className="footer-tiqanah-wrap">
-            <span
-              className="footer-initiative-label font-arapix"
-            >
-              {t.footer.initiativeBy}
-            </span>
-            <Image
-              src="/assets/logos/tiqanah.png"
-              alt="تقانة - Tiqanah"
-              width={210}
-              height={70}
-              className="footer-tiqanah-logo"
-            />
-          </div>
+          <Image
+            src="/assets/logos/tiqanah.png"
+            alt="تقانة - Tiqanah"
+            width={210}
+            height={70}
+            className="footer-tiqanah-logo"
+          />
           <span className="footer-brand-divider" />
-          <div className="footer-partner-wrap">
-            <span className="footer-initiative-label font-arapix">
-              {isRTL ? "بالشراكة مع" : "In Partnership With"}
-            </span>
-            <Image
-              src="/assets/logos/partnership-logo.png"
-              alt={isRTL ? "أنماء وشراكة" : "Inmaa wa Sharaka"}
-              width={80}
-              height={88}
-              className="footer-partner-logo"
-            />
-          </div>
+          <Image
+            src="/assets/logos/partnership-logo.png"
+            alt={isRTL ? "شعار الشراكة — أنماء وشراكة" : "Partnership Logo"}
+            width={140}
+            height={154}
+            className="footer-partner-logo"
+          />
         </div>
 
         {/* ======================================================== */}

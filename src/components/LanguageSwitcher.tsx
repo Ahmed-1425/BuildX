@@ -3,8 +3,9 @@
 import { useLanguage } from "@/context/LanguageContext";
 import { motion } from "framer-motion";
 
-export default function LanguageSwitcher() {
+export default function LanguageSwitcher({ variant = "default" }: { variant?: "default" | "subtle" }) {
   const { locale, setLocale, dir } = useLanguage();
+  const isSubtle = variant === "subtle";
 
   return (
     <div
@@ -15,12 +16,15 @@ export default function LanguageSwitcher() {
         position: "relative",
         display: "inline-grid",
         gridTemplateColumns: "1fr 1fr",
-        width: "112px",
-        height: "46px",
-        padding: "4px",
+        width: isSubtle ? "100px" : "106px",
+        height: isSubtle ? "38px" : "42px",
+        padding: "3px",
         backgroundColor: "#0c1018",
-        border: "2px solid #823419",
-        boxShadow: "4px 4px 0 #34155f",
+        border: isSubtle
+          ? "1px solid rgba(231, 237, 253, 0.14)"
+          : "1px solid rgba(231, 237, 253, 0.18)",
+        borderRadius: "12px",
+        boxShadow: isSubtle ? "none" : "0 2px 10px rgba(0, 0, 0, 0.3)",
         overflow: "hidden",
         direction: "ltr", // keep LTR for consistent internal pill sliding
       }}

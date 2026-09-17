@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "postbuild": "mkdir -p .next/_next && cp -r .next/static .next/_next/ && cp -r public/* .next/",
     "start": "next start",
     "lint": "eslint"
   },

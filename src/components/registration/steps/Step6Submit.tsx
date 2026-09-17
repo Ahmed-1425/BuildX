@@ -18,9 +18,10 @@ interface Props {
   isSubmitting: boolean;
   onSubmit: () => void;
   submitError?: string;
+  isRegistrationClosed?: boolean;
 }
 
-export default function Step6Submit({ declarations, onChange, errors, isSubmitting, onSubmit, submitError }: Props) {
+export default function Step6Submit({ declarations, onChange, errors, isSubmitting, onSubmit, submitError, isRegistrationClosed }: Props) {
   const { locale } = useLanguage();
   const ar = locale === "ar";
 
@@ -130,8 +131,14 @@ export default function Step6Submit({ declarations, onChange, errors, isSubmitti
         <button
           type="button"
           onClick={onSubmit}
-          disabled={isSubmitting}
-          className={`reg-submit-btn ${allChecked && !isSubmitting ? "reg-submit-btn--ready" : ""} ${isSubmitting ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
+          disabled={isSubmitting || isRegistrationClosed}
+          className={`reg-submit-btn ${
+            isRegistrationClosed
+              ? "!bg-rose-500/20 !border-rose-500/40 !text-rose-300 cursor-not-allowed"
+              : allChecked && !isSubmitting
+              ? "reg-submit-btn--ready"
+              : ""
+          } ${isSubmitting || isRegistrationClosed ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
           aria-busy={isSubmitting}
         >
           {isSubmitting ? (
@@ -139,13 +146,21 @@ export default function Step6Submit({ declarations, onChange, errors, isSubmitti
               <span className="w-4 h-4 border-2 border-[#0c1018] border-t-transparent rounded-full animate-spin" />
               <span>{ar ? "جارٍ إرسال الطلب..." : "Submitting your application..."}</span>
             </span>
+          ) : isRegistrationClosed ? (
+            <span>{ar ? "التسجيل مغلق" : "Registration Closed"}</span>
           ) : (
             <span>{ar ? "تسليم الطلب" : "Submit Application"}</span>
           )}
         </button>
-        {!allChecked && !isSubmitting && (
+        {isRegistrationClosed ? (
+          <p className="reg-submit-hint text-rose-300/80">
+            {ar
+              ? "تم إغلاق التسجيل أثناء تعبئة الطلب، ولذلك لم يعد بالإمكان إرسال طلب جديد."
+              : "Registration was closed; new submissions are no longer accepted."}
+          </p>
+        ) : !allChecked && !isSubmitting ? (
           <p className="reg-submit-hint">{ar ? "يرجى الموافقة على جميع الإقرارات أعلاه لتفعيل تسليم الطلب." : "Please confirm all declarations above to enable application submission."}</p>
-        )}
+        ) : null}
       </div>
 
       {/* Honeypot — hidden from users */}

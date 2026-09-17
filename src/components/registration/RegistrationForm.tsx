@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import { useLanguage } from "@/context/LanguageContext";
+import { useRegistrationStatus } from "@/context/RegistrationStatusContext";
 import { isValidSaudiPhone, normalizePhone } from "@/lib/validation/applicationSchema";
 import type {
   FormState,
@@ -175,6 +176,7 @@ const emptyAdvanced: AdvancedAnswers = {
 export default function RegistrationForm() {
   const { locale } = useLanguage();
   const ar = locale === "ar";
+  const { isOpen } = useRegistrationStatus();
 
   const [state, setState] = useState<FormState>(makeInitialState);
   const [mounted, setMounted] = useState(false);
@@ -446,6 +448,16 @@ export default function RegistrationForm() {
 
   // ── Final Submit Handler with Double-Submit Lock & Retries ─
   async function handleSubmit() {
+    // 0. Strict check if registration is closed
+    if (isOpen === false) {
+      setSubmitError(
+        ar
+          ? "تم إغلاق التسجيل أثناء تعبئة الطلب، ولذلك لم يعد بالإمكان إرسال طلب جديد."
+          : "Registration was closed while filling out the application, so new submissions are no longer possible."
+      );
+      return;
+    }
+
     // 1. Synchronous double-submit lock check
     if (submittingRef.current || isSubmitting) {
       return;
@@ -779,6 +791,31 @@ export default function RegistrationForm() {
         </div>
       )}
 
+      {/* ── Registration Closed Notice Banner ── */}
+      {isOpen === false && (
+        <div
+          className="mb-6 p-4 sm:p-5 rounded-2xl bg-rose-950/80 border border-rose-500/40 text-rose-200 flex items-start gap-3.5 shadow-xl backdrop-blur-md"
+          role="alert"
+        >
+          <AlertTriangle className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
+          <div className="flex-1 space-y-1">
+            <h4 className="text-sm font-bold text-rose-300">
+              {ar ? "تم إغلاق التسجيل" : "Registration Closed"}
+            </h4>
+            <p className="text-xs sm:text-sm text-rose-200/90 leading-relaxed">
+              {ar
+                ? "تم إغلاق التسجيل أثناء تعبئة الطلب، ولذلك لم يعد بالإمكان إرسال طلب جديد."
+                : "Registration was closed while filling out the application, so new submissions are no longer possible."}
+            </p>
+            <p className="text-[11px] text-slate-400">
+              {ar
+                ? "بياناتك الحالية محفوظة في هذا المتصفح كمسودة."
+                : "Your drafted responses remain saved on this browser."}
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* ── Active Step Content ── */}
       <div className="reg-step-content" ref={stepCardRef}>
         {currentStep === 1 && (
@@ -832,6 +869,7 @@ export default function RegistrationForm() {
             isSubmitting={isSubmitting}
             onSubmit={handleSubmit}
             submitError={submitError}
+            isRegistrationClosed={isOpen === false}
           />
         )}
       </div>

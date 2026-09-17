@@ -1,30 +1,59 @@
 import { NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase/server";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     const supabase = createServerClient();
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("camp_settings")
-      .select("value")
+      .select("value, updated_at")
       .eq("key", "registration_open")
       .single();
 
-    const isOpen = data ? Boolean(data.value) : true;
+    if (error && error.code !== "PGRST116") {
+      console.error("[camp/status] Database error:", error);
+      return NextResponse.json(
+        {
+          success: false,
+          error: "تعذر التحقق من حالة التسجيل حاليًا.",
+        },
+        {
+          status: 500,
+          headers: {
+            "Cache-Control": "no-store, no-cache, must-revalidate",
+          },
+        }
+      );
+    }
+
+    // Default to true if row doesn't exist yet, otherwise parse boolean
+    const isOpen = data !== null ? Boolean(data.value) : true;
+
     return NextResponse.json(
-      { registration_open: isOpen },
+      {
+        success: true,
+        registration_open: isOpen,
+        updated_at: data?.updated_at || null,
+      },
       {
         headers: {
-          "Cache-Control": "public, s-maxage=30, stale-while-revalidate=60",
+          "Cache-Control": "no-store, no-cache, must-revalidate",
         },
       }
     );
-  } catch {
+  } catch (err) {
+    console.error("[camp/status] Unexpected error:", err);
     return NextResponse.json(
-      { registration_open: true },
       {
+        success: false,
+        error: "حدث خطأ غير متوقع أثناء فحص حالة التسجيل.",
+      },
+      {
+        status: 500,
         headers: {
-          "Cache-Control": "public, s-maxage=10, stale-while-revalidate=30",
+          "Cache-Control": "no-store, no-cache, must-revalidate",
         },
       }
     );

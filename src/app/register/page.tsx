@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { useLanguage } from "@/context/LanguageContext";
+import { useRegistrationStatus } from "@/context/RegistrationStatusContext";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import RegistrationForm from "@/components/registration/RegistrationForm";
 import RegistrationSupport from "@/components/registration/RegistrationSupport";
@@ -12,20 +12,7 @@ import Link from "next/link";
 export default function RegisterPage() {
   const { locale } = useLanguage();
   const ar = locale === "ar";
-  const [isOpen, setIsOpen] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    async function checkStatus() {
-      try {
-        const res = await fetch("/api/camp/status");
-        const data = await res.json();
-        setIsOpen(data.registration_open);
-      } catch {
-        setIsOpen(true);
-      }
-    }
-    checkStatus();
-  }, []);
+  const { isOpen, isLoading, isError, refetch } = useRegistrationStatus();
 
   return (
     <div className="reg-page">
@@ -56,31 +43,63 @@ export default function RegisterPage() {
 
       {/* Main content */}
       <main className="reg-page-main" id="main-content">
-        {isOpen === false ? (
-          <div className="p-8 sm:p-12 text-center bg-[#121622]/90 border border-primary/30 rounded-3xl shadow-2xl backdrop-blur-xl max-w-xl mx-auto space-y-5">
-            <Image
-              src="/assets/characters/char-thinking.png"
-              alt="Closed"
-              width={100}
-              height={100}
-              className="mx-auto"
-            />
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-red-500/10 border border-red-500/30 text-red-400">
-              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-              <span>{ar ? "التسجيل مغلق حاليًا" : "Registration Closed"}</span>
+        {isLoading ? (
+          <div className="p-8 sm:p-12 text-center bg-[#121622]/90 border border-white/10 rounded-3xl shadow-2xl backdrop-blur-xl max-w-md mx-auto space-y-4 animate-pulse">
+            <div className="w-12 h-12 rounded-full border-2 border-primary/30 border-t-primary animate-spin mx-auto" />
+            <p className="text-sm text-slate-300 font-medium">
+              {ar ? "جارٍ التحقق من حالة التسجيل…" : "Checking registration status…"}
+            </p>
+          </div>
+        ) : isError ? (
+          <div className="p-8 sm:p-12 text-center bg-[#121622]/90 border border-red-500/30 rounded-3xl shadow-2xl backdrop-blur-xl max-w-md mx-auto space-y-5">
+            <div className="w-12 h-12 rounded-full bg-red-500/10 border border-red-500/30 text-red-400 flex items-center justify-center mx-auto text-xl">
+              ⚠️
             </div>
-            <h2 className="text-xl sm:text-2xl font-bold text-white font-bauhaus">
-              {ar ? "تم إغلاق باب التسجيل في معسكر BUILDx" : "Registration is Now Closed"}
+            <h2 className="text-lg font-bold text-white">
+              {ar ? "تعذر التحقق من حالة التسجيل" : "Failed to verify registration status"}
             </h2>
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-md mx-auto">
+            <p className="text-xs sm:text-sm text-slate-300">
               {ar
-                ? "شكرًا لاهتمامكم وشغفكم بالانضمام. لقد اكتملت المقاعد المتاحة لهذه النسخة من المعسكر. تابعونا لمعرفة الفعاليات والمعسكرات القادمة!"
-                : "Thank you for your interest and passion. Applications for this cohort are now closed. Stay tuned for upcoming cohorts and events!"}
+                ? "تعذر التحقق من حالة التسجيل حاليًا. حاول مرة أخرى بعد قليل."
+                : "Unable to verify registration status at this moment. Please try again shortly."}
+            </p>
+            <div className="pt-2">
+              <button
+                type="button"
+                onClick={() => refetch()}
+                className="inline-flex items-center justify-center px-6 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-all border border-white/10"
+              >
+                {ar ? "إعادة المحاولة" : "Retry"}
+              </button>
+            </div>
+          </div>
+        ) : isOpen === false ? (
+          <div className="p-8 sm:p-12 text-center bg-[#121622]/95 border border-red-500/20 rounded-3xl shadow-2xl backdrop-blur-xl max-w-xl mx-auto space-y-6">
+            <div className="relative w-36 h-36 mx-auto">
+              <Image
+                src="/assets/characters/thinking-closed.png"
+                alt={ar ? "التسجيل مغلق" : "Registration Closed"}
+                fill
+                className="object-contain drop-shadow-[0_10px_25px_rgba(244,63,94,0.15)]"
+                priority
+              />
+            </div>
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold bg-rose-500/10 border border-rose-500/25 text-rose-400">
+              <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+              <span>{ar ? "التسجيل مغلق" : "Registration Closed"}</span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-white font-bauhaus">
+              {ar ? "تم إغلاق التسجيل" : "Registration is Closed"}
+            </h2>
+            <p className="text-sm sm:text-base text-slate-300 leading-relaxed max-w-md mx-auto">
+              {ar
+                ? "نعتذر، تم إغلاق التسجيل في معسكر BUILDx ولم يعد استقبال الطلبات متاحًا حاليًا."
+                : "We apologize, registration for BUILDx camp is now closed and applications are no longer being accepted."}
             </p>
             <div className="pt-2">
               <Link
                 href="/"
-                className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-lime text-dark-base font-bold text-xs hover:bg-lime/90 transition-all shadow-lg shadow-lime/20"
+                className="inline-flex items-center justify-center px-7 py-3.5 rounded-xl bg-lime text-dark-base font-bold text-sm hover:bg-lime/90 transition-all shadow-lg shadow-lime/20"
               >
                 {ar ? "← العودة إلى الصفحة الرئيسية" : "← Back to Homepage"}
               </Link>

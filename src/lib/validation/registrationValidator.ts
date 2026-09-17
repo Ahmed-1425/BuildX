@@ -640,8 +640,8 @@ export function translateSubmissionError(
   // 5. Camp closed
   if (status === 403 || data?.code === "REGISTRATION_CLOSED") {
     return ar
-      ? "تم إغلاق باب التسجيل في معسكر BUILDx حالياً. شكراً لاهتمامك وشغفك."
-      : "Registration for BUILDx is currently closed. Thank you for your interest.";
+      ? "نعتذر، تم إغلاق التسجيل ولم يعد استقبال الطلبات متاحًا."
+      : "Sorry, registration for the BUILDx Camp is now closed.";
   }
 
   // 6. Generic validation or server error

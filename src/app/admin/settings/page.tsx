@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import RegistrationToggleBadge from "@/components/admin/RegistrationToggleBadge";
+import RegistrationStatusControlCard from "@/components/admin/RegistrationStatusControlCard";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { Settings, Users, Terminal, Copy, Check, ShieldCheck, UserCheck } from "lucide-react";
 
@@ -104,25 +104,21 @@ set
         isRefreshing={loading}
       />
 
-      {/* Registration Status Toggle Card */}
-      <div className="p-6 sm:p-8 bg-[rgba(24,29,40,0.85)] border border-white/10 rounded-3xl space-y-4 backdrop-blur-md shadow-xl">
-        <div className="flex flex-wrap items-center justify-between gap-6">
-          <div className="space-y-1.5 max-w-xl">
-            <h3 className="text-lg font-bold text-white">
-              حالة باب التسجيل العام في المعسكر
-            </h3>
-            <p className="text-sm text-slate-300 leading-relaxed">
-              يمكنك إغلاق باب التسجيل في أي لحظة. عند الإغلاق، سيتم إيقاف استقبال الطلبات في الخادم، وستعرض صفحة
-              التسجيل إشعاراً بأن باب التسجيل مغلق حالياً، دون التأثير على إمكانية استعراض وتعديل الطلبات السابقة في لوحة الإدارة.
-            </p>
-          </div>
-          <RegistrationToggleBadge
-            isOpen={data.registration_open}
-            canEdit={data.current_user?.role !== "reviewer"}
-            onToggle={(nextState) => setData((prev: any) => ({ ...prev, registration_open: nextState }))}
-          />
-        </div>
-      </div>
+      {/* Registration Status Control Card */}
+      <RegistrationStatusControlCard
+        initialOpen={data.registration_open}
+        updatedAt={data.registration_updated_at}
+        updatedByName={data.registration_updated_by_name}
+        canEdit={data.current_user?.role !== "reviewer"}
+        onStatusChange={(nextState, newTime, newName) => {
+          setData((prev: any) => ({
+            ...prev,
+            registration_open: nextState,
+            registration_updated_at: newTime,
+            registration_updated_by_name: newName,
+          }));
+        }}
+      />
 
       {/* Admin Users Table (Super Admin only) */}
       {isSuperAdmin && (

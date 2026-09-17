@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useLanguage } from "@/context/LanguageContext";
+import { useRegistrationStatus } from "@/context/RegistrationStatusContext";
 import LanguageSwitcher from "./LanguageSwitcher";
 import Image from "next/image";
 import Link from "next/link";
@@ -17,6 +18,7 @@ const NAV_SECTIONS = [
 
 export default function Header() {
   const { t, locale } = useLanguage();
+  const { isOpen, openClosedModal } = useRegistrationStatus();
   const pathname = usePathname();
   const router = useRouter();
   const isTeamPage = pathname === "/team";
@@ -383,9 +385,20 @@ export default function Header() {
               </button>
             )}
             <LanguageSwitcher />
-            <Link href="/register" className="header-register-button">
-              {t.nav.register}
-            </Link>
+            {isOpen === false ? (
+              <button
+                type="button"
+                onClick={openClosedModal}
+                className="header-register-button border-rose-500/40 text-rose-300 hover:bg-rose-500/10 cursor-pointer"
+                title={locale === "ar" ? "التسجيل مغلق حاليًا" : "Registration is currently closed"}
+              >
+                {locale === "ar" ? "التسجيل مغلق" : "Registration Closed"}
+              </button>
+            ) : (
+              <Link href="/register" className="header-register-button">
+                {t.nav.register}
+              </Link>
+            )}
           </div>
         </div>
       </header>

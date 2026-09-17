@@ -50,25 +50,47 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // Check if registration is open in camp_settings
+  // Strict server-side verification: check if registration is open in camp_settings
   try {
-    const { data: setting } = await supabase
+    const { data: setting, error: settingErr } = await supabase
       .from("camp_settings")
       .select("value")
       .eq("key", "registration_open")
       .single();
 
+    if (settingErr && settingErr.code !== "PGRST116") {
+      console.error("[applications] Failed to verify registration status:", settingErr);
+      return NextResponse.json(
+        {
+          success: false,
+          error: "تعذر التحقق من حالة التسجيل حاليًا. حاول مرة أخرى بعد قليل.",
+          code: "SERVER_ERROR",
+        },
+        { status: 500 }
+      );
+    }
+
     if (setting && setting.value === false) {
       return NextResponse.json(
         {
           success: false,
-          error: "تم إغلاق باب التسجيل في معسكر BUILDx حالياً. شكراً لاهتمامك وشغفك.",
+          error: "نعتذر، تم إغلاق التسجيل ولم يعد استقبال الطلبات متاحًا.",
           code: "REGISTRATION_CLOSED",
         },
         { status: 403 }
       );
     }
-  } catch {}
+  } catch (checkErr) {
+    console.error("[applications] Unexpected error checking registration status:", checkErr);
+    return NextResponse.json(
+      {
+        success: false,
+        error: "تعذر التحقق من حالة التسجيل حاليًا. حاول مرة أخرى بعد قليل.",
+        code: "SERVER_ERROR",
+      },
+      { status: 500 }
+    );
+  }
 
   if (typeof body === "object" && body !== null && "honeypot" in body) {
     const hp = (body as Record<string, unknown>).honeypot;

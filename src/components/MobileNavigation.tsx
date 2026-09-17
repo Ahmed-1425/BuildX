@@ -6,6 +6,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import Image from "next/image";
 import Link from "next/link";
 import LanguageSwitcher from "./LanguageSwitcher";
+import { useRegistrationStatus } from "@/context/RegistrationStatusContext";
 
 export default function MobileHeader() {
   const { locale } = useLanguage();
@@ -165,6 +166,7 @@ function getNavigationCharacter(progress: number): "ready" | "thinking" | "build
 
 export function MobileBottomNavigation() {
   const { t, locale } = useLanguage();
+  const { isOpen, openClosedModal } = useRegistrationStatus();
   const pathname = usePathname();
   const router = useRouter();
   const [navMode, setNavMode] = useState<"expanded" | "compact">("expanded");
@@ -307,6 +309,12 @@ export function MobileBottomNavigation() {
     setNavMode("expanded");
     keepExpandedUntil.current = Date.now() + 1000;
 
+    if (key === "register" && isOpen === false) {
+      e.preventDefault();
+      openClosedModal();
+      return;
+    }
+
     if (pathname === "/") {
       if (key === "home") {
         e.preventDefault();
@@ -407,7 +415,7 @@ export function MobileBottomNavigation() {
     },
     {
       key: "register",
-      label: t.nav.register,
+      label: isOpen === false ? (locale === "ar" ? "التسجيل مغلق" : "Closed") : t.nav.register,
       href: "/register",
       icon: (
         <svg

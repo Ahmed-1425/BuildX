@@ -57,6 +57,7 @@ export const metadata: Metadata = {
 };
 
 import GamingCursor from "@/components/GamingCursor";
+import { RegistrationStatusProvider } from "@/context/RegistrationStatusContext";
 
 export default function RootLayout({
   children,
@@ -96,7 +97,9 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen bg-dark text-light antialiased">
         <GamingCursor />
-        <LanguageProvider>{children}</LanguageProvider>
+        <LanguageProvider>
+          <RegistrationStatusProvider>{children}</RegistrationStatusProvider>
+        </LanguageProvider>
       </body>
     </html>
   );

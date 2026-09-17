@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, useSpring, useMotionValue, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
+import { useRegistrationStatus } from "@/context/RegistrationStatusContext";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -16,6 +17,7 @@ const CHARACTER_STATES = [
 
 export default function HeroSection() {
   const { t, locale } = useLanguage();
+  const { isOpen, openClosedModal } = useRegistrationStatus();
   const isRTL = locale === "ar";
 
   // Mouse Parallax tracking (reduced from 6 springs to 2 for performance)
@@ -300,6 +302,27 @@ export default function HeroSection() {
               {t.hero.description}
             </motion.p>
 
+            {/* Notice when registration is closed */}
+            {isOpen === false && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs sm:text-sm font-semibold mb-4 w-fit mx-auto lg:mx-0 shadow-lg shadow-rose-950/20"
+              >
+                <span className="w-2.5 h-2.5 rounded-full bg-rose-500 shrink-0 animate-pulse" />
+                <div>
+                  <strong className="text-white block sm:inline ml-1 font-bold">
+                    {locale === "ar" ? "تم إغلاق التسجيل:" : "Registration Closed:"}
+                  </strong>
+                  <span>
+                    {locale === "ar"
+                      ? "نعتذر، تم إغلاق التسجيل في معسكر BUILDx."
+                      : "Sorry, registration for the BUILDx Camp is now closed."}
+                  </span>
+                </div>
+              </motion.div>
+            )}
+
             {/* 4. Gaming CTA Group with Guaranteed Clean Separation */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -308,33 +331,50 @@ export default function HeroSection() {
               className="grid grid-cols-1 min-[440px]:grid-cols-2 lg:flex lg:flex-row items-center gap-4 sm:gap-6 w-full max-w-[460px] lg:max-w-none mb-10 sm:mb-14 lg:mb-16 lg:ps-12 xl:ps-16 mx-auto lg:mx-0"
               style={{ marginTop: "16px" }}
             >
-              {/* Primary Action: START / PLAY */}
-              <Link
-                href="/register"
-                className="group relative flex items-center justify-center gap-4 px-6 sm:px-7 w-full lg:w-64 min-h-[54px] sm:h-14 bg-gradient-to-r from-lime via-lime to-[#aef01e] text-dark text-base sm:text-lg font-bold border-2 border-lime shadow-[5px_5px_0px_0px_#34155f] hover:shadow-[0_0_25px_rgba(195,249,55,0.7),8px_8px_0px_0px_#34155f] hover:-translate-x-1 hover:-translate-y-1 active:translate-x-1 active:translate-y-1 active:shadow-[2px_2px_0px_0px_#34155f] transition-all duration-150 cursor-pointer overflow-hidden backdrop-blur-md"
-                style={{ fontFamily: "var(--font-janna-bold)" }}
-              >
-                <div
-                  className="absolute inset-0 pointer-events-none opacity-20"
-                  style={{
-                    backgroundImage: "repeating-linear-gradient(0deg, #000, #000 1px, transparent 1px, transparent 3px)",
-                  }}
-                />
-                <span className="absolute top-0.5 right-2 text-[8px] font-bold tracking-widest text-dark/70 font-arapix">
-                  ACT.01
-                </span>
-                <span className="absolute bottom-0 left-0 w-2 h-2 bg-dark" />
-                
-                <span className="w-5 h-5 flex items-center justify-center bg-dark text-lime text-xs font-black group-hover:scale-125 transition-transform duration-200 shrink-0">
-                  ▶
-                </span>
-                
-                <span className="leading-none pt-0.5 tracking-wide text-dark font-black drop-shadow-[0_1px_0_rgba(255,255,255,0.4)]">
-                  {t.hero.registerBtn}
-                </span>
-                
-                <span className="w-1.5 h-1.5 bg-dark rounded-full animate-ping ml-0.5 shrink-0" />
-              </Link>
+              {/* Primary Action: START / PLAY or CLOSED */}
+              {isOpen === false ? (
+                <button
+                  type="button"
+                  onClick={openClosedModal}
+                  className="group relative flex items-center justify-center gap-4 px-6 sm:px-7 w-full lg:w-64 min-h-[54px] sm:h-14 bg-gradient-to-r from-rose-500/20 via-rose-500/30 to-pink-500/20 text-white text-base sm:text-lg font-bold border-2 border-rose-500/60 shadow-[5px_5px_0px_0px_#34155f] hover:shadow-[0_0_25px_rgba(244,63,94,0.5),8px_8px_0px_0px_#34155f] hover:-translate-x-1 hover:-translate-y-1 active:translate-x-1 active:translate-y-1 transition-all duration-150 cursor-pointer overflow-hidden backdrop-blur-md"
+                  style={{ fontFamily: "var(--font-janna-bold)" }}
+                  title={locale === "ar" ? "التسجيل مغلق حاليًا" : "Registration Closed"}
+                >
+                  <span className="w-5 h-5 flex items-center justify-center bg-rose-500/40 text-rose-200 text-xs font-black shrink-0">
+                    ✕
+                  </span>
+                  <span className="leading-none pt-0.5 tracking-wide text-white font-black">
+                    {locale === "ar" ? "التسجيل مغلق" : "Registration Closed"}
+                  </span>
+                </button>
+              ) : (
+                <Link
+                  href="/register"
+                  className="group relative flex items-center justify-center gap-4 px-6 sm:px-7 w-full lg:w-64 min-h-[54px] sm:h-14 bg-gradient-to-r from-lime via-lime to-[#aef01e] text-dark text-base sm:text-lg font-bold border-2 border-lime shadow-[5px_5px_0px_0px_#34155f] hover:shadow-[0_0_25px_rgba(195,249,55,0.7),8px_8px_0px_0px_#34155f] hover:-translate-x-1 hover:-translate-y-1 active:translate-x-1 active:translate-y-1 active:shadow-[2px_2px_0px_0px_#34155f] transition-all duration-150 cursor-pointer overflow-hidden backdrop-blur-md"
+                  style={{ fontFamily: "var(--font-janna-bold)" }}
+                >
+                  <div
+                    className="absolute inset-0 pointer-events-none opacity-20"
+                    style={{
+                      backgroundImage: "repeating-linear-gradient(0deg, #000, #000 1px, transparent 1px, transparent 3px)",
+                    }}
+                  />
+                  <span className="absolute top-0.5 right-2 text-[8px] font-bold tracking-widest text-dark/70 font-arapix">
+                    ACT.01
+                  </span>
+                  <span className="absolute bottom-0 left-0 w-2 h-2 bg-dark" />
+                  
+                  <span className="w-5 h-5 flex items-center justify-center bg-dark text-lime text-xs font-black group-hover:scale-125 transition-transform duration-200 shrink-0">
+                    ▶
+                  </span>
+                  
+                  <span className="leading-none pt-0.5 tracking-wide text-dark font-black drop-shadow-[0_1px_0_rgba(255,255,255,0.4)]">
+                    {t.hero.registerBtn}
+                  </span>
+                  
+                  <span className="w-1.5 h-1.5 bg-dark rounded-full animate-ping ml-0.5 shrink-0" />
+                </Link>
+              )}
 
               {/* Secondary Action: QUEST LOG / JOURNEY */}
               <button

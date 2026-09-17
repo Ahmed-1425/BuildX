@@ -15,11 +15,23 @@ export async function GET() {
     // 1. Fetch camp settings
     const { data: settingRow } = await supabase
       .from("camp_settings")
-      .select("value, updated_at")
+      .select("value, updated_at, updated_by")
       .eq("key", "registration_open")
       .single();
 
     const registrationOpen = settingRow ? Boolean(settingRow.value) : true;
+    let updaterName: string | null = null;
+
+    if (settingRow?.updated_by) {
+      const { data: updater } = await supabase
+        .from("admin_users")
+        .select("full_name")
+        .eq("id", settingRow.updated_by)
+        .single();
+      if (updater) {
+        updaterName = updater.full_name;
+      }
+    }
 
     // 2. If super_admin, fetch admin users list
     let adminUsersList: any[] = [];
@@ -42,6 +54,8 @@ export async function GET() {
     return NextResponse.json({
       success: true,
       registration_open: registrationOpen,
+      registration_updated_at: settingRow?.updated_at || null,
+      registration_updated_by_name: updaterName,
       admin_users: adminUsersList,
       current_user: admin,
     });
@@ -68,19 +82,37 @@ export async function PATCH(req: NextRequest) {
       }
 
       const isOpen = Boolean(body.registration_open);
+      const nowIso = new Date().toISOString();
 
       const { error } = await supabase
         .from("camp_settings")
         .upsert({
           key: "registration_open",
           value: isOpen,
-          updated_at: new Date().toISOString(),
+          updated_at: nowIso,
           updated_by: admin.id,
         });
 
       if (error) {
         console.error("[admin/settings] Update reg error:", error);
         return NextResponse.json({ success: false, error: "تعذر تحديث حالة التسجيل." }, { status: 500 });
+      }
+
+      // Broadcast realtime notification to connected clients
+      try {
+        const channel = supabase.channel("camp-settings-sync");
+        await channel.send({
+          type: "broadcast",
+          event: "registration_status_changed",
+          payload: {
+            registration_open: isOpen,
+            updated_at: nowIso,
+            updated_by_name: admin.full_name,
+          },
+        });
+        supabase.removeChannel(channel);
+      } catch (broadcastErr) {
+        console.warn("[admin/settings] Broadcast error (non-fatal):", broadcastErr);
       }
 
       await recordAuditLog({
@@ -95,6 +127,8 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({
         success: true,
         registration_open: isOpen,
+        registration_updated_at: nowIso,
+        registration_updated_by_name: admin.full_name,
         message: isOpen ? "تم فتح باب التسجيل بنجاح." : "تم إغلاق باب التسجيل بنجاح.",
       });
     }

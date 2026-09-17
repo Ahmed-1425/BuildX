@@ -45,7 +45,7 @@ export default function RegistrationClosedModal({ isOpen, onClose }: Props) {
 
   return (
     <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200"
+      className="fixed inset-0 z-[90000] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200"
       role="presentation"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
@@ -65,10 +65,10 @@ export default function RegistrationClosedModal({ isOpen, onClose }: Props) {
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-4 left-4 sm:top-5 sm:left-5 w-9 h-9 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+          className="absolute top-4 left-4 sm:top-5 sm:left-5 w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white flex items-center justify-center transition-all cursor-pointer z-30 shadow-md active:scale-95"
           aria-label={ar ? "إغلاق" : "Close"}
         >
-          <X size={18} />
+          <X size={20} />
         </button>
 
         {/* Character image specified by user */}

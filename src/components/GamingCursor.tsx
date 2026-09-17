@@ -135,8 +135,8 @@ export default function GamingCursor() {
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 z-[9999] pointer-events-none hidden lg:block"
-      style={{ opacity: 0, willChange: "auto" }}
+      className="fixed inset-0 z-[999999] pointer-events-none hidden lg:block"
+      style={{ opacity: 0, willChange: "auto", zIndex: 999999 }}
     >
       {/* Outer glow ring (smooth lerp follow) */}
       <div

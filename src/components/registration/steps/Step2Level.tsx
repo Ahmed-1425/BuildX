@@ -65,7 +65,7 @@ export default function Step2Level({ value, onChange, error }: Props) {
         </div>
       </div>
 
-      <div className="reg-level-cards">
+      <div id="level_cards" className="reg-level-cards">
         {levels.map((lvl) => {
           const selected = value === lvl.id;
           return (

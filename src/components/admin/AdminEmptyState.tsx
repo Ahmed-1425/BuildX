@@ -20,27 +20,27 @@ export default function AdminEmptyState({
 }: Props) {
   return (
     <div
-      className="bento-card admin-empty-card"
+      className="admin-empty-state bento-card"
       dir="rtl"
     >
-      <div className="relative z-10 max-w-lg mx-auto flex flex-col items-center justify-center text-center">
-        {/* 1. Icon Container */}
-        <div className="w-14 h-14 rounded-2xl bg-white/[0.04] border border-white/10 flex items-center justify-center shadow-lg mb-4">
-          <Inbox className="w-7 h-7 text-[#c3f937]" strokeWidth={1.75} aria-hidden="true" />
+      <div className="flex flex-col items-center justify-center text-center gap-4">
+        {/* Icon */}
+        <div className="w-12 h-12 rounded-2xl bg-white/[0.04] border border-white/10 flex items-center justify-center">
+          <Inbox className="w-6 h-6 text-[#c3f937]" strokeWidth={1.75} aria-hidden="true" />
         </div>
 
-        {/* 2. Title & Description with 10px gap */}
-        <div className="space-y-2.5">
-          <h3 className="text-xl font-bold text-white tracking-tight">
+        {/* Title & Description */}
+        <div className="space-y-2">
+          <h3 className="text-lg font-bold text-white tracking-tight">
             {title}
           </h3>
-          <p className="body-text text-slate-300 leading-[1.8] max-w-md mx-auto">
+          <p className="text-sm text-slate-300 leading-[1.75] max-w-md mx-auto">
             {description}
           </p>
         </div>
 
-        {/* 3. Action Buttons with 24px gap before */}
-        <div className="flex flex-wrap items-center justify-center gap-4 mt-6">
+        {/* Actions */}
+        <div className="flex flex-wrap items-center justify-center gap-3">
           {showAllLink && (
             <Link
               href="/admin/applications"

@@ -7,18 +7,12 @@ import ApplicationsMobileCards from "@/components/admin/ApplicationsMobileCards"
 import StatusChangeModal from "@/components/admin/StatusChangeModal";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
+import AdminDataToolbar from "@/components/admin/ui/AdminDataToolbar";
+import AdminPagination from "@/components/admin/ui/AdminPagination";
+import AdminSkeleton from "@/components/admin/AdminSkeleton";
 import {
-  Search,
-  Download,
-  SlidersHorizontal,
-  X,
-  ChevronRight,
-  ChevronLeft,
-  RefreshCw,
   Trash2,
-  CheckCircle2,
   Filter,
-  Layers,
 } from "lucide-react";
 import { formatNumber } from "@/lib/admin/formatters";
 
@@ -241,61 +235,22 @@ function ApplicationsContent() {
         }
         onRefresh={fetchApplications}
         isRefreshing={loading}
-        actions={
-          <>
-            <button
-              type="button"
-              onClick={() => setShowFilters(!showFilters)}
-              className={`btn-admin-md border transition-all cursor-pointer ${
-                showFilters || activeFiltersCount > 0
-                  ? "bg-[#c3f937]/10 text-[#c3f937] border-[#c3f937]/30"
-                  : "bg-white/[0.04] text-slate-200 hover:text-white border-white/10 hover:bg-white/[0.08]"
-              }`}
-            >
-              <SlidersHorizontal className="w-4 h-4" />
-              <span>الفلاتر</span>
-              {activeFiltersCount > 0 && (
-                <span className="w-5 h-5 rounded-full bg-[#c3f937] text-[#0c1018] text-[11px] font-bold flex items-center justify-center numeric-value">
-                  {formatNumber(activeFiltersCount)}
-                </span>
-              )}
-            </button>
-
-            <button
-              type="button"
-              onClick={handleExportCSV}
-              disabled={exporting}
-              className="btn-admin-md bg-[#c3f937] hover:bg-[#c3f937]/90 text-[#0c1018] font-bold shadow-sm shadow-[#c3f937]/15 cursor-pointer disabled:opacity-50"
-            >
-              <Download className="w-4 h-4" />
-              <span>تصدير CSV</span>
-            </button>
-          </>
-        }
       />
 
-      {/* ── Search Bar with Instant Debounce ────────────────────────── */}
-      <div className="relative">
-        <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-slate-400">
-          <Search className="w-5 h-5" />
-        </div>
-        <input
-          type="text"
-          value={searchInput}
-          onChange={(e) => setSearchInput(e.target.value)}
-          placeholder="ابحث بالاسم، رقم الطلب، البريد، الجوال، المدينة، الجهة، أو التخصص..."
-          className="w-full h-12 pr-12 pl-10 rounded-xl bg-[rgba(20,24,36,0.85)] border border-white/10 text-white placeholder-slate-400 text-sm focus:outline-none focus:border-[#c3f937] transition-all shadow-inner"
-        />
-        {searchInput && (
-          <button
-            type="button"
-            onClick={() => setSearchInput("")}
-            className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400 hover:text-white"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        )}
-      </div>
+      {/* ── Unified Data Toolbar ────────────────────────────────────── */}
+      <AdminDataToolbar
+        searchValue={searchInput}
+        onSearchChange={setSearchInput}
+        searchPlaceholder="ابحث بالاسم، رقم الطلب، البريد، الجوال، المدينة، الجهة، أو التخصص..."
+        totalCount={total}
+        activeFiltersCount={activeFiltersCount}
+        showFilters={showFilters}
+        onToggleFilters={() => setShowFilters(!showFilters)}
+        onRefresh={fetchApplications}
+        isRefreshing={loading}
+        onExport={handleExportCSV}
+        isExporting={exporting}
+      />
 
       {/* ── Collapsible Filters Panel ──────────────────────────────── */}
       {showFilters && (
@@ -480,9 +435,7 @@ function ApplicationsContent() {
 
       {/* ── Table & Cards View ─────────────────────────────────────── */}
       {loading ? (
-        <div className="p-16 text-center text-slate-400 bento-card animate-pulse">
-          جارٍ تحميل الطلبات...
-        </div>
+        <AdminSkeleton variant="list" />
       ) : items.length === 0 ? (
         <div className="mt-8 flex justify-center">
           <AdminEmptyState
@@ -513,52 +466,18 @@ function ApplicationsContent() {
             onQuickStatusChange={(app) => setQuickModalApp(app)}
           />
 
-          {/* ── Real Pagination Controls ───────────────────────────── */}
-          <div className="bento-card p-4 flex flex-wrap items-center justify-between gap-4">
-            <div className="flex items-center gap-2 text-xs text-slate-400">
-              <span>عرض</span>
-              <select
-                value={limit}
-                onChange={(e) => {
-                  setLimit(Number(e.target.value));
-                  setPage(1);
-                }}
-                className="h-8 px-2 rounded-lg bg-white/[0.05] border border-white/10 text-white font-mono text-xs focus:outline-none"
-              >
-                <option value={10} className="bg-[#121622]">10</option>
-                <option value={20} className="bg-[#121622]">20</option>
-                <option value={50} className="bg-[#121622]">50</option>
-                <option value={100} className="bg-[#121622]">100</option>
-              </select>
-              <span>طلب لكل صفحة • الإجمالي: <span className="numeric-value font-mono">{formatNumber(total)}</span></span>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page <= 1}
-                className="inline-flex items-center gap-1 px-3 h-8 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-xs font-semibold text-slate-200 border border-white/10 disabled:opacity-40 cursor-pointer"
-              >
-                <ChevronRight className="w-4 h-4" />
-                <span>السابق</span>
-              </button>
-
-              <span className="text-xs font-mono text-slate-300 px-2 numeric-value">
-                صفحة {formatNumber(page)} من {formatNumber(totalPages)}
-              </span>
-
-              <button
-                type="button"
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                disabled={page >= totalPages}
-                className="inline-flex items-center gap-1 px-3 h-8 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-xs font-semibold text-slate-200 border border-white/10 disabled:opacity-40 cursor-pointer"
-              >
-                <span>التالي</span>
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
+          {/* Reusable Pagination */}
+          <AdminPagination
+            page={page}
+            totalPages={totalPages}
+            total={total}
+            limit={limit}
+            onPageChange={setPage}
+            onLimitChange={(newLimit) => {
+              setLimit(newLimit);
+              setPage(1);
+            }}
+          />
         </>
       )}
 

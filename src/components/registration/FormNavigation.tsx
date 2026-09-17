@@ -10,10 +10,11 @@ interface FormNavigationProps {
   isLastStep?: boolean;
   isSubmitting?: boolean;
   nextDisabled?: boolean;
+  nextLabel?: string;
 }
 
 export default function FormNavigation({
-  currentStep, onPrev, onNext, isLastStep, isSubmitting, nextDisabled,
+  currentStep, onPrev, onNext, isLastStep, isSubmitting, nextDisabled, nextLabel,
 }: FormNavigationProps) {
   const { locale } = useLanguage();
   const ar = locale === "ar";
@@ -38,6 +39,8 @@ export default function FormNavigation({
       >
         {isSubmitting
           ? (ar ? "جارٍ تسليم طلبك..." : "Submitting...")
+          : nextLabel
+          ? nextLabel
           : isLastStep
           ? (ar ? "تسليم الطلب" : "Submit Application")
           : (ar ? "التالي ←" : "Next →")}

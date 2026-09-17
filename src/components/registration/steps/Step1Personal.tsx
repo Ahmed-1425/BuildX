@@ -1,11 +1,12 @@
 "use client";
+import { useState } from "react";
 import { useLanguage } from "@/context/LanguageContext";
 import FormField from "../fields/FormField";
 import SearchableSelect from "../fields/SearchableSelect";
 import RadioCards from "../fields/RadioCards";
 import type { PersonalData } from "@/types/registration";
 import Image from "next/image";
-import { User, UserRound } from "lucide-react";
+import { User, UserRound, CheckCircle2, AlertCircle } from "lucide-react";
 
 const SAUDI_CITIES = [
   "الرياض","جدة","مكة المكرمة","المدينة المنورة","الدمام","الخبر","الظهران","الطائف","تبوك","بريدة",
@@ -28,6 +29,21 @@ interface Props {
 export default function Step1Personal({ data, onChange, errors }: Props) {
   const { locale } = useLanguage();
   const ar = locale === "ar";
+  const [confirmTouched, setConfirmTouched] = useState(false);
+
+  const cleanEmail = (data.email || "").trim().toLowerCase();
+  const cleanConfirm = (data.email_confirm || "").trim().toLowerCase();
+  const hasConfirmTyped = (data.email_confirm || "").length > 0;
+
+  const isEmailFormatValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail);
+  const isMatch = hasConfirmTyped && cleanEmail === cleanConfirm && cleanEmail.length > 0 && isEmailFormatValid;
+  const isMismatch = hasConfirmTyped && cleanEmail !== cleanConfirm;
+
+  const liveMismatchError = isMismatch
+    ? (ar ? "البريد الإلكتروني غير متطابق، تأكد من كتابته بالشكل نفسه." : "Emails do not match, please ensure they are identical.")
+    : undefined;
+
+  const displayConfirmError = errors.email_confirm || liveMismatchError;
 
   function set<K extends keyof PersonalData>(key: K, val: PersonalData[K]) {
     onChange({ ...data, [key]: val });
@@ -149,12 +165,61 @@ export default function Step1Personal({ data, onChange, errors }: Props) {
 
         {/* Email */}
         <FormField label={ar ? "البريد الإلكتروني" : "Email"} required hint={ar ? "يرجى إدخال بريد إلكتروني فعّال، حيث سيتم استخدامه في التواصل المتعلق بالقبول والمعسكر." : "Enter a valid email address for camp-related communications."} error={errors.email} htmlFor="email">
-          <input id="email" type="email" value={data.email} onChange={(e) => set("email", e.target.value.toLowerCase())} className={`reg-input ${errors.email ? "reg-input--error" : ""}`} autoComplete="email" dir="ltr" />
+          <input
+            id="email"
+            type="email"
+            value={data.email}
+            onChange={(e) => set("email", e.target.value)}
+            className={`reg-input ${errors.email ? "reg-input--error" : ""}`}
+            autoComplete="email"
+            dir="ltr"
+            placeholder="name@example.com"
+          />
         </FormField>
 
         {/* Email confirm */}
-        <FormField label={ar ? "تأكيد البريد الإلكتروني" : "Confirm Email"} required hint={ar ? "أعد إدخال بريدك الإلكتروني للتأكد من صحته." : "Re-enter your email address to confirm."} error={errors.email_confirm} htmlFor="email_confirm">
-          <input id="email_confirm" type="email" value={data.email_confirm} onChange={(e) => set("email_confirm", e.target.value.toLowerCase())} className={`reg-input ${errors.email_confirm ? "reg-input--error" : ""}`} autoComplete="off" dir="ltr" />
+        <FormField
+          label={ar ? "تأكيد البريد الإلكتروني" : "Confirm Email"}
+          required
+          hint={ar ? "أعد إدخال بريدك الإلكتروني للتأكد من صحته." : "Re-enter your email address to confirm."}
+          error={displayConfirmError}
+          htmlFor="email_confirm"
+        >
+          <div className="relative">
+            <input
+              id="email_confirm"
+              type="email"
+              value={data.email_confirm}
+              onChange={(e) => {
+                set("email_confirm", e.target.value);
+                setConfirmTouched(true);
+              }}
+              onBlur={() => setConfirmTouched(true)}
+              className={`reg-input pe-10 ${
+                displayConfirmError
+                  ? "reg-input--error border-rose-500 shadow-[0_0_0_2px_rgba(244,63,94,0.18)]"
+                  : isMatch
+                  ? "border-emerald-500/60 bg-emerald-500/[0.03] shadow-[0_0_0_2px_rgba(16,185,129,0.15)]"
+                  : ""
+              }`}
+              autoComplete="off"
+              dir="ltr"
+              placeholder="name@example.com"
+            />
+            <div className="absolute inset-y-0 end-0 pe-3 flex items-center pointer-events-none">
+              {displayConfirmError ? (
+                <AlertCircle className="w-4 h-4 text-rose-400" aria-hidden="true" />
+              ) : isMatch ? (
+                <CheckCircle2 className="w-4 h-4 text-emerald-400" aria-hidden="true" />
+              ) : null}
+            </div>
+          </div>
+          {isMatch && !displayConfirmError && (
+            <p className="text-xs text-emerald-400 font-semibold mt-1 flex items-center gap-1">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+              <span>{ar ? "البريد الإلكتروني متطابق." : "Emails match successfully."}</span>
+            </p>
+          )}
         </FormField>
 
         {/* City */}

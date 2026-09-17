@@ -43,9 +43,9 @@ export default function Footer() {
           <Image
             src="/assets/logos/partnership-logo.png"
             alt={isRTL ? "شعار الشراكة — أنماء وشراكة" : "Partnership Logo"}
-            width={140}
-            height={154}
-            className="footer-partner-logo"
+            width={160}
+            height={175}
+            className="footer-partnership-seal"
           />
         </div>
 

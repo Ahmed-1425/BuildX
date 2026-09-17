@@ -185,7 +185,7 @@ export default function ApplicationsTable({
               return (
                 <tr
                   key={item.id}
-                  className={`min-h-[84px] h-[88px] hover:bg-white/[0.035] transition-colors ${
+                  className={`min-h-[82px] h-[82px] hover:bg-white/[0.035] transition-colors ${
                     isSelected ? "bg-[#c3f937]/[0.06]" : ""
                   }`}
                 >

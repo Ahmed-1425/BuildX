@@ -39,10 +39,20 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: false, error: "طلب غير صالح", code: "VALIDATION" }, { status: 400 });
   }
 
+  let supabase;
+  try {
+    supabase = createServerClient();
+  } catch (clientErr) {
+    console.error("[applications] Failed to initialize server client:", clientErr);
+    return NextResponse.json(
+      { success: false, error: "تعذر تسليم الطلب حاليًا. حاول مرة أخرى بعد قليل.", code: "SERVER_ERROR" },
+      { status: 500 }
+    );
+  }
+
   // Check if registration is open in camp_settings
   try {
-    const supabaseCheck = createServerClient();
-    const { data: setting } = await supabaseCheck
+    const { data: setting } = await supabase
       .from("camp_settings")
       .select("value")
       .eq("key", "registration_open")
@@ -93,7 +103,6 @@ export async function POST(req: NextRequest) {
   const referenceCode = generateReferenceCode();
 
   try {
-    const supabase = createServerClient();
     const { error } = await supabase.from("applications").insert({
       reference_code: referenceCode,
       full_name: data.full_name,
@@ -125,7 +134,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (error) {
-      if (error.code === "23505" && error.message?.includes("idempotency_key")) {
+      if (error.code === "23505" && (error.message?.includes("idempotency_key") || (error as { detail?: string }).detail?.includes("idempotency_key"))) {
         const { data: existing } = await supabase
           .from("applications")
           .select("reference_code")
@@ -134,8 +143,15 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ success: true, reference_code: existing?.reference_code ?? referenceCode });
       }
       if (error.code === "23505") {
+        const errorDetail = (error as { detail?: string }).detail || error.message || "";
+        if (errorDetail.includes("phone") || errorDetail.includes("applications_phone_key") || errorDetail.includes("idx_applications_phone")) {
+          return NextResponse.json(
+            { success: false, error: "يوجد طلب مسجل مسبقًا باستخدام رقم الجوال هذا.", code: "DUPLICATE_PHONE", field: "phone" },
+            { status: 409 }
+          );
+        }
         return NextResponse.json(
-          { success: false, error: "يوجد طلب مسجل مسبقًا باستخدام هذا البريد الإلكتروني أو رقم الجوال.", code: "DUPLICATE_EMAIL" },
+          { success: false, error: "يوجد طلب مسجل مسبقًا باستخدام هذا البريد الإلكتروني.", code: "DUPLICATE_EMAIL", field: "email" },
           { status: 409 }
         );
       }

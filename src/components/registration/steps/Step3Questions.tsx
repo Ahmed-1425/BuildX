@@ -49,7 +49,7 @@ function FoundationQuestions({ answers, onChange, portfolioLinks, professionalLi
   return (
     <div className="reg-questions">
       {qs.map((q, i) => (
-        <FormField key={q.key} label={`${i + 1}. ${q.q}`} required hint={q.hint} error={errors[q.key]}>
+        <FormField key={q.key} label={`${i + 1}. ${q.q}`} required hint={q.hint} error={errors[q.key]} htmlFor={q.key}>
           <TextareaField id={q.key} value={answers[q.key]} onChange={(v) => set(q.key, v)} error={errors[q.key]} />
         </FormField>
       ))}
@@ -102,8 +102,8 @@ function PractitionerQuestions({ answers, onChange, portfolioLinks, professional
   return (
     <div className="reg-questions">
       {qs.map((q, i) => (
-        <FormField key={q.key} label={`${i + 1}. ${q.q}`} required hint={q.hint} error={errors[q.key]}>
-          <TextareaField id={q.key} value={answers[q.key]} onChange={(v) => set(q.key, v)} error={errors[q.key]} monospace={q.mono} />
+        <FormField key={q.key} label={`${i + 1}. ${q.q}`} required hint={q.hint} error={errors[q.key]} htmlFor={q.key}>
+          <TextareaField id={q.key} value={answers[q.key]} onChange={(v) => set(q.key, v)} error={errors[q.key]} />
         </FormField>
       ))}
       <FormField label={ar ? "9. شاركنا الروابط التي تعكس أعمالك وخبراتك — إن وجدت." : "9. Share links that reflect your work — optional."}>
@@ -131,30 +131,30 @@ function AdvancedQuestions({ answers, onChange, portfolioLinks, professionalLink
   function set(k: keyof AdvancedAnswers, v: string | boolean) { onChange({ ...answers, [k]: v }); }
 
   const qs = ar ? [
-    { key: "strongest_product" as const, q: "حدثنا عن أقوى منتج رقمي سبق لك بناؤه أو تطويره.", hint: "وضّح فكرة المنتج، ودورك الفعلي فيه، وما الذي قمت بتنفيذه بنفسك.", mono: false },
-    { key: "idea_to_mvp" as const, q: "إذا بدأت اليوم بفكرة منتج جديدة، كيف تنتقل بها من الفكرة إلى MVP قابل للتجربة؟", hint: "وضّح المراحل التي تتبعها، وكيف تحدد ما يجب أن تتضمنه النسخة الأولى.", mono: false },
-    { key: "vibe_coding_workflow" as const, q: "كيف توظّف Vibe Coding في عملية بناء منتجاتك؟", hint: "وضّح الأدوات التي تستخدمها، وكيف تعتمد على الذكاء الاصطناعي أثناء البناء.", mono: false },
-    { key: "advanced_prompt_example" as const, q: "شاركنا Prompt ترى أنه يعكس مستواك في Vibe Coding.", hint: "يمكن أن يكون Prompt سبق لك استخدامه أو مثالًا من مشروع حقيقي، مع توضيح النتيجة التي كنت تريد الوصول إليها.", mono: true },
-    { key: "hardest_problem" as const, q: "اذكر أصعب مشكلة واجهتك أثناء بناء مشروع رقمي، وكيف وصلت إلى حل لها.", hint: "استخدم موقفًا حقيقيًا، ووضّح كيف حددت المشكلة، وما الذي جربته، وكيف تحققت من الحل.", mono: false },
-    { key: "team_leadership" as const, q: "في BUILDx ستعمل ضمن فريق يضم عضوًا متقدمًا، وعضوًا ممارسًا، وعضوين مبتدئين. بصفتك العضو المتقدم في الفريق، كيف ستتعامل مع اختلاف المستويات وتوزّع العمل بحيث يشارك الجميع بفعالية دون أن تتحمل تنفيذ المشروع وحدك؟", hint: "وضّح كيف ستوزع المسؤوليات، وتدعم الأعضاء الأقل خبرة، وتحافظ على جودة المنتج وسرعة الإنجاز.", mono: false },
-    { key: "mvp_prioritization" as const, q: "لديك 48 ساعة فقط لبناء MVP، وأدركت أن الوقت لن يسمح بتنفيذ جميع الـ Features المخطط لها. كيف ستحدد ما الذي ستنفذه وما الذي ستستبعده؟", hint: "وضّح المعايير التي ستعتمد عليها في ترتيب الأولويات والوصول إلى منتج قابل للتجربة ضمن الوقت المتاح.", mono: false },
-    { key: "independent_capability" as const, q: "ما الذي تستطيع تنفيذه اليوم بشكل مستقل ويثبت أنك مناسب للمستوى المتقدم في BUILDx؟", hint: "استند إلى قدرات ومشاريع وتجارب فعلية، وليس إلى أسماء الأدوات أو تقييمك الشخصي لمستواك.", mono: false },
+    { key: "strongest_product" as const, q: "حدثنا عن أقوى منتج رقمي سبق لك بناؤه أو تطويره.", hint: "وضّح فكرة المنتج، ودورك الفعلي فيه، وما الذي قمت بتنفيذه بنفسك." },
+    { key: "idea_to_mvp" as const, q: "إذا بدأت اليوم بفكرة منتج جديدة، كيف تنتقل بها من الفكرة إلى MVP قابل للتجربة؟", hint: "وضّح المراحل التي تتبعها، وكيف تحدد ما يجب أن تتضمنه النسخة الأولى." },
+    { key: "vibe_coding_workflow" as const, q: "كيف توظّف Vibe Coding في عملية بناء منتجاتك؟", hint: "وضّح الأدوات التي تستخدمها، وكيف تعتمد على الذكاء الاصطناعي أثناء البناء." },
+    { key: "advanced_prompt_example" as const, q: "شاركنا Prompt ترى أنه يعكس مستواك في Vibe Coding.", hint: "يمكن أن يكون Prompt سبق لك استخدامه أو مثالًا من مشروع حقيقي، مع توضيح النتيجة التي كنت تريد الوصول إليها." },
+    { key: "hardest_problem" as const, q: "اذكر أصعب مشكلة واجهتك أثناء بناء مشروع رقمي، وكيف وصلت إلى حل لها.", hint: "استخدم موقفًا حقيقيًا، ووضّح كيف حددت المشكلة، وما الذي جربته، وكيف تحققت من الحل." },
+    { key: "team_leadership" as const, q: "في BUILDx ستعمل ضمن فريق يضم عضوًا متقدمًا، وعضوًا ممارسًا، وعضوين مبتدئين. بصفتك العضو المتقدم في الفريق، كيف ستتعامل مع اختلاف المستويات وتوزّع العمل بحيث يشارك الجميع بفعالية دون أن تتحمل تنفيذ المشروع وحدك؟", hint: "وضّح كيف ستوزع المسؤوليات، وتدعم الأعضاء الأقل خبرة، وتحافظ على جودة المنتج وسرعة الإنجاز." },
+    { key: "mvp_prioritization" as const, q: "لديك 48 ساعة فقط لبناء MVP، وأدركت أن الوقت لن يسمح بتنفيذ جميع الـ Features المخطط لها. كيف ستحدد ما الذي ستنفذه وما الذي ستستبعده؟", hint: "وضّح المعايير التي ستعتمد عليها في ترتيب الأولويات والوصول إلى منتج قابل للتجربة ضمن الوقت المتاح." },
+    { key: "independent_capability" as const, q: "ما الذي تستطيع تنفيذه اليوم بشكل مستقل ويثبت أنك مناسب للمستوى المتقدم في BUILDx؟", hint: "استند إلى قدرات ومشاريع وتجارب فعلية، وليس إلى أسماء الأدوات أو تقييمك الشخصي لمستواك." },
   ] : [
-    { key: "strongest_product" as const, q: "Tell us about the strongest digital product you've built or developed.", hint: "Explain the product idea, your actual role, and what you implemented yourself.", mono: false },
-    { key: "idea_to_mvp" as const, q: "If you started with a new product idea today, how would you go from idea to a testable MVP?", hint: "Describe the stages you follow and how you decide what the first version should include.", mono: false },
-    { key: "vibe_coding_workflow" as const, q: "How do you apply Vibe Coding in your product-building process?", hint: "Describe the tools you use and how you leverage AI during the build.", mono: false },
-    { key: "advanced_prompt_example" as const, q: "Share a Prompt that you feel reflects your Vibe Coding level.", hint: "It can be a prompt you've used before or an example from a real project, with the outcome you aimed for.", mono: true },
-    { key: "hardest_problem" as const, q: "Describe the hardest problem you've faced while building a digital project and how you solved it.", hint: "Use a real situation; explain how you identified the problem, what you tried, and how you verified the solution.", mono: false },
-    { key: "team_leadership" as const, q: "In BUILDx you'll work in a team with one advanced member, one practitioner, and two beginners. As the advanced member, how will you handle different skill levels and distribute work so everyone participates effectively?", hint: "Explain how you'll assign responsibilities, support less-experienced members, while maintaining product quality and pace.", mono: false },
-    { key: "mvp_prioritization" as const, q: "You have only 48 hours to build an MVP and realize time won't allow all planned features. How do you decide what to implement and what to cut?", hint: "Describe the criteria you'll use to prioritize and deliver a testable product within the time available.", mono: false },
-    { key: "independent_capability" as const, q: "What can you independently implement today that proves you're suited for the Advanced level in BUILDx?", hint: "Reference actual capabilities, projects, and experiences — not tool names or your self-assessment.", mono: false },
+    { key: "strongest_product" as const, q: "Tell us about the strongest digital product you've built or developed.", hint: "Explain the product idea, your actual role, and what you implemented yourself." },
+    { key: "idea_to_mvp" as const, q: "If you started with a new product idea today, how would you go from idea to a testable MVP?", hint: "Describe the stages you follow and how you decide what the first version should include." },
+    { key: "vibe_coding_workflow" as const, q: "How do you apply Vibe Coding in your product-building process?", hint: "Describe the tools you use and how you leverage AI during the build." },
+    { key: "advanced_prompt_example" as const, q: "Share a Prompt that you feel reflects your Vibe Coding level.", hint: "It can be a prompt you've used before or an example from a real project, with the outcome you aimed for." },
+    { key: "hardest_problem" as const, q: "Describe the hardest problem you've faced while building a digital project and how you solved it.", hint: "Use a real situation; explain how you identified the problem, what you tried, and how you verified the solution." },
+    { key: "team_leadership" as const, q: "In BUILDx you'll work in a team with one advanced member, one practitioner, and two beginners. As the advanced member, how will you handle different skill levels and distribute work so everyone participates effectively?", hint: "Explain how you'll assign responsibilities, support less-experienced members, while maintaining product quality and pace." },
+    { key: "mvp_prioritization" as const, q: "You have only 48 hours to build an MVP and realize time won't allow all planned features. How do you decide what to implement and what to cut?", hint: "Describe the criteria you'll use to prioritize and deliver a testable product within the time available." },
+    { key: "independent_capability" as const, q: "What can you independently implement today that proves you're suited for the Advanced level in BUILDx?", hint: "Reference actual capabilities, projects, and experiences — not tool names or your self-assessment." },
   ];
 
   return (
     <div className="reg-questions">
       {qs.map((q, i) => (
-        <FormField key={q.key} label={`${i + 1}. ${q.q}`} required hint={q.hint} error={errors[q.key]}>
-          <TextareaField id={q.key} value={answers[q.key]} onChange={(v) => set(q.key, v)} error={errors[q.key]} monospace={q.mono} />
+        <FormField key={q.key} label={`${i + 1}. ${q.q}`} required hint={q.hint} error={errors[q.key]} htmlFor={q.key}>
+          <TextareaField id={q.key} value={answers[q.key]} onChange={(v) => set(q.key, v)} error={errors[q.key]} />
         </FormField>
       ))}
 

@@ -12,9 +12,13 @@ const STEPS: Step[] = [
   { key: "submit", labelAr: "الإقرار والتسليم", labelEn: "Submit" },
 ];
 
-interface StepIndicatorProps { currentStep: number; }
+interface StepIndicatorProps {
+  currentStep: number;
+  onStepClick?: (step: number) => void;
+  errorSteps?: number[];
+}
 
-export default function StepIndicator({ currentStep }: StepIndicatorProps) {
+export default function StepIndicator({ currentStep, onStepClick, errorSteps = [] }: StepIndicatorProps) {
   const { locale } = useLanguage();
   const ar = locale === "ar";
   const total = STEPS.length;
@@ -45,10 +49,39 @@ export default function StepIndicator({ currentStep }: StepIndicatorProps) {
           const num = idx + 1;
           const done = num < currentStep;
           const active = num === currentStep;
+          const hasError = errorSteps.includes(num);
+          const isClickable = (done || hasError) && Boolean(onStepClick);
           return (
-            <div key={step.key} className={`reg-step-item ${done ? "is-done" : ""} ${active ? "is-active" : ""}`}>
-              <div className="reg-step-item__circle">
-                {done ? "✓" : num}
+            <div
+              key={step.key}
+              className={`reg-step-item ${done ? "is-done" : ""} ${active ? "is-active" : ""} ${
+                hasError ? "has-error" : ""
+              } ${isClickable ? "cursor-pointer hover:opacity-90 transition-opacity" : ""}`}
+              onClick={isClickable ? () => onStepClick?.(num) : undefined}
+              role={isClickable ? "button" : undefined}
+              tabIndex={isClickable ? 0 : undefined}
+              onKeyDown={
+                isClickable
+                  ? (e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        onStepClick?.(num);
+                      }
+                    }
+                  : undefined
+              }
+              aria-current={active ? "step" : undefined}
+            >
+              <div className="reg-step-item__circle relative">
+                {done && !hasError ? "✓" : num}
+                {hasError && (
+                  <span
+                    className="absolute -top-1 -end-1 w-4 h-4 bg-rose-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-md animate-pulse"
+                    title={ar ? "توجد حقول غير مكتملة" : "Incomplete fields"}
+                  >
+                    !
+                  </span>
+                )}
               </div>
               <span className="reg-step-item__label">
                 {ar ? step.labelAr : step.labelEn}

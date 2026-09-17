@@ -28,8 +28,8 @@
   left: auto !important;
   transform: none !important;
 
-  width: min(960px, calc(100vw - 48px)) !important;
-  max-width: 960px !important;
+  width: min(1180px, calc(100vw - 64px)) !important;
+  max-width: 1180px !important;
   height: auto !important;
   max-height: calc(100dvh - 48px) !important;
 

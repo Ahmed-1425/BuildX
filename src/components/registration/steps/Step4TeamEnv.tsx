@@ -35,7 +35,7 @@ export default function Step4TeamEnv({ value, onChange, error }: Props) {
         </p>
       </div>
 
-      <div className="reg-team-options" role="radiogroup">
+      <div id="team_env" className="reg-team-options" role="radiogroup">
         {options.map((opt) => {
           const selected = value === opt.id;
           return (

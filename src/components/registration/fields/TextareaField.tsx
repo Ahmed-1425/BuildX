@@ -8,13 +8,19 @@ interface TextareaFieldProps {
   placeholder?: string;
   minLength?: number;
   maxLength?: number;
-  monospace?: boolean;
   error?: string;
   rows?: number;
 }
 
 export default function TextareaField({
-  id, value, onChange, placeholder, minLength = 40, maxLength = 2000, monospace = false, error, rows = 5,
+  id,
+  value,
+  onChange,
+  placeholder,
+  minLength = 40,
+  maxLength = 2000,
+  error,
+  rows = 5,
 }: TextareaFieldProps) {
   const { locale } = useLanguage();
   const count = value.length;
@@ -29,7 +35,7 @@ export default function TextareaField({
         onChange={(e) => onChange(e.target.value.slice(0, maxLength))}
         rows={rows}
         placeholder={placeholder}
-        className={`reg-textarea ${monospace ? "reg-textarea--mono" : ""} ${error ? "reg-textarea--error" : ""}`}
+        className={`reg-textarea ${error ? "reg-textarea--error" : ""}`}
         aria-invalid={!!error}
         aria-describedby={error ? `${id}-err` : undefined}
       />

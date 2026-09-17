@@ -11,8 +11,22 @@ export async function GET() {
       .single();
 
     const isOpen = data ? Boolean(data.value) : true;
-    return NextResponse.json({ registration_open: isOpen });
+    return NextResponse.json(
+      { registration_open: isOpen },
+      {
+        headers: {
+          "Cache-Control": "public, s-maxage=30, stale-while-revalidate=60",
+        },
+      }
+    );
   } catch {
-    return NextResponse.json({ registration_open: true });
+    return NextResponse.json(
+      { registration_open: true },
+      {
+        headers: {
+          "Cache-Control": "public, s-maxage=10, stale-while-revalidate=30",
+        },
+      }
+    );
   }
 }

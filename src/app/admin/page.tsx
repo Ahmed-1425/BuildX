@@ -1,10 +1,11 @@
 "use client";
 import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import type { DashboardStats, ApplicationListItem } from "@/types/admin";
 import AdminStatusBadge from "@/components/admin/StatusBadge";
-import AdminStatCard from "@/components/admin/AdminStatCard";
+import AdminKpiCard from "@/components/admin/ui/AdminKpiCard";
+import AdminSkeleton from "@/components/admin/AdminSkeleton";
+import AdminErrorState from "@/components/admin/AdminErrorState";
 import {
   FileText,
   Search,
@@ -27,7 +28,6 @@ import {
   User,
   UserRound,
   HelpCircle,
-  Sparkles,
 } from "lucide-react";
 import {
   formatNumber,
@@ -35,35 +35,6 @@ import {
   formatTimeArabic,
   toLatinDigits,
 } from "@/lib/admin/formatters";
-
-// ── Animated Number Counter Component (Enforces Latin Digits) ────────
-function AnimatedCounter({ value }: { value: number }) {
-  const [displayValue, setDisplayValue] = useState(0);
-
-  useEffect(() => {
-    let start = 0;
-    const duration = 750;
-    const startTime = performance.now();
-
-    function update(currentTime: number) {
-      const elapsed = currentTime - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      const ease = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
-      const current = Math.floor(ease * (value - start) + start);
-      setDisplayValue(current);
-
-      if (progress < 1) {
-        requestAnimationFrame(update);
-      } else {
-        setDisplayValue(value);
-      }
-    }
-
-    requestAnimationFrame(update);
-  }, [value]);
-
-  return <span className="numeric-value">{formatNumber(displayValue)}</span>;
-}
 
 export default function AdminDashboardPage() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
@@ -95,39 +66,18 @@ export default function AdminDashboardPage() {
   }, [fetchStats]);
 
   if (loading && !stats) {
-    return (
-      <div className="space-y-8 animate-pulse admin-page" dir="rtl">
-        <div className="h-32 bg-white/[0.03] rounded-3xl" />
-        <div className="metrics-grid">
-          {[...Array(6)].map((_, i) => (
-            <div key={i} className="h-44 bg-white/[0.03] rounded-2xl" />
-          ))}
-        </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="h-96 bg-white/[0.03] rounded-3xl" />
-          <div className="h-96 bg-white/[0.03] rounded-3xl" />
-        </div>
-      </div>
-    );
+    return <AdminSkeleton variant="dashboard" />;
   }
 
   if (error || !stats) {
     return (
       <div className="admin-page" dir="rtl">
-        <div className="admin-empty-card bento-card text-rose-300 space-y-4">
-          <div className="w-14 h-14 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center shadow-lg">
-            <CircleX className="w-7 h-7" />
-          </div>
-          <h2 className="text-xl font-bold text-white">تعذر تحميل لوحة التحكم</h2>
-          <p className="body-text text-slate-300">{error}</p>
-          <button
-            type="button"
-            onClick={fetchStats}
-            className="btn-admin-md bg-[#c3f937] text-[#0c1018] font-bold shadow-md shadow-[#c3f937]/20 cursor-pointer"
-          >
-            إعادة المحاولة
-          </button>
-        </div>
+        <AdminErrorState
+          title="تعذر تحميل لوحة القيادة"
+          message={error || "تعذر الاتصال بالخادم. تحقق من اتصالك وحاول مرة أخرى."}
+          onRetry={fetchStats}
+          isRetrying={loading}
+        />
       </div>
     );
   }
@@ -202,9 +152,9 @@ export default function AdminDashboardPage() {
   ).length || 0;
 
   return (
-    <div className="admin-page space-y-8" dir="rtl">
-      {/* ── 1. EXECUTIVE PAGE HEADER ───────────────────────────────── */}
-      <header className="page-header pb-6 border-b border-white/[0.08]">
+    <div className="admin-page space-y-7" dir="rtl">
+      {/* ── 1. PAGE HEADER ───────────────────────────────────────── */}
+      <header className="page-header pb-5 border-b border-white/[0.08]">
         <div className="page-header-copy">
           <h1 className="admin-title font-bold text-white tracking-tight">
             لوحة قيادة BUILDx
@@ -218,7 +168,7 @@ export default function AdminDashboardPage() {
             <div className="flex items-center gap-2 text-xs text-slate-400 pt-1">
               <Clock3 className="w-3.5 h-3.5 text-[#c3f937]" aria-hidden="true" />
               <span>
-                آخر تحديث للبيانات:{" "}
+                آخر تحديث:{" "}
                 <span className="numeric-value font-mono text-slate-300 font-medium">
                   {lastUpdated}
                 </span>
@@ -227,7 +177,6 @@ export default function AdminDashboardPage() {
           )}
         </div>
 
-        {/* Header Actions */}
         <div className="page-header-actions">
           <button
             type="button"
@@ -253,67 +202,58 @@ export default function AdminDashboardPage() {
         </div>
       </header>
 
-      {/* ── 2. METRICS GRID (3 columns wide, 2 medium, 1 mobile) ───────── */}
+      {/* ── 2. KPI CARDS (3→2→1 columns) ─────────────────────────── */}
       <section aria-labelledby="kpi-heading">
         <h2 id="kpi-heading" className="sr-only">مؤشرات الأداء الرئيسية</h2>
         <div className="metrics-grid">
-          {/* 1. Total Applications */}
-          <AdminStatCard
-            title="إجمالي الطلبات المستلمة"
+          <AdminKpiCard
+            title="إجمالي الطلبات"
             value={total}
             description="العدد الكلي للطلبات المكتملة المسجلة عبر البوابة"
             icon={FileText}
             accentColor="lime"
             href="/admin/applications"
-            featured={true}
-            badge={`${formatNumber(total)} طلب`}
           />
 
-          {/* 2. Today's Applications */}
-          <AdminStatCard
+          <AdminKpiCard
             title="طلبات اليوم"
             value={todayCount}
             description="الطلبات الجديدة المستلمة خلال آخر 24 ساعة"
             icon={Clock3}
             accentColor="pink"
-            badge={`+${formatNumber(todayCount)} اليوم`}
           />
 
-          {/* 3. Under Review */}
-          <AdminStatCard
-            title="قيد المراجعة والفرز"
+          <AdminKpiCard
+            title="قيد المراجعة"
             value={stats.by_status?.under_review || 0}
-            description="طلبات يقوم المحكمون بتقييمها واختبارها حالياً"
+            description="طلبات يقوم المحكمون بتقييمها حاليًا"
             icon={Search}
             accentColor="purple"
             href="/admin/applications?status=under_review"
           />
 
-          {/* 4. Preliminary Candidates */}
-          <AdminStatCard
+          <AdminKpiCard
             title="المرشحون مبدئيًا"
             value={stats.by_status?.preliminary_candidate || 0}
-            description="متقدمون اجتازوا الفرز الأولي وجاهزون للقبول النهائي"
+            description="اجتازوا الفرز الأولي وجاهزون للقبول النهائي"
             icon={Star}
             accentColor="gold"
             href="/admin/preliminary"
           />
 
-          {/* 5. Accepted */}
-          <AdminStatCard
+          <AdminKpiCard
             title="المقبولون نهائيًا"
             value={stats.by_status?.accepted || 0}
-            description="تم اعتماد قبولهم في المقاعد الرسمية للمعسكر"
+            description="تم اعتماد قبولهم في المقاعد الرسمية"
             icon={CheckCircle2}
             accentColor="lime"
             href="/admin/accepted"
           />
 
-          {/* 6. Confirmed Attendees */}
-          <AdminStatCard
+          <AdminKpiCard
             title="مؤكدو الحضور"
             value={stats.by_status?.confirmed || 0}
-            description="أكدوا التزامهم التام بحضور أيام المعسكر والهاكاثون"
+            description="أكدوا التزامهم بحضور أيام المعسكر"
             icon={UserCheck}
             accentColor="cyan"
             href="/admin/applications?status=confirmed"
@@ -321,14 +261,14 @@ export default function AdminDashboardPage() {
         </div>
       </section>
 
-      {/* ── 3. DASHBOARD BENTO GRID (12-column system) ──────────────── */}
+      {/* ── 3. BENTO GRID ────────────────────────────────────────── */}
       <div className="dashboard-bento-grid">
-        {/* Admission Pipeline Panel (7 cols) */}
-        <div className="dashboard-panel bento-card col-span-12 lg:col-span-7 flex flex-col justify-between">
+        {/* Selection Pipeline (8 cols) */}
+        <div className="dashboard-panel bento-card col-span-12 lg:col-span-8 flex flex-col justify-between">
             <div>
-              <div className="panel-header">
+              <div className="panel-header" style={{ marginBottom: "16px" }}>
                 <div>
-                  <h2 className="section-title font-bold text-white flex items-center gap-2">
+                  <h2 className="text-[22px] font-bold text-white flex items-center gap-2">
                     <TrendingUp className="w-5 h-5 text-[#c3f937]" aria-hidden="true" />
                     <span>مسار الاختيار والقبول</span>
                   </h2>
@@ -341,9 +281,9 @@ export default function AdminDashboardPage() {
                 </span>
               </div>
 
-              {/* 5 Funnel Stages (Laptop min-h: 132px, Mobile scroll) */}
-              <div className="relative my-4">
-                <div className="flex sm:grid sm:grid-cols-5 gap-[14px] overflow-x-auto pb-3 sm:pb-0 scrollbar-none snap-x">
+              {/* 5 Funnel Stages */}
+              <div className="relative mb-4">
+                <div className="flex sm:grid sm:grid-cols-5 gap-[12px] overflow-x-auto pb-3 sm:pb-0 scrollbar-none snap-x">
                   {pipelineStages.map((stage) => {
                     const pct = total > 0 ? Math.round((stage.count / total) * 100) : 0;
                     const Icon = stage.icon;
@@ -352,9 +292,8 @@ export default function AdminDashboardPage() {
                       <Link
                         key={stage.id}
                         href={stage.href}
-                        className="min-w-[150px] sm:min-w-0 min-h-[132px] p-4 rounded-2xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.08] text-center flex flex-col justify-between items-center transition-all hover:-translate-y-0.5 group focus:outline-none snap-start"
+                        className="min-w-[140px] sm:min-w-0 min-h-[124px] p-3.5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.08] text-center flex flex-col justify-between items-center transition-all hover:-translate-y-0.5 group focus:outline-none snap-start"
                       >
-                        {/* Top: Icon */}
                         <div
                           className="w-8 h-8 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110"
                           style={{ background: `${stage.color}15`, color: stage.color }}
@@ -362,20 +301,18 @@ export default function AdminDashboardPage() {
                           <Icon className="w-4 h-4" aria-hidden="true" />
                         </div>
 
-                        {/* Middle: Name & Big Number */}
                         <div className="space-y-1 my-auto">
-                          <span className="text-xs font-bold text-slate-200 block truncate">
+                          <span className="text-xs font-bold text-slate-200 block">
                             {stage.name}
                           </span>
                           <span
-                            className="text-2xl sm:text-3xl font-black font-mono block leading-none numeric-value"
+                            className="text-2xl sm:text-[28px] font-black font-mono block leading-none numeric-value"
                             style={{ color: stage.color }}
                           >
                             {formatNumber(stage.count)}
                           </span>
                         </div>
 
-                        {/* Bottom: Percent */}
                         <span className="text-xs text-slate-400 font-mono block bg-white/[0.04] px-2.5 py-0.5 rounded-md numeric-value">
                           {pct}%
                         </span>
@@ -383,15 +320,14 @@ export default function AdminDashboardPage() {
                     );
                   })}
                 </div>
-                {/* Mobile scroll hint */}
                 <div className="sm:hidden text-center text-[11px] text-slate-400 flex items-center justify-center gap-1.5 pt-1">
-                  <span>← اسحب أفقياً لاستعراض بقية المراحل →</span>
+                  <span>اسحب أفقيًا لاستعراض بقية المراحل</span>
                 </div>
               </div>
             </div>
 
-            {/* Additional Stage Sub-links */}
-            <div className="pt-4 border-t border-white/[0.08] flex flex-wrap items-center justify-between gap-3 text-xs">
+            {/* Sub-links */}
+            <div className="pt-3.5 border-t border-white/[0.08] flex flex-wrap items-center justify-between gap-3 text-xs">
               <span className="text-slate-400">مسارات المراجعة الإضافية:</span>
               <div className="flex items-center gap-4">
                 <Link
@@ -403,7 +339,7 @@ export default function AdminDashboardPage() {
                     قائمة الانتظار (<span className="numeric-value">{formatNumber(stats.by_status?.waitlisted || 0)}</span>)
                   </span>
                 </Link>
-                <span className="text-slate-600">•</span>
+                <span className="text-slate-600">|</span>
                 <Link
                   href="/admin/rejected"
                   className="inline-flex items-center gap-1.5 text-rose-400 hover:text-rose-300 font-semibold transition-colors"
@@ -417,26 +353,22 @@ export default function AdminDashboardPage() {
             </div>
           </div>
 
-        {/* Level Distribution Panel (5 cols) */}
-        <div className="dashboard-panel bento-card col-span-12 lg:col-span-5 flex flex-col justify-between">
+        {/* Level Distribution (4 cols) */}
+        <div className="dashboard-panel bento-card col-span-12 lg:col-span-4 flex flex-col justify-between">
             <div>
-              <div className="panel-header">
+              <div className="panel-header" style={{ marginBottom: "16px" }}>
                 <div>
-                  <h2 className="section-title font-bold text-white flex items-center gap-2">
+                  <h2 className="text-[22px] font-bold text-white flex items-center gap-2">
                     <Layers className="w-5 h-5 text-[#c3f937]" aria-hidden="true" />
                     <span>توزيع المستويات</span>
                   </h2>
                   <p className="muted-text text-slate-400 mt-1">
-                    نسبة المتقدمين حسب المستوى المسجل في الاستمارة
+                    نسبة المتقدمين حسب المستوى المسجل
                   </p>
                 </div>
-                <span className="text-xs font-semibold text-slate-400 bg-white/[0.04] px-3 py-1.5 rounded-xl border border-white/[0.08] numeric-value">
-                  3 مستويات
-                </span>
               </div>
 
-              {/* Distinct Distribution Items */}
-              <div className="space-y-3 my-4">
+              <div className="space-y-3 mb-4">
                 {/* Foundation */}
                 <div className="distribution-item border-b border-white/[0.05] pb-3">
                   <div className="distribution-header">
@@ -496,8 +428,7 @@ export default function AdminDashboardPage() {
               </div>
             </div>
 
-            {/* Team Environment Preference Footer */}
-            <div className="pt-4 border-t border-white/[0.08] flex items-center justify-between text-xs text-slate-300">
+            <div className="pt-3.5 border-t border-white/[0.08] flex items-center justify-between text-xs text-slate-300">
               <span>تفضيل بيئة الفريق:</span>
               <div className="flex items-center gap-2 font-mono">
                 <span className="px-2.5 py-1 rounded-lg bg-white/[0.04] border border-white/[0.08]">
@@ -510,54 +441,62 @@ export default function AdminDashboardPage() {
             </div>
           </div>
 
-        {/* ── 4. REVIEW PROGRESS & ACTION ALERTS (6 cols each) ──────── */}
-        {/* Reviewer Progress */}
+        {/* Reviewer Progress (6 cols) */}
         <div className="dashboard-panel bento-card col-span-12 lg:col-span-6 flex flex-col justify-between">
             <div>
-              <div className="panel-header">
+              <div className="panel-header" style={{ marginBottom: "16px" }}>
                 <div>
-                  <h2 className="section-title font-bold text-white flex items-center gap-2">
+                  <h2 className="text-[22px] font-bold text-white flex items-center gap-2">
                     <Award className="w-5 h-5 text-[#c3f937]" aria-hidden="true" />
-                    <span>تقدم المحكمين في المراجعة</span>
+                    <span>تقدم المراجعة</span>
                   </h2>
                   <p className="muted-text text-slate-400 mt-1">
-                    متابعة استكمال تقييم طلبات المتقدمين
+                    متابعة استكمال تقييم الطلبات
                   </p>
                 </div>
                 {stats.avg_score_overall !== null && (
                   <span className="text-xs font-mono font-bold text-[#c3f937] bg-[#c3f937]/10 px-3 py-1.5 rounded-xl border border-[#c3f937]/30 numeric-value">
-                    متوسط التقييم: {stats.avg_score_overall} / 5
+                    المتوسط: {stats.avg_score_overall} / 5
                   </span>
                 )}
               </div>
 
-              <div className="grid grid-cols-2 gap-4 my-6">
-                <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.06] text-right space-y-1">
-                  <span className="text-xs text-slate-400 block">طلبات تم تقييمها</span>
-                  <span className="text-3xl font-black font-mono text-emerald-400 block numeric-value">
+              {/* Progress stats */}
+              <div className="grid grid-cols-2 gap-3 mb-4">
+                <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.06] text-right space-y-1">
+                  <span className="text-xs text-slate-400 block">تم تقييمها</span>
+                  <span className="text-2xl font-black font-mono text-emerald-400 block numeric-value">
                     {formatNumber(total - unreviewedCount)}
                   </span>
                   <span className="text-xs text-slate-400 block numeric-value">
-                    نسبة الإنجاز: {total > 0 ? Math.round(((total - unreviewedCount) / total) * 100) : 0}%
+                    {total > 0 ? Math.round(((total - unreviewedCount) / total) * 100) : 0}% مكتملة
                   </span>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.06] text-right space-y-1">
-                  <span className="text-xs text-slate-400 block">طلبات بانتظار التقييم</span>
-                  <span className="text-3xl font-black font-mono text-yellow-400 block numeric-value">
+                <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.06] text-right space-y-1">
+                  <span className="text-xs text-slate-400 block">بانتظار التقييم</span>
+                  <span className="text-2xl font-black font-mono text-yellow-400 block numeric-value">
                     {formatNumber(unreviewedCount)}
                   </span>
-                  <span className="text-xs text-slate-400 block">تحتاج مراجعة المحكمين</span>
+                  <span className="text-xs text-slate-400 block">تحتاج مراجعة</span>
                 </div>
+              </div>
+
+              {/* Progress bar */}
+              <div className="w-full h-2 rounded-full bg-white/[0.08] overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-emerald-400 transition-all duration-700"
+                  style={{ width: `${total > 0 ? Math.round(((total - unreviewedCount) / total) * 100) : 0}%` }}
+                />
               </div>
             </div>
 
-            <div className="pt-4 border-t border-white/[0.08] flex items-center justify-between">
+            <div className="pt-3.5 border-t border-white/[0.08] flex items-center justify-between">
               <Link
                 href="/admin/applications?status=submitted"
                 className="text-xs font-semibold text-[#c3f937] hover:underline flex items-center gap-1"
               >
-                <span>بدء تقييم الطلبات غير المراجعة</span>
+                <span>بدء مراجعة الطلبات غير المكتملة</span>
                 <ChevronLeft className="w-3.5 h-3.5" aria-hidden="true" />
               </Link>
             </div>
@@ -566,17 +505,17 @@ export default function AdminDashboardPage() {
           {/* Action Alerts (6 cols) */}
           <div className="dashboard-panel bento-card col-span-12 lg:col-span-6 flex flex-col justify-between">
             <div>
-              <div className="panel-header">
+              <div className="panel-header" style={{ marginBottom: "16px" }}>
                 <div>
-                  <h2 className="section-title font-bold text-white flex items-center gap-2">
+                  <h2 className="text-[22px] font-bold text-white flex items-center gap-2">
                     <AlertTriangle className="w-5 h-5 text-amber-400" aria-hidden="true" />
-                    <span>تنبيهات تحتاج إجراء</span>
+                    <span>تحتاج إجراء</span>
                   </h2>
-                  <p className="muted-text text-slate-400 mt-1">مهام تتطلب متابعة فورية من الإدارة</p>
+                  <p className="muted-text text-slate-400 mt-1">مهام تتطلب متابعة فورية</p>
                 </div>
               </div>
 
-              <div className="space-y-3 my-4">
+              <div className="space-y-3 mb-4">
                 {unreviewedCount > 0 && (
                   <Link
                     href="/admin/applications?status=submitted"
@@ -610,7 +549,7 @@ export default function AdminDashboardPage() {
                       </div>
                       <div>
                         <span className="text-xs font-bold text-white block">
-                          <span className="numeric-value">{formatNumber(advancedNeedVideoReview)}</span> متقدم بمستوى متقدم يتطلب فحص الفيديو
+                          <span className="numeric-value">{formatNumber(advancedNeedVideoReview)}</span> متقدم يتطلب فحص الفيديو
                         </span>
                         <span className="text-[11px] text-pink-300/80 block mt-0.5">
                           تأكد من صلاحية رابط الفيديو والمشروع
@@ -622,15 +561,15 @@ export default function AdminDashboardPage() {
                 )}
 
                 {unreviewedCount === 0 && advancedNeedVideoReview === 0 && (
-                  <div className="p-8 text-center text-xs text-slate-400 bg-white/[0.02] rounded-2xl border border-white/[0.06]">
-                    <CheckCircle2 className="w-8 h-8 text-emerald-400 mx-auto mb-2" />
-                    <span>لا توجد تنبيهات عاجلة حالياً. جميع الطلبات محدثة.</span>
+                  <div className="p-6 text-center text-xs text-slate-400 bg-white/[0.02] rounded-2xl border border-white/[0.06]">
+                    <CheckCircle2 className="w-7 h-7 text-emerald-400 mx-auto mb-2" />
+                    <span>لا توجد تنبيهات عاجلة حاليًا. جميع الطلبات محدثة.</span>
                   </div>
                 )}
               </div>
             </div>
 
-            <div className="pt-4 border-t border-white/[0.08] text-xs text-slate-400 flex items-center justify-between">
+            <div className="pt-3.5 border-t border-white/[0.08] text-xs text-slate-400 flex items-center justify-between">
               <span>تحديث المعسكر:</span>
               <Link
                 href="/admin/team-builder"
@@ -641,18 +580,17 @@ export default function AdminDashboardPage() {
             </div>
           </div>
 
-        {/* ── 5. GENDER DISTRIBUTION & TOP CITIES (6 cols each) ──────── */}
-        {/* Gender Distribution Section */}
+        {/* Gender Distribution (6 cols) */}
         <div className="dashboard-panel bento-card col-span-12 lg:col-span-6 flex flex-col justify-between">
             <div>
-              <div className="panel-header">
+              <div className="panel-header" style={{ marginBottom: "16px" }}>
                 <div>
-                  <h2 className="section-title font-bold text-white flex items-center gap-2">
+                  <h2 className="text-[22px] font-bold text-white flex items-center gap-2">
                     <Users className="w-5 h-5 text-[#c3f937]" aria-hidden="true" />
-                    <span>توزيع المشاركين حسب الجنس</span>
+                    <span>توزيع الجنس</span>
                   </h2>
                   <p className="muted-text text-slate-400 mt-1">
-                    إحصائيات المتقدمين الذكور والإناث ونسبهم من إجمالي الطلبات
+                    نسب المتقدمين حسب الجنس
                   </p>
                 </div>
                 {total > 0 && (
@@ -663,42 +601,39 @@ export default function AdminDashboardPage() {
               </div>
 
               {total === 0 ? (
-                <div className="py-12 text-center text-xs text-slate-400 bg-white/[0.02] rounded-2xl border border-white/[0.06] my-6">
+                <div className="py-8 text-center text-xs text-slate-400 bg-white/[0.02] rounded-2xl border border-white/[0.06] mb-4">
                   سيظهر توزيع المشاركين بعد استقبال طلبات التسجيل.
                 </div>
               ) : (
-                <div className="my-4 space-y-4">
-                  {/* Horizontal Distribution Bar */}
-                  <div className="space-y-1.5">
-                    <div className="w-full h-3 rounded-full bg-white/[0.08] overflow-hidden flex gap-0.5 p-0.5">
-                      {maleCount > 0 && (
-                        <div
-                          className="h-full rounded-full bg-sky-400 transition-all duration-700"
-                          style={{ width: `${malePct}%` }}
-                          title={`ذكر: ${malePct}%`}
-                        />
-                      )}
-                      {femaleCount > 0 && (
-                        <div
-                          className="h-full rounded-full bg-purple-400 transition-all duration-700"
-                          style={{ width: `${femalePct}%` }}
-                          title={`أنثى: ${femalePct}%`}
-                        />
-                      )}
-                      {unspecifiedCount > 0 && (
-                        <div
-                          className="h-full rounded-full bg-slate-500 transition-all duration-700"
-                          style={{ width: `${unspecifiedPct}%` }}
-                          title={`غير محدد: ${unspecifiedPct}%`}
-                        />
-                      )}
-                    </div>
+                <div className="mb-4 space-y-3">
+                  {/* Distribution bar */}
+                  <div className="w-full h-3 rounded-full bg-white/[0.08] overflow-hidden flex gap-0.5 p-0.5">
+                    {maleCount > 0 && (
+                      <div
+                        className="h-full rounded-full bg-sky-400 transition-all duration-700"
+                        style={{ width: `${malePct}%` }}
+                        title={`ذكر: ${malePct}%`}
+                      />
+                    )}
+                    {femaleCount > 0 && (
+                      <div
+                        className="h-full rounded-full bg-purple-400 transition-all duration-700"
+                        style={{ width: `${femalePct}%` }}
+                        title={`أنثى: ${femalePct}%`}
+                      />
+                    )}
+                    {unspecifiedCount > 0 && (
+                      <div
+                        className="h-full rounded-full bg-slate-500 transition-all duration-700"
+                        style={{ width: `${unspecifiedPct}%` }}
+                        title={`غير محدد: ${unspecifiedPct}%`}
+                      />
+                    )}
                   </div>
 
                   {/* Rows */}
-                  <div className="space-y-3">
-                    {/* Male Row */}
-                    <div className="distribution-item border-b border-white/[0.05] pb-3">
+                  <div className="space-y-2.5">
+                    <div className="distribution-item border-b border-white/[0.05] pb-2.5">
                       <div className="distribution-header">
                         <div className="flex items-center gap-2.5 text-sm font-semibold text-slate-100">
                           <span className="w-2.5 h-2.5 rounded-full bg-sky-400" />
@@ -712,8 +647,7 @@ export default function AdminDashboardPage() {
                       </div>
                     </div>
 
-                    {/* Female Row */}
-                    <div className="distribution-item border-b border-white/[0.05] pb-3">
+                    <div className="distribution-item border-b border-white/[0.05] pb-2.5">
                       <div className="distribution-header">
                         <div className="flex items-center gap-2.5 text-sm font-semibold text-slate-100">
                           <span className="w-2.5 h-2.5 rounded-full bg-purple-400" />
@@ -727,7 +661,6 @@ export default function AdminDashboardPage() {
                       </div>
                     </div>
 
-                    {/* Unspecified Row (for legacy records) */}
                     {unspecifiedCount > 0 && (
                       <div className="distribution-item pb-1">
                         <div className="distribution-header">
@@ -748,10 +681,10 @@ export default function AdminDashboardPage() {
               )}
             </div>
 
-            <div className="pt-4 border-t border-white/[0.08] text-xs text-slate-400 flex items-center justify-between">
-              <span>بيانات حقيقية من Supabase:</span>
+            <div className="pt-3.5 border-t border-white/[0.08] text-xs text-slate-400 flex items-center justify-between">
+              <span>إجمالي المسجلين:</span>
               <span className="text-slate-300 font-mono numeric-value">
-                {total > 0 ? `${formatNumber(total)} طلب مسجل` : "بانتظار التسجيل"}
+                {total > 0 ? `${formatNumber(total)} طلب` : "بانتظار التسجيل"}
               </span>
             </div>
           </div>
@@ -759,59 +692,72 @@ export default function AdminDashboardPage() {
           {/* Top Cities (6 cols) */}
           <div className="dashboard-panel bento-card col-span-12 lg:col-span-6 flex flex-col justify-between">
             <div>
-              <div className="panel-header">
+              <div className="panel-header" style={{ marginBottom: "16px" }}>
                 <div>
-                  <h2 className="section-title font-bold text-white flex items-center gap-2">
+                  <h2 className="text-[22px] font-bold text-white flex items-center gap-2">
                     <MapPin className="w-5 h-5 text-[#c3f937]" aria-hidden="true" />
                     <span>توزيع المدن</span>
                   </h2>
-                  <p className="muted-text text-slate-400 mt-1">التوزيع الجغرافي لأعلى المدن تسجيلاً</p>
+                  <p className="muted-text text-slate-400 mt-1">التوزيع الجغرافي لأعلى المدن تسجيلًا</p>
                 </div>
               </div>
 
-              <div className="space-y-3.5 my-4">
+              <div className="space-y-3 mb-4">
                 {stats.top_cities && stats.top_cities.length > 0 ? (
-                  stats.top_cities.map((c, i) => {
-                    const pct = total > 0 ? Math.round((c.count / total) * 100) : 0;
-                    return (
-                      <div key={i} className="distribution-item border-b border-white/[0.05] pb-3 last:border-0">
-                        <div className="distribution-header">
-                          <span className="text-slate-100 font-semibold text-sm flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-[#c3f937]" />
-                            <span>{c.city}</span>
-                          </span>
-                          <span className="font-mono text-slate-300 text-sm numeric-value">
-                            {formatNumber(c.count)} ({pct}%)
-                          </span>
-                        </div>
-                        <div className="w-full h-1.5 rounded-full bg-white/[0.08] overflow-hidden mt-2.5">
-                          <div
-                            className="h-full rounded-full bg-[#c3f937]"
-                            style={{ width: `${pct}%` }}
-                          />
-                        </div>
+                  stats.top_cities.length === 1 ? (
+                    // Single-city compact highlight
+                    <div className="p-4 rounded-2xl bg-[#c3f937]/5 border border-[#c3f937]/15 flex items-center justify-between">
+                      <div className="flex items-center gap-2.5">
+                        <MapPin className="w-5 h-5 text-[#c3f937]" />
+                        <span className="text-base font-bold text-white">{stats.top_cities[0].city}</span>
                       </div>
-                    );
-                  })
+                      <span className="font-mono font-bold text-[#c3f937] text-lg numeric-value">
+                        {formatNumber(stats.top_cities[0].count)}
+                      </span>
+                    </div>
+                  ) : (
+                    stats.top_cities.map((c, i) => {
+                      const pct = total > 0 ? Math.round((c.count / total) * 100) : 0;
+                      return (
+                        <div key={i} className="distribution-item border-b border-white/[0.05] pb-2.5 last:border-0">
+                          <div className="distribution-header">
+                            <span className="text-slate-100 font-semibold text-sm flex items-center gap-2">
+                              <span className="w-1.5 h-1.5 rounded-full bg-[#c3f937]" />
+                              <span>{c.city}</span>
+                            </span>
+                            <span className="font-mono text-slate-300 text-sm numeric-value">
+                              {formatNumber(c.count)} ({pct}%)
+                            </span>
+                          </div>
+                          <div className="w-full h-1.5 rounded-full bg-white/[0.08] overflow-hidden mt-2">
+                            <div
+                              className="h-full rounded-full bg-[#c3f937]"
+                              style={{ width: `${pct}%` }}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })
+                  )
                 ) : (
-                  <div className="py-8 text-center text-xs text-slate-400">
+                  <div className="py-6 text-center text-xs text-slate-400">
                     لا توجد بيانات مدن مسجلة حتى الآن.
                   </div>
                 )}
               </div>
             </div>
 
-            <div className="pt-4 border-t border-white/[0.08] text-xs text-slate-400 flex items-center gap-1.5">
+            <div className="pt-3.5 border-t border-white/[0.08] text-xs text-slate-400 flex items-center gap-1.5">
               <MapPin className="w-3.5 h-3.5 text-[#c3f937]" />
               <span>المعسكر حضوري في مدينة الرياض</span>
             </div>
           </div>
 
-        {/* ── 6. RECENT APPLICATIONS SECTION (12 cols) ─────────────── */}
+        {/* Recent Applications (12 cols) */}
         <div className="dashboard-panel bento-card col-span-12">
-          <div className="panel-header">
+          <div className="panel-header" style={{ marginBottom: "12px" }}>
             <div>
-              <h2 className="section-title font-bold text-white flex items-center gap-2">
+              <h2 className="text-[22px] font-bold text-white flex items-center gap-2">
                 <Activity className="w-5 h-5 text-[#c3f937]" aria-hidden="true" />
                 <span>أحدث الطلبات</span>
               </h2>
@@ -826,8 +772,7 @@ export default function AdminDashboardPage() {
             </Link>
           </div>
 
-          {/* Applications list using .recent-application */}
-          <div className="divide-y divide-white/[0.05] my-2">
+          <div className="divide-y divide-white/[0.05]">
             {stats.recent_applications && stats.recent_applications.length > 0 ? (
               stats.recent_applications.slice(0, 5).map((app: ApplicationListItem) => (
                 <div
@@ -846,7 +791,7 @@ export default function AdminDashboardPage() {
                       <span className="application-id text-slate-300 bg-white/[0.04] px-2 py-0.5 rounded border border-white/[0.06]">
                         {toLatinDigits(app.reference_code)}
                       </span>
-                      <span>•</span>
+                      <span>|</span>
                       <span className="text-slate-300">{app.city || "الرياض"}</span>
                     </div>
                   </div>
@@ -879,13 +824,13 @@ export default function AdminDashboardPage() {
                 </div>
               ))
             ) : (
-              <div className="py-10 text-center text-xs text-slate-400">
+              <div className="py-8 text-center text-xs text-slate-400">
                 لا توجد طلبات مسجلة بعد. ستظهر أحدث الطلبات هنا مباشرة فور تسجيلها.
               </div>
             )}
           </div>
 
-          <div className="pt-4 border-t border-white/[0.06] text-xs text-slate-400 flex items-center justify-between">
+          <div className="pt-3.5 border-t border-white/[0.06] text-xs text-slate-400 flex items-center justify-between mt-2">
             <span className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
               <span>تحديث تلقائي لحظي للبيانات</span>

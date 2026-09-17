@@ -2,12 +2,10 @@
 import React, { useState, useEffect, useImperativeHandle, forwardRef, useMemo } from "react";
 import type { ApplicationReview, OverallRecommendation } from "@/types/admin";
 import {
-  Star,
   CheckCircle2,
   Save,
   Award,
   AlertCircle,
-  Clock,
   Send,
   ChevronDown,
   ChevronUp,
@@ -15,8 +13,6 @@ import {
   HelpCircle,
   Hourglass,
   ThumbsDown,
-  FileText,
-  MessageSquare,
 } from "lucide-react";
 import { toLatinDigits } from "@/lib/admin/formatters";
 

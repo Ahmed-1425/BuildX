@@ -145,11 +145,12 @@ export function ApplicantProfileModal({
       closeBtnRef.current?.focus();
     }, 50);
 
+    const returnFocusEl = returnFocusRef?.current;
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
       clearTimeout(timer);
-      if (returnFocusRef?.current) {
-        returnFocusRef.current.focus();
+      if (returnFocusEl) {
+        returnFocusEl.focus();
       }
     };
   }, [isModalOpen, applicant, onClose, returnFocusRef]);
@@ -178,7 +179,7 @@ export function ApplicantProfileModal({
       return { calculatedAge: null, isBirthDateInvalid: true };
     }
     return { calculatedAge: age, isBirthDateInvalid: false };
-  }, [applicant?.birth_date]);
+  }, [applicant]);
 
   // Extract professional links
   const links = useMemo(() => {

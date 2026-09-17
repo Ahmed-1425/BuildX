@@ -1,8 +1,18 @@
 "use client";
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLanguage } from "@/context/LanguageContext";
 import { isValidSaudiPhone, normalizePhone } from "@/lib/validation/applicationSchema";
-import type { FormState, PersonalData, LevelData, Level, Gender, TeamEnvPreference, FoundationAnswers, PractitionerAnswers, AdvancedAnswers } from "@/types/registration";
+import type {
+  FormState,
+  PersonalData,
+  LevelData,
+  Level,
+  Gender,
+  TeamEnvPreference,
+  FoundationAnswers,
+  PractitionerAnswers,
+  AdvancedAnswers,
+} from "@/types/registration";
 import StepIndicator from "./StepIndicator";
 import FormNavigation from "./FormNavigation";
 import Step1Personal from "./steps/Step1Personal";
@@ -14,14 +24,28 @@ import Step6Submit from "./steps/Step6Submit";
 import SuccessScreen from "./SuccessScreen";
 import Image from "next/image";
 import Link from "next/link";
+import { AlertCircle, AlertTriangle, ArrowRight, ArrowLeft, CheckCircle2, X } from "lucide-react";
+import {
+  type FormValidationError,
+  validatePersonal,
+  validateAnswers,
+  validateDeclarations,
+  validateAllSteps,
+  getStepsWithErrors,
+  translateSubmissionError,
+  QUESTION_LABELS,
+} from "@/lib/validation/registrationValidator";
 
 // ── Draft helpers ──────────────────────────────────────────────
 const DRAFT_KEY = "buildx-reg-draft";
 const SUCCESS_KEY = "buildx-reg-success";
 
 function saveDraft(state: FormState) {
-  try { localStorage.setItem(DRAFT_KEY, JSON.stringify(state)); } catch {}
+  try {
+    localStorage.setItem(DRAFT_KEY, JSON.stringify(state));
+  } catch {}
 }
+
 function loadDraft(): FormState | null {
   try {
     const s = localStorage.getItem(DRAFT_KEY);
@@ -38,10 +62,15 @@ function loadDraft(): FormState | null {
         ...(parsed.declarations || {}),
       },
     };
-  } catch { return null; }
+  } catch {
+    return null;
+  }
 }
+
 function clearDraft() {
-  try { localStorage.removeItem(DRAFT_KEY); } catch {}
+  try {
+    localStorage.removeItem(DRAFT_KEY);
+  } catch {}
 }
 
 // ── Initial state ──────────────────────────────────────────────
@@ -73,9 +102,18 @@ function makeIdempotencyKey(): string {
 }
 
 const emptyPersonal: PersonalData = {
-  full_name: "", birth_date: "", gender: "", phone: "", email: "", email_confirm: "",
-  city: "", city_other: "", organization: "", specialization: "",
-  current_status: "", current_status_other: "",
+  full_name: "",
+  birth_date: "",
+  gender: "",
+  phone: "",
+  email: "",
+  email_confirm: "",
+  city: "",
+  city_other: "",
+  organization: "",
+  specialization: "",
+  current_status: "",
+  current_status_other: "",
 };
 
 function makeInitialState(): FormState {
@@ -85,66 +123,55 @@ function makeInitialState(): FormState {
     portfolio_links: [],
     professional_links: [],
     team_env: "",
-    declarations: { information_accurate: false, full_attendance: false, application_not_acceptance: false, data_processing: false, laptop_commitment: false },
+    declarations: {
+      information_accurate: false,
+      full_attendance: false,
+      application_not_acceptance: false,
+      data_processing: false,
+      laptop_commitment: false,
+    },
     currentStep: 1,
     idempotency_key: makeIdempotencyKey(),
   };
 }
 
 // ── Empty answers per level ────────────────────────────────────
-const emptyFoundation: FoundationAnswers = { technical_experience: "", vibe_coding_understanding: "", motivation: "", problem_and_solution: "", self_learning: "", team_contribution: "" };
-const emptyPractitioner: PractitionerAnswers = { programming_experience: "", tools_and_technologies: "", previous_project: "", ai_usage: "", registration_page_prompt: "", debugging_approach: "", team_contribution: "", growth_skill: "" };
-const emptyAdvanced: AdvancedAnswers = { strongest_product: "", idea_to_mvp: "", vibe_coding_workflow: "", advanced_prompt_example: "", hardest_problem: "", team_leadership: "", mvp_prioritization: "", independent_capability: "", video_url: "", video_access_confirmed: false };
+const emptyFoundation: FoundationAnswers = {
+  technical_experience: "",
+  vibe_coding_understanding: "",
+  motivation: "",
+  problem_and_solution: "",
+  self_learning: "",
+  team_contribution: "",
+};
 
-// ── Validation helpers ─────────────────────────────────────────
-function validatePersonal(p: PersonalData, locale: string): Partial<Record<keyof PersonalData, string>> {
-  const e: Partial<Record<keyof PersonalData, string>> = {};
-  const ar = locale === "ar";
-  const trim = (v: string) => v.trim().replace(/\s+/g, " ");
-  const name = trim(p.full_name);
-  if (!name) e.full_name = ar ? "الاسم الثلاثي مطلوب" : "Full name is required";
-  else if (name.split(" ").filter(Boolean).length < 3) e.full_name = ar ? "يرجى إدخال الاسم الثلاثي كاملاً" : "Please enter your full three-part name";
-  else if (/[0-9!@#$%^&*()\[\]{};:'",<>?/\\|`~]/.test(name)) e.full_name = ar ? "الاسم يحتوي على رموز غير مسموح بها" : "Name contains invalid characters";
-  if (!p.birth_date) e.birth_date = ar ? "تاريخ الميلاد مطلوب" : "Date of birth is required";
-  else if (new Date(p.birth_date) >= new Date()) e.birth_date = ar ? "تاريخ الميلاد غير صالح" : "Invalid date of birth";
-  if (!p.gender) e.gender = ar ? "يرجى اختيار الجنس للمتابعة." : "Please select your gender to proceed.";
-  if (!p.phone) e.phone = ar ? "رقم الجوال مطلوب" : "Mobile number is required";
-  else if (!isValidSaudiPhone(p.phone)) e.phone = ar ? "رقم الجوال غير صالح. أدخل رقماً سعودياً صحيحاً" : "Invalid mobile number. Enter a valid Saudi number";
-  if (!p.email) e.email = ar ? "البريد الإلكتروني مطلوب" : "Email is required";
-  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(p.email)) e.email = ar ? "البريد الإلكتروني غير صالح" : "Invalid email address";
-  if (!p.email_confirm) e.email_confirm = ar ? "تأكيد البريد الإلكتروني مطلوب" : "Email confirmation is required";
-  else if (p.email.toLowerCase().trim() !== p.email_confirm.toLowerCase().trim()) e.email_confirm = ar ? "البريد الإلكتروني غير متطابق" : "Emails do not match";
-  if (!p.city) e.city = ar ? "المدينة مطلوبة" : "City is required";
-  if ((p.city === "أخرى" || p.city === "Other") && !p.city_other.trim()) e.city_other = ar ? "يرجى كتابة اسم مدينتك" : "Please enter your city";
-  if (!p.organization.trim()) e.organization = ar ? "جهة الدراسة أو العمل مطلوبة" : "Organization is required";
-  if (!p.specialization.trim()) e.specialization = ar ? "التخصص أو المجال مطلوب" : "Specialization is required";
-  if (!p.current_status) e.current_status = ar ? "يرجى اختيار حالتك الحالية" : "Please select your current status";
-  if (p.current_status === "other" && !p.current_status_other.trim()) e.current_status_other = ar ? "يرجى تحديد حالتك" : "Please specify your status";
-  return e;
-}
+const emptyPractitioner: PractitionerAnswers = {
+  programming_experience: "",
+  tools_and_technologies: "",
+  previous_project: "",
+  ai_usage: "",
+  registration_page_prompt: "",
+  debugging_approach: "",
+  team_contribution: "",
+  growth_skill: "",
+};
 
-function validateAnswers(levelData: LevelData, locale: string): Record<string, string> {
-  const e: Record<string, string> = {};
-  const ar = locale === "ar";
-  const MIN = 40;
-  const msg = (field: string) => ar ? `يرجى الإجابة بما لا يقل عن ${MIN} حرفاً` : `Answer must be at least ${MIN} characters`;
+const emptyAdvanced: AdvancedAnswers = {
+  strongest_product: "",
+  idea_to_mvp: "",
+  vibe_coding_workflow: "",
+  advanced_prompt_example: "",
+  hardest_problem: "",
+  team_leadership: "",
+  mvp_prioritization: "",
+  independent_capability: "",
+  video_url: "",
+  video_access_confirmed: false,
+};
 
-  const answers = levelData.answers as unknown as Record<string, string | boolean>;
-  for (const [key, val] of Object.entries(answers)) {
-    if (key === "video_access_confirmed") {
-      if (levelData.level === "advanced" && !val) e[key] = ar ? "يجب تأكيد صلاحية الوصول للفيديو" : "Must confirm video access";
-    } else if (key === "video_url") {
-      if (levelData.level === "advanced") {
-        if (!val || typeof val !== "string" || !val.startsWith("http")) e[key] = ar ? "رابط الفيديو مطلوب ويجب أن يبدأ بـ https://" : "Video URL is required and must start with https://";
-      }
-    } else {
-      if (typeof val === "string" && val.trim().length < MIN) e[key] = msg(key);
-    }
-  }
-  return e;
-}
 
-// ── Main component ─────────────────────────────────────────────
+
+// ── Main RegistrationForm Component ────────────────────────────
 export default function RegistrationForm() {
   const { locale } = useLanguage();
   const ar = locale === "ar";
@@ -157,21 +184,34 @@ export default function RegistrationForm() {
   const [declarationErrors, setDeclarationErrors] = useState<Partial<Record<keyof FormState["declarations"], string>>>({});
   const [successCode, setSuccessCode] = useState<string | null>(null);
   const [draftSaved, setDraftSaved] = useState(false);
+  const [pendingDraft, setPendingDraft] = useState<FormState | null>(null);
+  const [emailToast, setEmailToast] = useState("");
   const [pendingLevelChange, setPendingLevelChange] = useState<Level | null>(null);
+
+  // Level 2 Multi-Step Error Summary Modal State
+  const [validationSummaryErrors, setValidationSummaryErrors] = useState<FormValidationError[]>([]);
+  const [showValidationSummary, setShowValidationSummary] = useState(false);
+
+  // Synchronous double-submit lock ref & element refs
+  const submittingRef = useRef(false);
   const submitStartTime = useRef<number>(0);
   const topRef = useRef<HTMLDivElement>(null);
+  const stepCardRef = useRef<HTMLDivElement>(null);
+  const isFirstMount = useRef(true);
+  const isJumpingToFieldRef = useRef(false);
 
-  // Load draft on mount
+  // Load draft on mount with user-confirmation prompt
   useEffect(() => {
     const saved = loadDraft();
-    if (saved) setState(saved);
-    // Check if already submitted
+    if (saved && (saved.personal.full_name?.trim() || saved.currentStep > 1 || saved.levelData)) {
+      setPendingDraft(saved);
+    }
     const successRef = localStorage.getItem(SUCCESS_KEY);
     if (successRef) setSuccessCode(successRef);
     setMounted(true);
   }, []);
 
-  // Warn before leave
+  // Warn before leave if dirty
   useEffect(() => {
     function handleBeforeUnload(e: BeforeUnloadEvent) {
       if (state.currentStep > 1 && !successCode) {
@@ -183,7 +223,7 @@ export default function RegistrationForm() {
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [state.currentStep, successCode]);
 
-  // Auto-save draft
+  // Auto-save draft with debouncing
   const draftTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   function scheduleDraft(s: FormState) {
     if (draftTimerRef.current) clearTimeout(draftTimerRef.current);
@@ -198,15 +238,68 @@ export default function RegistrationForm() {
     setState((prev) => {
       const next = { ...prev, ...partial };
       scheduleDraft(next);
+
+      // Real-time error list update if summary modal is currently open or populated
+      if (validationSummaryErrors.length > 0) {
+        const remaining = validateAllSteps(next);
+        setValidationSummaryErrors(remaining);
+        if (remaining.length === 0) {
+          setShowValidationSummary(false);
+        }
+      }
+
       return next;
     });
   }
 
-  function scrollTop() {
-    topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  // ── Scroll & Reduced-Motion Handlers ────────────────────────
+  function getScrollBehavior(): ScrollBehavior {
+    if (typeof window === "undefined") return "smooth";
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      ? "auto"
+      : "smooth";
   }
 
-  // ── Level change with confirmation ─────────────────────────
+  function scrollToFormTop(overrideBehavior?: ScrollBehavior) {
+    if (typeof window === "undefined") return;
+
+    const behavior = overrideBehavior || getScrollBehavior();
+
+    // Use requestAnimationFrame to ensure newly rendered step is committed & sized in DOM
+    requestAnimationFrame(() => {
+      const targetEl = stepCardRef.current || topRef.current;
+      if (!targetEl) return;
+
+      const header = document.querySelector(".reg-page-header");
+      const headerHeight = header ? header.getBoundingClientRect().height : 68;
+
+      // Comfort offset so step header and first field are cleanly visible below sticky header & banner
+      const topPadding = 20;
+      const rect = targetEl.getBoundingClientRect();
+      const targetY = window.pageYOffset + rect.top - (headerHeight + topPadding);
+
+      window.scrollTo({
+        top: Math.max(0, Math.round(targetY)),
+        behavior,
+      });
+    });
+  }
+
+  // Effect runs AFTER step change is committed to the DOM
+  useEffect(() => {
+    if (isFirstMount.current) {
+      isFirstMount.current = false;
+      return;
+    }
+
+    if (isJumpingToFieldRef.current) {
+      return;
+    }
+
+    scrollToFormTop();
+  }, [state.currentStep]);
+
+  // Level change confirmation
   function requestLevelChange(newLevel: Level) {
     if (state.levelData && state.levelData.level !== newLevel) {
       setPendingLevelChange(newLevel);
@@ -224,19 +317,25 @@ export default function RegistrationForm() {
     setPendingLevelChange(null);
   }
 
-  // ── Validation per step ────────────────────────────────────
+  // ── Step Navigation & Level 1 Validation ─────────────────────
   function validateCurrentStep(): boolean {
     const { currentStep } = state;
     if (currentStep === 1) {
       const e = validatePersonal(state.personal, locale);
       if (Object.keys(e).length > 0) {
         setErrors(e as Record<string, string>);
+        const cleanEmail = (state.personal.email || "").trim().toLowerCase();
+        const cleanConfirm = (state.personal.email_confirm || "").trim().toLowerCase();
+        if (cleanConfirm && cleanEmail !== cleanConfirm) {
+          setEmailToast(ar ? "البريد الإلكتروني غير متطابق، تأكد من كتابته بالشكل نفسه." : "Emails do not match, please ensure they are identical.");
+          setTimeout(() => setEmailToast(""), 4500);
+        }
         return false;
       }
     }
     if (currentStep === 2) {
       if (!state.levelData) {
-        setErrors({ level: ar ? "يرجى اختيار مستواك" : "Please select your level" });
+        setErrors({ level: ar ? "يرجى اختيار مستواك (مبتدئ، ممارس، متقدم)" : "Please select your level" });
         return false;
       }
     }
@@ -250,7 +349,17 @@ export default function RegistrationForm() {
     }
     if (currentStep === 4) {
       if (!state.team_env) {
-        setErrors({ team_env: ar ? "يرجى الإجابة على هذا السؤال" : "Please answer this question" });
+        setErrors({ team_env: ar ? "يرجى الإجابة على سؤال بيئة الفريق" : "Please answer this question" });
+        return false;
+      }
+    }
+    if (currentStep === 5) {
+      // Step 5 Review -> Step 6: Verify all prior steps are completed
+      const allErrors = validateAllSteps(state);
+      const priorErrors = allErrors.filter((e) => e.step < 6);
+      if (priorErrors.length > 0) {
+        setValidationSummaryErrors(allErrors);
+        setShowValidationSummary(true);
         return false;
       }
     }
@@ -260,54 +369,129 @@ export default function RegistrationForm() {
 
   function goNext() {
     if (!validateCurrentStep()) {
-      // Scroll to first error
-      const firstError = document.querySelector("[aria-invalid='true'], .reg-error");
-      firstError?.scrollIntoView({ behavior: "smooth", block: "center" });
+      // Smoothly scroll to and focus first invalid field on current step
+      const behavior = getScrollBehavior();
+      requestAnimationFrame(() => {
+        const firstError = document.querySelector(
+          "[aria-invalid='true'], .reg-input--error, .reg-error, .reg-declaration-row--error, .reg-checkbox-row--error"
+        );
+        if (firstError) {
+          const fieldEl =
+            firstError.closest(".reg-field")?.querySelector("input, textarea, select, [role='radiogroup']") ||
+            firstError;
+
+          fieldEl.scrollIntoView({ behavior, block: "center" });
+          if (typeof (fieldEl as HTMLElement).focus === "function") {
+            (fieldEl as HTMLElement).focus({ preventScroll: true });
+          }
+        }
+      });
       return;
     }
     const next = state.currentStep + 1;
     update({ currentStep: Math.min(next, 6) });
-    scrollTop();
   }
 
   function goPrev() {
     setErrors({});
     update({ currentStep: Math.max(state.currentStep - 1, 1) });
-    scrollTop();
   }
 
   function goToStep(step: number) {
     setErrors({});
+    if (step === state.currentStep) {
+      scrollToFormTop();
+      return;
+    }
     update({ currentStep: step });
-    scrollTop();
   }
 
-  // ── Submit ─────────────────────────────────────────────────
+  // ── Jump to Field with Focus & Pulse Animation ────────────────
+  function handleJumpToField(step: number, fieldId: string) {
+    setShowValidationSummary(false);
+    isJumpingToFieldRef.current = true;
+
+    const behavior = getScrollBehavior();
+
+    function focusTargetField() {
+      const el =
+        document.getElementById(fieldId) ||
+        document.querySelector(`[name="${fieldId}"]`) ||
+        document.querySelector(`#check_${fieldId}`);
+
+      if (el) {
+        el.scrollIntoView({ behavior, block: "center" });
+        if (typeof (el as HTMLElement).focus === "function") {
+          (el as HTMLElement).focus({ preventScroll: true });
+        }
+        el.classList.add("reg-field-highlight");
+        setTimeout(() => {
+          el.classList.remove("reg-field-highlight");
+          isJumpingToFieldRef.current = false;
+        }, 3600);
+      } else {
+        isJumpingToFieldRef.current = false;
+      }
+    }
+
+    if (step !== state.currentStep) {
+      update({ currentStep: step });
+      setTimeout(() => {
+        focusTargetField();
+      }, 240);
+    } else {
+      focusTargetField();
+    }
+  }
+
+  // ── Final Submit Handler with Double-Submit Lock & Retries ─
   async function handleSubmit() {
-    if (isSubmitting) return;
-    if (!state.levelData || !state.team_env) return;
-
-    if (!state.declarations.laptop_commitment) {
-      const msg = locale === "ar"
-        ? "يجب الإقرار بتوفر جهاز محمول والالتزام بإحضاره لإكمال التسجيل."
-        : "You must commit to having and bringing a laptop to complete registration.";
-      setSubmitError(msg);
-      setDeclarationErrors({ laptop_commitment: msg });
+    // 1. Synchronous double-submit lock check
+    if (submittingRef.current || isSubmitting) {
       return;
     }
 
-    const allChecked = Object.values(state.declarations).every(Boolean);
-    if (!allChecked) {
-      const msg = locale === "ar"
-        ? "يرجى الموافقة على جميع الإقرارات أعلاه لتفعيل زر التسليم."
-        : "Please confirm all declarations above to enable the submit button.";
-      setSubmitError(msg);
+    // 2. Comprehensive validation check across all steps
+    const allErrors = validateAllSteps(state);
+    if (allErrors.length > 0) {
+      setValidationSummaryErrors(allErrors);
+      setShowValidationSummary(true);
+
+      // Strict laptop commitment enforcement
+      if (!state.declarations.laptop_commitment) {
+        const laptopMsg = ar
+          ? "يجب الإقرار بتوفر جهاز محمول صالح للاستخدام والالتزام بإحضاره."
+          : "You must commit to having and bringing a functional laptop.";
+        setDeclarationErrors({ laptop_commitment: laptopMsg });
+        setSubmitError(laptopMsg);
+        if (state.currentStep !== 6) {
+          update({ currentStep: 6 });
+        }
+        setTimeout(() => {
+          const el = document.getElementById("laptop_commitment") || document.getElementById("check_laptop_commitment");
+          el?.scrollIntoView({ behavior: getScrollBehavior(), block: "center" });
+          (el as HTMLElement)?.focus?.();
+        }, 220);
+      } else {
+        setSubmitError(
+          ar
+            ? "يرجى إكمال جميع الحقول المطلوبة والموافقة على جميع الإقرارات لتسليم الطلب."
+            : "Please complete all required fields and confirm all declarations to submit."
+        );
+      }
       return;
     }
 
+    if (!state.levelData || !state.team_env) {
+      return;
+    }
+
+    // 3. Acquire lock immediately
+    submittingRef.current = true;
+    setIsSubmitting(true);
     setSubmitError("");
     setDeclarationErrors({});
-    setIsSubmitting(true);
+    submitStartTime.current = Date.now();
 
     const answers = state.levelData.answers as unknown as Record<string, string | boolean>;
     const payload = {
@@ -326,7 +510,8 @@ export default function RegistrationForm() {
       portfolio_links: state.portfolio_links.filter((l) => l.trim()),
       professional_links: state.professional_links.filter((l) => l.trim()),
       advanced_video_url: state.levelData.level === "advanced" ? (answers.video_url as string) : undefined,
-      advanced_video_access_confirmed: state.levelData.level === "advanced" ? (answers.video_access_confirmed as boolean) : undefined,
+      advanced_video_access_confirmed:
+        state.levelData.level === "advanced" ? (answers.video_access_confirmed as boolean) : undefined,
       team_environment_preference: state.team_env as TeamEnvPreference,
       declaration_information_accurate: state.declarations.information_accurate,
       declaration_full_attendance: state.declarations.full_attendance,
@@ -338,36 +523,73 @@ export default function RegistrationForm() {
       submitted_at_client: submitStartTime.current,
     };
 
-    try {
-      const res = await fetch("/api/applications", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+    // Safe submission attempt with bounded exponential backoff & jitter (max 2 retries for 429/503/network)
+    const MAX_RETRIES = 2;
+    let attempt = 0;
+    let lastErrorMsg = "";
 
-      const data = await res.json();
+    while (attempt <= MAX_RETRIES) {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 25000);
 
-      if (data.success) {
-        clearDraft();
-        localStorage.setItem(SUCCESS_KEY, data.reference_code);
-        setSuccessCode(data.reference_code);
-      } else {
-        setSubmitError(data.error || (ar ? "تعذر تسليم الطلب حاليًا. حاول مرة أخرى بعد قليل." : "Submission failed. Please try again."));
+      try {
+        const res = await fetch("/api/applications", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+          signal: controller.signal,
+        });
+
+        clearTimeout(timeoutId);
+        const data = await res.json().catch(() => null);
+
+        if (res.ok && data?.success && data?.reference_code) {
+          // Confirmed API success: clear draft ONLY now
+          clearDraft();
+          localStorage.setItem(SUCCESS_KEY, data.reference_code);
+          setSuccessCode(data.reference_code);
+          submittingRef.current = false;
+          setIsSubmitting(false);
+          return;
+        }
+
+        // Retry on 429, 502, 503, 504
+        if ((res.status === 429 || res.status === 502 || res.status === 503 || res.status === 504) && attempt < MAX_RETRIES) {
+          attempt++;
+          const retryAfterSec = parseInt(res.headers.get("retry-after") || "0", 10);
+          const backoffMs = retryAfterSec > 0
+            ? retryAfterSec * 1000
+            : Math.min(1000 * Math.pow(2, attempt) + Math.random() * 400, 4000);
+          await new Promise((resolve) => setTimeout(resolve, backoffMs));
+          continue;
+        }
+
+        lastErrorMsg = translateSubmissionError(res.status, data, null, locale);
+        break;
+      } catch (fetchErr: unknown) {
+        clearTimeout(timeoutId);
+        if (attempt < MAX_RETRIES) {
+          attempt++;
+          const backoffMs = Math.min(1000 * Math.pow(2, attempt) + Math.random() * 400, 3500);
+          await new Promise((resolve) => setTimeout(resolve, backoffMs));
+          continue;
+        }
+        lastErrorMsg = translateSubmissionError(0, null, fetchErr, locale);
+        break;
       }
-    } catch {
-      setSubmitError(ar
-        ? "تعذر إرسال الطلب بسبب مشكلة في الاتصال. إجاباتك ما زالت محفوظة على هذا الجهاز، حاول مرة أخرى."
-        : "Failed to submit due to a connection issue. Your answers are still saved on this device. Please try again.");
-    } finally {
-      setIsSubmitting(false);
     }
+
+    setSubmitError(lastErrorMsg || (ar ? "تعذر إرسال الطلب حاليًا. لم نفقد بياناتك، حاول مرة أخرى بعد قليل." : "Could not submit. Try again shortly."));
+    submittingRef.current = false;
+    setIsSubmitting(false);
   }
 
-  // ── Success screen ─────────────────────────────────────────
+  // ── Render Success Screen ──────────────────────────────────
   if (successCode) {
     return <SuccessScreen referenceCode={successCode} />;
   }
 
+  // ── Render Loading State ───────────────────────────────────
   if (!mounted) {
     return (
       <div className="reg-loading">
@@ -379,15 +601,114 @@ export default function RegistrationForm() {
 
   const { currentStep } = state;
 
+  // Group validation errors by step for the summary modal
+  const groupedErrors = validationSummaryErrors.reduce<Record<number, FormValidationError[]>>((acc, err) => {
+    if (!acc[err.step]) acc[err.step] = [];
+    acc[err.step].push(err);
+    return acc;
+  }, {});
+
   return (
     <div className="reg-form-wrap" ref={topRef}>
-      {/* Pending level change confirmation */}
+      {/* ── Floating Email Mismatch Toast ── */}
+      {emailToast && (
+        <div
+          className="fixed top-20 start-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-xl bg-rose-950/95 border border-rose-500 text-rose-200 text-xs sm:text-sm font-bold shadow-2xl flex items-center gap-2"
+          role="alert"
+        >
+          <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+          <span>{emailToast}</span>
+        </div>
+      )}
+
+      {/* ── Level 2 Multi-Step Error Summary Modal ── */}
+      {showValidationSummary && validationSummaryErrors.length > 0 && (
+        <div className="reg-error-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="error-modal-title">
+          <div className="reg-error-modal">
+            <div className="reg-error-modal__header">
+              <div className="reg-error-modal__title-wrap">
+                <AlertTriangle className="w-5 h-5 text-[#fb50c3] shrink-0" aria-hidden="true" />
+                <h3 id="error-modal-title" className="reg-error-modal__title">
+                  {ar ? "لا يمكن إرسال الطلب حتى تكتمل البيانات" : "Cannot submit until required information is complete"}
+                </h3>
+                <span className="reg-error-modal__badge">
+                  {ar ? `تبقى ${validationSummaryErrors.length} حقول لإكمال طلبك` : `${validationSummaryErrors.length} remaining`}
+                </span>
+              </div>
+              <button
+                type="button"
+                className="reg-error-modal__close"
+                onClick={() => setShowValidationSummary(false)}
+                aria-label={ar ? "إغلاق" : "Close"}
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="reg-error-modal__body">
+              <p className="text-xs text-slate-300 leading-relaxed">
+                {ar
+                  ? "يرجى مراجعة وتعبئة الحقول المتبقية التالية لإتاحة إرسال طلبك. يمكنك الضغط على أي حقل للانتقال إليه مباشرةً وتصحيحه:"
+                  : "Please review and complete the following required fields to enable submitting your application. Click on any field to jump directly to it:"}
+              </p>
+
+              {Object.entries(groupedErrors).map(([stepStr, errList]) => {
+                const sNum = parseInt(stepStr, 10);
+                const stepTitle = ar ? errList[0].stepTitleAr : errList[0].stepTitleEn;
+
+                return (
+                  <div key={sNum} className="reg-error-step-group">
+                    <div className="reg-error-step-header">
+                      <span className="w-2 h-2 rounded-full bg-[#c3f937]" />
+                      <span>{stepTitle}</span>
+                    </div>
+
+                    <div className="space-y-2">
+                      {errList.map((err) => (
+                        <button
+                          key={`${err.step}_${err.fieldId}_${err.messageAr}`}
+                          type="button"
+                          onClick={() => handleJumpToField(err.step, err.fieldId)}
+                          className="reg-error-item w-full cursor-pointer group"
+                        >
+                          <div className="reg-error-item__text">
+                            <span className="reg-error-item__field">
+                              {ar ? err.fieldLabelAr : err.fieldLabelEn}
+                            </span>
+                            <span className="reg-error-item__msg">
+                              {ar ? err.messageAr : err.messageEn}
+                            </span>
+                          </div>
+                          <span className="reg-error-item__action flex items-center gap-1">
+                            <span>{ar ? "الانتقال والتصحيح" : "Go to field"}</span>
+                            {ar ? <ArrowLeft className="w-3 h-3" /> : <ArrowRight className="w-3 h-3" />}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="reg-error-modal__footer">
+              <button
+                type="button"
+                className="reg-btn-secondary py-2 px-5 text-xs"
+                onClick={() => setShowValidationSummary(false)}
+              >
+                {ar ? "متابعة التعبئة" : "Continue Editing"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Pending Level Change Confirmation Dialog ── */}
       {pendingLevelChange && (
         <div className="reg-confirm-overlay" role="dialog" aria-modal="true">
           <div className="reg-confirm-box">
-            <p className="reg-confirm-title">
-              {ar ? "تغيير المستوى" : "Change Level"}
-            </p>
+            <p className="reg-confirm-title">{ar ? "تغيير المستوى" : "Change Level"}</p>
             <p className="reg-confirm-body">
               {ar
                 ? "سيؤدي تغيير المستوى إلى حذف إجاباتك السابقة على أسئلة المستوى الحالي. هل تريد المتابعة؟"
@@ -405,18 +726,61 @@ export default function RegistrationForm() {
         </div>
       )}
 
-      {/* Header */}
-      <StepIndicator currentStep={currentStep} />
+      {/* ── Step Indicator Header ── */}
+      <StepIndicator
+        currentStep={currentStep}
+        onStepClick={goToStep}
+        errorSteps={getStepsWithErrors(validationSummaryErrors)}
+      />
 
-      {/* Draft saved toast */}
+      {/* ── Auto-save Draft Toast ── */}
       {draftSaved && (
         <div className="reg-draft-toast" role="status" aria-live="polite">
-          💾 {ar ? "يتم حفظ تقدمك على هذا الجهاز" : "Your progress is saved on this device"}
+          💾 {ar ? "تم حفظ المسودة محليًا" : "Draft saved locally"}
         </div>
       )}
 
-      {/* Step content */}
-      <div className="reg-step-content">
+      {/* ── Draft Restore Prompt Banner ── */}
+      {pendingDraft && (
+        <div className="mb-6 p-4 rounded-2xl bg-[#121622]/95 border border-[#c3f937]/35 shadow-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-in fade-in">
+          <div className="flex items-center gap-3">
+            <span className="text-2xl shrink-0">💾</span>
+            <div>
+              <p className="font-bold text-white text-sm">
+                {ar ? "تم العثور على مسودة محفوظة لطلبك السابق" : "A saved draft was found for your application"}
+              </p>
+              <p className="text-xs text-slate-300">
+                {ar ? "هل ترغب في استعادة إجاباتك ومتابعة التسجيل؟" : "Would you like to restore your saved answers and continue?"}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
+            <button
+              type="button"
+              onClick={() => {
+                clearDraft();
+                setPendingDraft(null);
+              }}
+              className="px-3.5 py-1.5 rounded-xl border border-white/20 text-slate-300 text-xs hover:bg-white/10 transition-colors"
+            >
+              {ar ? "بدء طلب جديد" : "Start Fresh"}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setState(pendingDraft);
+                setPendingDraft(null);
+              }}
+              className="px-4 py-1.5 rounded-xl bg-[#c3f937] text-[#0c1018] text-xs font-bold hover:bg-[#b2e82e] transition-colors shadow-md"
+            >
+              {ar ? "استعادة المسودة" : "Restore Draft"}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ── Active Step Content ── */}
+      <div className="reg-step-content" ref={stepCardRef}>
         {currentStep === 1 && (
           <Step1Personal
             data={state.personal}
@@ -449,9 +813,7 @@ export default function RegistrationForm() {
             error={errors.team_env}
           />
         )}
-        {currentStep === 5 && (
-          <Step5Review formState={state} onEdit={goToStep} />
-        )}
+        {currentStep === 5 && <Step5Review formState={state} onEdit={goToStep} />}
         {currentStep === 6 && (
           <Step6Submit
             declarations={state.declarations}
@@ -474,17 +836,26 @@ export default function RegistrationForm() {
         )}
       </div>
 
-      {/* Navigation */}
+      {/* ── Form Navigation (Steps 1 to 5) ── */}
       {currentStep < 6 && (
         <FormNavigation
           currentStep={currentStep}
           totalSteps={6}
           onPrev={goPrev}
           onNext={goNext}
-          isLastStep={currentStep === 5}
+          isLastStep={false}
           isSubmitting={isSubmitting}
+          nextLabel={
+            currentStep === 5
+              ? ar
+                ? "الانتقال إلى الإقرار والتسليم ←"
+                : "Proceed to Declaration & Submit →"
+              : undefined
+          }
         />
       )}
+
+      {/* ── Navigation for Step 6 ── */}
       {currentStep === 6 && state.currentStep > 1 && (
         <div className="reg-nav reg-nav--step6">
           <button type="button" onClick={goPrev} className="reg-btn-secondary" disabled={isSubmitting}>

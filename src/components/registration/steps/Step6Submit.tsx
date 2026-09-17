@@ -84,20 +84,22 @@ export default function Step6Submit({ declarations, onChange, errors, isSubmitti
           return (
             <label
               key={c.key}
+              id={c.key}
               className={`reg-declaration-row ${
                 isChecked ? "reg-declaration-row--checked" : ""
               } ${errors[c.key] ? "reg-declaration-row--error" : ""}`}
             >
               <input
+                id={`check_${c.key}`}
                 type="checkbox"
                 checked={isChecked}
                 onChange={() => toggle(c.key)}
-                className="reg-checkbox mt-1"
+                className="reg-checkbox mt-1 cursor-pointer"
               />
               <div className="flex-1 space-y-1">
                 <div className="flex items-start gap-2.5">
                   {c.icon && <span>{c.icon}</span>}
-                  <span className="reg-declaration-label font-medium text-slate-100 text-sm leading-relaxed">
+                  <span className="reg-declaration-label font-medium text-slate-100 text-sm leading-relaxed cursor-pointer">
                     {ar ? c.labelAr : c.labelEn}
                   </span>
                 </div>
@@ -107,8 +109,9 @@ export default function Step6Submit({ declarations, onChange, errors, isSubmitti
                   </p>
                 )}
                 {errors[c.key] && (
-                  <p className="text-xs text-rose-400 font-semibold pt-0.5">
-                    {errors[c.key]}
+                  <p className="text-xs text-rose-400 font-semibold pt-0.5 flex items-center gap-1.5">
+                    <span>⚠</span>
+                    <span>{errors[c.key]}</span>
                   </p>
                 )}
               </div>
@@ -128,15 +131,20 @@ export default function Step6Submit({ declarations, onChange, errors, isSubmitti
           type="button"
           onClick={onSubmit}
           disabled={isSubmitting}
-          className={`reg-submit-btn ${allChecked && !isSubmitting ? "reg-submit-btn--ready" : ""}`}
+          className={`reg-submit-btn ${allChecked && !isSubmitting ? "reg-submit-btn--ready" : ""} ${isSubmitting ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
           aria-busy={isSubmitting}
         >
-          {isSubmitting
-            ? (ar ? "جارٍ تسليم طلبك..." : "Submitting your application...")
-            : (ar ? "تسليم الطلب" : "Submit Application")}
+          {isSubmitting ? (
+            <span className="inline-flex items-center justify-center gap-2">
+              <span className="w-4 h-4 border-2 border-[#0c1018] border-t-transparent rounded-full animate-spin" />
+              <span>{ar ? "جارٍ إرسال الطلب..." : "Submitting your application..."}</span>
+            </span>
+          ) : (
+            <span>{ar ? "تسليم الطلب" : "Submit Application"}</span>
+          )}
         </button>
         {!allChecked && !isSubmitting && (
-          <p className="reg-submit-hint">{ar ? "يرجى الموافقة على جميع الإقرارات أعلاه لتفعيل زر التسليم." : "Please confirm all declarations above to enable the submit button."}</p>
+          <p className="reg-submit-hint">{ar ? "يرجى الموافقة على جميع الإقرارات أعلاه لتفعيل تسليم الطلب." : "Please confirm all declarations above to enable application submission."}</p>
         )}
       </div>
 

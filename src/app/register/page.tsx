@@ -88,8 +88,8 @@ export default function RegisterPage() {
           </div>
         ) : (
           <>
-            <div className="mb-6 mx-auto max-w-xl flex items-center justify-center gap-2.5 px-4 py-2.5 rounded-2xl bg-lime/10 border border-lime/30 text-lime text-xs sm:text-sm font-bold text-center shadow-[0_0_15px_rgba(195,249,55,0.08)]">
-              <span className="w-2 h-2 rounded-full bg-lime animate-ping shrink-0" />
+            <div className="reg-notice-banner" role="status" aria-live="polite">
+              <span className="w-2 h-2 rounded-full bg-lime animate-ping shrink-0" aria-hidden="true" />
               <span>
                 {ar
                   ? "تنويه: يُغلق باب التسجيل يوم 21 سبتمبر في تمام الساعة 6:00 مساءً"

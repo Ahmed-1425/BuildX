@@ -188,17 +188,88 @@ export default function Step5Review({ formState, onEdit }: Props) {
         </ReviewSection>
       )}
 
-      {/* Laptop Commitment */}
-      <ReviewSection title={ar ? "الجهاز المحمول والتجهيزات" : "Laptop & Equipment"} onEdit={onEdit} step={6}>
-        <div className="review-row flex items-center justify-between py-1">
-          <span className="review-row__label flex items-center gap-2">
-            <Laptop className="w-4 h-4 text-[#c3f937]" />
-            <span>{ar ? "توفر الجهاز المحمول:" : "Laptop Availability:"}</span>
-          </span>
-          <span className="review-row__value flex items-center gap-1.5 text-emerald-400 font-semibold">
-            <CircleCheck className="w-4 h-4 text-emerald-400" />
-            <span>{ar ? "تم الإقرار والالتزام بإحضاره" : "Acknowledged & Committed to bring"}</span>
-          </span>
+      {/* Mandatory Declarations Review */}
+      <ReviewSection title={ar ? "الإقرارات والالتزامات" : "Declarations & Commitments"} onEdit={onEdit} step={6}>
+        <div className="space-y-2 py-1">
+          {/* Laptop Commitment */}
+          <div className="review-row flex items-center justify-between py-1">
+            <span className="review-row__label flex items-center gap-2">
+              <Laptop className="w-4 h-4 text-[#c3f937] shrink-0" />
+              <span>{ar ? "توفر الجهاز المحمول (Laptop):" : "Laptop Availability:"}</span>
+            </span>
+            {formState.declarations?.laptop_commitment === true ? (
+              <span className="review-row__value flex items-center gap-1.5 text-emerald-400 font-semibold">
+                <CircleCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span>{ar ? "تم الإقرار والالتزام بإحضار الجهاز المحمول" : "Committed to bringing a laptop"}</span>
+              </span>
+            ) : (
+              <span className="review-row__value flex items-center gap-1.5 text-amber-400 font-semibold">
+                <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
+                <span>{ar ? "لم يتم الإقرار بإحضار الجهاز المحمول بعد" : "Laptop commitment not confirmed yet"}</span>
+              </span>
+            )}
+          </div>
+
+          {/* Other Declarations Status */}
+          <div className="review-row flex items-center justify-between py-1">
+            <span className="review-row__label">{ar ? "صحة البيانات والمعلومات:" : "Information Accuracy:"}</span>
+            {formState.declarations?.information_accurate === true ? (
+              <span className="review-row__value flex items-center gap-1.5 text-emerald-400 font-semibold">
+                <CircleCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span>{ar ? "تم الإقرار" : "Confirmed"}</span>
+              </span>
+            ) : (
+              <span className="review-row__value flex items-center gap-1.5 text-amber-400 font-semibold">
+                <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
+                <span>{ar ? "لم يتم الإقرار بعد" : "Not confirmed yet"}</span>
+              </span>
+            )}
+          </div>
+
+          <div className="review-row flex items-center justify-between py-1">
+            <span className="review-row__label">{ar ? "الالتزام بالحضور الكامل:" : "Full Attendance:"}</span>
+            {formState.declarations?.full_attendance === true ? (
+              <span className="review-row__value flex items-center gap-1.5 text-emerald-400 font-semibold">
+                <CircleCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span>{ar ? "تم الإقرار والالتزام" : "Confirmed"}</span>
+              </span>
+            ) : (
+              <span className="review-row__value flex items-center gap-1.5 text-amber-400 font-semibold">
+                <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
+                <span>{ar ? "لم يتم الإقرار بعد" : "Not confirmed yet"}</span>
+              </span>
+            )}
+          </div>
+
+          <div className="review-row flex items-center justify-between py-1">
+            <span className="review-row__label">{ar ? "شروط المفاضلة والقبول:" : "Selection & Capacity Terms:"}</span>
+            {formState.declarations?.application_not_acceptance === true ? (
+              <span className="review-row__value flex items-center gap-1.5 text-emerald-400 font-semibold">
+                <CircleCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span>{ar ? "تم الإقرار والموافقة" : "Confirmed"}</span>
+              </span>
+            ) : (
+              <span className="review-row__value flex items-center gap-1.5 text-amber-400 font-semibold">
+                <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
+                <span>{ar ? "لم يتم الإقرار بعد" : "Not confirmed yet"}</span>
+              </span>
+            )}
+          </div>
+
+          <div className="review-row flex items-center justify-between py-1">
+            <span className="review-row__label">{ar ? "معالجة واستخدام البيانات:" : "Data Processing:"}</span>
+            {formState.declarations?.data_processing === true ? (
+              <span className="review-row__value flex items-center gap-1.5 text-emerald-400 font-semibold">
+                <CircleCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span>{ar ? "تمت الموافقة" : "Confirmed"}</span>
+              </span>
+            ) : (
+              <span className="review-row__value flex items-center gap-1.5 text-amber-400 font-semibold">
+                <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
+                <span>{ar ? "لم تتم الموافقة بعد" : "Not confirmed yet"}</span>
+              </span>
+            )}
+          </div>
         </div>
       </ReviewSection>
     </div>

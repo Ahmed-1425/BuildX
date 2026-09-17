@@ -5,17 +5,12 @@ import ApplicationsTable from "./ApplicationsTable";
 import ApplicationsMobileCards from "./ApplicationsMobileCards";
 import StatusChangeModal from "./StatusChangeModal";
 import AdminEmptyState from "./AdminEmptyState";
-import {
-  Search,
-  RefreshCw,
-  Download,
-  ChevronRight,
-  ChevronLeft,
-  X,
-  SlidersHorizontal,
-} from "lucide-react";
-import { formatNumber } from "@/lib/admin/formatters";
+import AdminSkeleton from "./AdminSkeleton";
+import AdminPagination from "./ui/AdminPagination";
+import AdminDataToolbar from "./ui/AdminDataToolbar";
 import AdminPageHeader from "./AdminPageHeader";
+import { formatNumber } from "@/lib/admin/formatters";
+import { Download } from "lucide-react";
 
 interface Props {
   title: string;
@@ -39,6 +34,7 @@ export default function StatusFilteredApplicationsView({
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
   const [level, setLevel] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
   const [sortBy, setSortBy] = useState("submitted_at");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [page, setPage] = useState(1);
@@ -142,6 +138,8 @@ export default function StatusFilteredApplicationsView({
     }
   }
 
+  const activeFiltersCount = (level ? 1 : 0);
+
   return (
     <div className="space-y-6" dir="rtl">
       {/* Page Header */}
@@ -168,52 +166,46 @@ export default function StatusFilteredApplicationsView({
         }
       />
 
-      {/* Search & Level Filter */}
-      <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
-        <div className="sm:col-span-8 relative">
-          <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-slate-400">
-            <Search className="w-4 h-4" />
-          </div>
-          <input
-            type="text"
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            placeholder="ابحث بالاسم، رقم الطلب، المدينة، أو التخصص..."
-            className="w-full h-11 pr-11 pl-10 rounded-xl bg-[rgba(20,24,36,0.85)] border border-white/10 text-white placeholder-slate-400 text-xs sm:text-sm focus:outline-none focus:border-[#c3f937]"
-          />
-          {searchInput && (
-            <button
-              type="button"
-              onClick={() => setSearchInput("")}
-              className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 hover:text-white"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          )}
-        </div>
+      {/* Unified Toolbar */}
+      <AdminDataToolbar
+        searchValue={searchInput}
+        onSearchChange={setSearchInput}
+        searchPlaceholder="ابحث بالاسم، رقم الطلب، المدينة، أو التخصص..."
+        totalCount={total}
+        activeFiltersCount={activeFiltersCount}
+        showFilters={showFilters}
+        onToggleFilters={() => setShowFilters(!showFilters)}
+        onRefresh={fetchItems}
+        isRefreshing={loading}
+        onExport={handleExportCSV}
+        isExporting={exporting}
+      />
 
-        <div className="sm:col-span-4">
-          <select
-            value={level}
-            onChange={(e) => {
-              setLevel(e.target.value);
-              setPage(1);
-            }}
-            className="w-full h-11 px-3 rounded-xl bg-[rgba(20,24,36,0.85)] border border-white/10 text-white text-xs sm:text-sm focus:outline-none focus:border-[#c3f937]"
-          >
-            <option value="" className="bg-[#121622]">جميع المستويات</option>
-            <option value="foundation" className="bg-[#121622]">مبتدئ (Foundation)</option>
-            <option value="practitioner" className="bg-[#121622]">ممارس (Practitioner)</option>
-            <option value="advanced" className="bg-[#121622]">متقدم (Advanced)</option>
-          </select>
+      {/* Level Filter (shown when filters toggled) */}
+      {showFilters && (
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 p-4 rounded-xl bg-white/[0.02] border border-white/[0.08]">
+          <div className="sm:col-span-2">
+            <label className="text-xs font-semibold text-slate-300 block mb-1.5">المستوى</label>
+            <select
+              value={level}
+              onChange={(e) => {
+                setLevel(e.target.value);
+                setPage(1);
+              }}
+              className="w-full h-11 px-3 rounded-xl bg-[rgba(20,24,36,0.85)] border border-white/10 text-white text-sm focus:outline-none focus:border-[#c3f937]"
+            >
+              <option value="" className="bg-[#121622]">جميع المستويات</option>
+              <option value="foundation" className="bg-[#121622]">مبتدئ (Foundation)</option>
+              <option value="practitioner" className="bg-[#121622]">ممارس (Practitioner)</option>
+              <option value="advanced" className="bg-[#121622]">متقدم (Advanced)</option>
+            </select>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Table / Cards / Empty State */}
       {loading ? (
-        <div className="p-16 text-center text-slate-400 bento-card animate-pulse">
-          جارٍ تحميل قائمة المتقدمين...
-        </div>
+        <AdminSkeleton variant="list" />
       ) : items.length === 0 ? (
         <AdminEmptyState
           title={`لا يوجد متقدمون في مرحلة «${title}»`}
@@ -242,51 +234,18 @@ export default function StatusFilteredApplicationsView({
             onQuickStatusChange={(app) => setQuickModalApp(app)}
           />
 
-          {/* Pagination Controls */}
-          <div className="bento-card p-4 flex flex-wrap items-center justify-between gap-4">
-            <div className="flex items-center gap-2 text-xs text-slate-400">
-              <span>عرض</span>
-              <select
-                value={limit}
-                onChange={(e) => {
-                  setLimit(Number(e.target.value));
-                  setPage(1);
-                }}
-                className="h-8 px-2 rounded-lg bg-white/[0.05] border border-white/10 text-white font-mono text-xs focus:outline-none"
-              >
-                <option value={10} className="bg-[#121622]">10</option>
-                <option value={20} className="bg-[#121622]">20</option>
-                <option value={50} className="bg-[#121622]">50</option>
-              </select>
-              <span>طلب لكل صفحة • الإجمالي: <span className="numeric-value font-mono">{formatNumber(total)}</span></span>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page <= 1}
-                className="inline-flex items-center gap-1 px-3 h-8 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-xs font-semibold text-slate-200 border border-white/10 disabled:opacity-40 cursor-pointer"
-              >
-                <ChevronRight className="w-4 h-4" />
-                <span>السابق</span>
-              </button>
-
-              <span className="text-xs font-mono text-slate-300 px-2 numeric-value">
-                صفحة {formatNumber(page)} من {formatNumber(totalPages)}
-              </span>
-
-              <button
-                type="button"
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                disabled={page >= totalPages}
-                className="inline-flex items-center gap-1 px-3 h-8 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-xs font-semibold text-slate-200 border border-white/10 disabled:opacity-40 cursor-pointer"
-              >
-                <span>التالي</span>
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
+          {/* Pagination */}
+          <AdminPagination
+            page={page}
+            totalPages={totalPages}
+            total={total}
+            limit={limit}
+            onPageChange={setPage}
+            onLimitChange={(newLimit) => {
+              setLimit(newLimit);
+              setPage(1);
+            }}
+          />
         </>
       )}
 

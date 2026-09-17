@@ -1,11 +1,11 @@
 "use client";
 import React, { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import Link from "next/link";
-import type { ApplicationDetailItem, ApplicationReview } from "@/types/admin";
+import type { ApplicationDetailItem } from "@/types/admin";
 import { getGenderLabel } from "@/types/admin";
 import AdminStatusBadge from "@/components/admin/StatusBadge";
 import StatusChangeModal from "@/components/admin/StatusChangeModal";
-import ReviewerEvaluationPanel, { type ReviewerPanelHandle, CRITERIA_LIST } from "@/components/admin/ReviewerEvaluationPanel";
+import ReviewerEvaluationPanel, { type ReviewerPanelHandle } from "@/components/admin/ReviewerEvaluationPanel";
 import ApplicantAnswerCard from "@/components/admin/ApplicantAnswerCard";
 import ApplicantProfileModal from "@/components/admin/ApplicantProfileModal";
 import IncompleteEvaluationModal, { type MissingEvaluationItem } from "@/components/admin/IncompleteEvaluationModal";
@@ -25,9 +25,7 @@ import {
   AlertCircle,
   X,
   SlidersHorizontal,
-  ChevronDown,
   ChevronLeft,
-  ChevronUp,
   Save,
   Send,
   MoreHorizontal,
@@ -39,7 +37,6 @@ import {
 } from "lucide-react";
 import {
   formatDateArabic,
-  formatNumber,
   toLatinDigits,
 } from "@/lib/admin/formatters";
 
@@ -60,15 +57,6 @@ const LEVEL_CONFIG = {
     desc: "مسار المهندسين والرواد لبناء وإطلاق منتجات رقمية معقدة وقيادة الفرق تقنيًا.",
   },
 };
-
-const STATUS_LABELS: Record<string, string> = {
-  student: "طالب/ـة",
-  graduate: "خريج/ـة",
-  employed: "موظف/ـة",
-  job_seeker: "باحث/ـة عن عمل",
-  other: "أخرى",
-};
-
 interface Props {
   id: string;
 }

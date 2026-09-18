@@ -227,6 +227,16 @@ export const teamMembers: TeamMember[] = [
     },
   },
   {
+    id: "reem-zuhd",
+    nameAr: "ريم زهد",
+    nameEn: "Reem Zuhd",
+    imageSrc: "/assets/team/female-placeholder.png",
+    imageIsTemporary: true,
+    links: {
+      linkedin: "https://www.linkedin.com/in/reem-zuhd-1198aa383",
+    },
+  },
+  {
     id: "mshari-alqahtani",
     nameAr: "مشاري القحطاني",
     nameEn: "Mshari Al-Qahtani",
@@ -432,6 +442,12 @@ export const teamSections: TeamSection[] = [
         roleAr: "الإدارة الإعلامية",
         roleEn: "Media Management",
         order: 5,
+      },
+      {
+        memberId: "reem-zuhd",
+        roleAr: "الإدارة الإعلامية",
+        roleEn: "Media Management",
+        order: 6,
       },
     ],
     layout: "grid",

@@ -382,6 +382,27 @@ function ApplicationsContent() {
                 <option value="no" className="bg-[#121622]">بدون فيديو</option>
               </select>
             </div>
+
+            {/* Sort by Submission Time */}
+            <div className="space-y-1 text-right">
+              <label className="text-xs font-semibold text-slate-300">ترتيب حسب وقت التقديم</label>
+              <select
+                value={`${sortBy}:${sortOrder}`}
+                onChange={(e) => {
+                  const [newSortBy, newSortOrder] = e.target.value.split(":") as [string, "asc" | "desc"];
+                  setSortBy(newSortBy);
+                  setSortOrder(newSortOrder);
+                  setPage(1);
+                }}
+                className="w-full h-10 px-3 rounded-lg bg-white/[0.05] border border-white/10 text-white text-xs focus:outline-none focus:border-[#c3f937]"
+              >
+                <option value="submitted_at:desc" className="bg-[#121622]">الأحدث أولاً</option>
+                <option value="submitted_at:asc" className="bg-[#121622]">الأقدم أولاً</option>
+                <option value="full_name:asc" className="bg-[#121622]">الاسم (أ → ي)</option>
+                <option value="full_name:desc" className="bg-[#121622]">الاسم (ي → أ)</option>
+                <option value="updated_at:desc" className="bg-[#121622]">آخر تحديث</option>
+              </select>
+            </div>
           </div>
         </div>
       )}

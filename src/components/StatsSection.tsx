@@ -216,7 +216,7 @@ export default function StatsSection() {
   const stats = [
     // 1. Featured Target Registrations
     {
-      value: 1200,
+      value: 500,
       prefix: "+",
       suffix: "",
       label: t.stats.registrations,
@@ -369,7 +369,7 @@ export default function StatsSection() {
           {/* Radial Dark Vignette between image and cards */}
           <div className="absolute -inset-x-6 -inset-y-10 sm:-inset-x-12 sm:-inset-y-12 bg-[radial-gradient(circle_at_center,rgba(12,16,24,0.05),rgba(12,16,24,0.45)_75%)] pointer-events-none -z-10" />
 
-          {/* 1. Featured Primary Card (+1,200 Targeted Registrations) */}
+          {/* 1. Featured Primary Card (+500 Targeted Registrations) */}
           <StatCard
             {...stats[0]}
             started={hasBeenInView}

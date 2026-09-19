@@ -189,6 +189,8 @@ export default function CampTimeline() {
               num: string;
               name: string;
               badge?: string;
+              timeRange?: string;
+              neighborhood?: string;
               events: Array<{ date: string; title: string; desc: string; dayNum?: string }>;
               breakEvent?: { date: string; title: string; desc: string };
             };
@@ -237,6 +239,30 @@ export default function CampTimeline() {
                       {phaseRanges[cfg.id]}
                     </span>
                   </div>
+
+                  {/* Time & Location meta */}
+                  {(phase.timeRange || phase.neighborhood) && (
+                    <div className="vt-phase__meta">
+                      {phase.timeRange && (
+                        <div className="vt-phase__meta-item">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 opacity-70">
+                            <circle cx="12" cy="12" r="10" />
+                            <polyline points="12 6 12 12 16 14" />
+                          </svg>
+                          <span>{phase.timeRange}</span>
+                        </div>
+                      )}
+                      {phase.neighborhood && (
+                        <div className="vt-phase__meta-item">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 opacity-70">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                            <circle cx="12" cy="10" r="3" />
+                          </svg>
+                          <span>{phase.neighborhood}</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
 
                   {/* Events */}
                   <div className="vt-events">

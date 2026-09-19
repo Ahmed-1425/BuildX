@@ -238,6 +238,8 @@ export const en = {
         num: "02",
         name: "Training Camp",
         badge: "In Person — Riyadh",
+        timeRange: "5:00 — 9:00 PM",
+        neighborhood: "Al-Rahmaniyah, near King Saud University",
         events: [
           {
             date: "Sep 27",
@@ -280,6 +282,8 @@ export const en = {
         num: "03",
         name: "Collaborative Hackathon",
         badge: "In Person — Riyadh",
+        timeRange: "5:00 — 9:00 PM",
+        neighborhood: "Al-Rahmaniyah, near King Saud University",
         events: [
           {
             date: "Oct 4",
@@ -299,6 +303,8 @@ export const en = {
         num: "04",
         name: "Closing Ceremony",
         badge: "In Person — Riyadh",
+        timeRange: "5:00 — 10:00 PM",
+        neighborhood: "Al-Yasmin District",
         events: [
           {
             date: "Oct 6",

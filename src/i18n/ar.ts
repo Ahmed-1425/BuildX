@@ -238,6 +238,8 @@ export const ar = {
         num: "02",
         name: "المعسكر التدريبي",
         badge: "حضوريًا في الرياض",
+        timeRange: "5:00 — 9:00 مساءً",
+        neighborhood: "حي الرحمانية، بالقرب من جامعة الملك سعود",
         events: [
           {
             date: "27 سبتمبر",
@@ -280,6 +282,8 @@ export const ar = {
         num: "03",
         name: "الهاكاثون الجماعي",
         badge: "حضوريًا في الرياض",
+        timeRange: "5:00 — 9:00 مساءً",
+        neighborhood: "حي الرحمانية، بالقرب من جامعة الملك سعود",
         events: [
           {
             date: "4 أكتوبر",
@@ -299,6 +303,8 @@ export const ar = {
         num: "04",
         name: "الحفل الختامي",
         badge: "حضوريًا في الرياض",
+        timeRange: "5:00 — 10:00 مساءً",
+        neighborhood: "حي الياسمين",
         events: [
           {
             date: "6 أكتوبر",

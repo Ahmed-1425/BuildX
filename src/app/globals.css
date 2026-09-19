@@ -3027,6 +3027,32 @@ section {
   white-space: nowrap;
 }
 
+/* ── Phase time & location meta ── */
+.vt-phase__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  background: rgba(231, 237, 253, 0.03);
+  border: 1px solid rgba(231, 237, 253, 0.06);
+  border-radius: 6px;
+}
+
+.vt-phase__meta-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--font-arapix);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: rgba(231, 237, 253, 0.7);
+}
+
+.vt-phase__meta-item svg {
+  color: var(--phase-accent, rgba(231, 237, 253, 0.5));
+}
+
 /* ── Events responsive grid ── */
 .vt-events {
   display: grid;

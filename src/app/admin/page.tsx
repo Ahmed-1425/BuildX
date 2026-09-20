@@ -82,7 +82,12 @@ export default function AdminDashboardPage() {
     );
   }
 
+  // 532 historical registrations documented outside the current system.
+  // Display-only offset — does NOT alter the database or any other metric.
+  const HREGISTRATIONS = 532;
+
   const total = stats.total || 0;
+  const displayTotal = HREGISTRATIONS + total;
   const todayCount = stats.today || 0;
 
   // Level statistics
@@ -208,7 +213,7 @@ export default function AdminDashboardPage() {
         <div className="metrics-grid">
           <AdminKpiCard
             title="إجمالي الطلبات"
-            value={total}
+            value={displayTotal}
             description="العدد الكلي للطلبات المكتملة المسجلة عبر البوابة"
             icon={FileText}
             accentColor="lime"

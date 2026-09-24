@@ -112,7 +112,7 @@ export const PHASES: AgendaPhase[] = [
     id: 6,
     title: "إعلان الفائزين والختام",
     icon: "🏆",
-    characterImage: "/images/agenda/characters/hollow-volt.png",
+    characterImage: "/images/agenda/characters/trophy_465320.png",
     accentColor: "#c3f937",
   },
 ];

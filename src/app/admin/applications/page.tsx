@@ -228,11 +228,6 @@ function ApplicationsContent() {
       <AdminPageHeader
         title="طلبات التسجيل"
         subtitle="تصفّح، ابحث، وافرز طلبات المتقدمين لمعسكر BUILDx."
-        badge={
-          <span className="font-mono text-xs font-bold px-3 py-1 rounded-full bg-[#c3f937]/15 text-[#c3f937] border border-[#c3f937]/30 numeric-value">
-            {formatNumber(total)} نتيجة
-          </span>
-        }
         onRefresh={fetchApplications}
         isRefreshing={loading}
       />

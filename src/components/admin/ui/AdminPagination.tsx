@@ -37,13 +37,7 @@ export default function AdminPagination({
             </option>
           ))}
         </select>
-        <span>
-          طلب لكل صفحة
-          <span className="hidden sm:inline">
-            {" "}• الإجمالي:{" "}
-            <span className="numeric-value font-mono">{formatNumber(total)}</span>
-          </span>
-        </span>
+        <span>طلب لكل صفحة</span>
       </div>
 
       <div className="flex items-center gap-2">

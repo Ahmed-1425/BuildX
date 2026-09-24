@@ -323,6 +323,15 @@ export const teamMembers: TeamMember[] = [
       linkedin: "https://www.linkedin.com/in/سامي-المطيري-058824355?utm_source=share_via&utm_content=profile&utm_medium=member_ios",
     },
   },
+  {
+    id: "yamin-shahwan",
+    nameAr: "يامن آل شهوان",
+    nameEn: "Yamin Shahwan",
+    imageSrc: "/assets/team/yamin-shahwan.png",
+    links: {
+      linkedin: "https://www.linkedin.com/in/yaminshahwan",
+    },
+  },
 ];
 
 // ---------------------------------------------------------------------------
@@ -372,6 +381,12 @@ export const teamSections: TeamSection[] = [
         roleAr: "إدارة مبادرة تقانة",
         roleEn: "Tiqanah Initiative Management",
         order: 2,
+      },
+      {
+        memberId: "yamin-shahwan",
+        roleAr: "إدارة مبادرة تقانة",
+        roleEn: "Tiqanah Initiative Management",
+        order: 3,
       },
     ],
     layout: "grid",

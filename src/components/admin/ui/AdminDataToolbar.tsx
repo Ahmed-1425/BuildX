@@ -76,10 +76,7 @@ export default function AdminDataToolbar({
 
         {/* Controls group */}
         <div className="flex items-center gap-2 shrink-0">
-          {/* Result count badge */}
-          <span className="font-mono text-xs font-bold px-2.5 py-1.5 rounded-lg bg-white/[0.04] text-slate-300 border border-white/[0.08] numeric-value hidden sm:inline-flex">
-            {formatNumber(totalCount)} نتيجة
-          </span>
+          {/* Result count badge hidden to avoid exposing raw registration total */}
 
           {/* Filter toggle */}
           {onToggleFilters && (

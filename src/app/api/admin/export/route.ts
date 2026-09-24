@@ -25,19 +25,32 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: "ليس لديك صلاحية تصدير البيانات." }, { status: 403 });
     }
 
-    const { application_ids, status, level } = await req.json();
+    const { application_ids, status, level, gender, sort_order, search } = await req.json();
     const supabase = createServerClient();
 
+    const isAscending = sort_order === "asc";
     let query = supabase
       .from("applications")
       .select("*")
-      .order("submitted_at", { ascending: false });
+      .order("submitted_at", { ascending: isAscending });
 
     if (application_ids && Array.isArray(application_ids) && application_ids.length > 0) {
       query = query.in("id", application_ids);
     } else {
       if (status) query = query.eq("application_status", status);
       if (level) query = query.eq("level", level);
+      if (gender && gender !== "all") {
+        if (gender === "unspecified") {
+          query = query.or("gender.is.null,gender.eq.");
+        } else {
+          query = query.eq("gender", gender);
+        }
+      }
+      if (search) {
+        query = query.or(
+          `full_name.ilike.%${search}%,reference_code.ilike.%${search}%,email.ilike.%${search}%,phone.ilike.%${search}%,city.ilike.%${search}%,organization.ilike.%${search}%,specialization.ilike.%${search}%`
+        );
+      }
     }
 
     const { data: rows, error } = await query;

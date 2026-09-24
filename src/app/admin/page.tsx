@@ -82,9 +82,9 @@ export default function AdminDashboardPage() {
     );
   }
 
-  // 532 historical registrations documented outside the current system.
+  // 432 historical registrations documented outside the current system.
   // Display-only offset — does NOT alter the database or any other metric.
-  const HREGISTRATIONS = 532;
+  const HREGISTRATIONS = 432;
 
   const total = stats.total || 0;
   const displayTotal = HREGISTRATIONS + total;
@@ -382,7 +382,7 @@ export default function AdminDashboardPage() {
                       <span className="font-bold text-slate-100 text-sm">مبتدئ (Foundation)</span>
                     </div>
                     <span className="font-mono font-bold text-cyan-300 numeric-value text-sm">
-                      {formatNumber(fnd)} ({fndPct}%)
+                      {fndPct}%
                     </span>
                   </div>
                   <div className="w-full h-2 rounded-full bg-white/[0.08] overflow-hidden mt-2.5">
@@ -401,7 +401,7 @@ export default function AdminDashboardPage() {
                       <span className="font-bold text-slate-100 text-sm">ممارس (Practitioner)</span>
                     </div>
                     <span className="font-mono font-bold text-[#c3f937] numeric-value text-sm">
-                      {formatNumber(prac)} ({pracPct}%)
+                      {pracPct}%
                     </span>
                   </div>
                   <div className="w-full h-2 rounded-full bg-white/[0.08] overflow-hidden mt-2.5">
@@ -420,7 +420,7 @@ export default function AdminDashboardPage() {
                       <span className="font-bold text-slate-100 text-sm">متقدم (Advanced)</span>
                     </div>
                     <span className="font-mono font-bold text-pink-300 numeric-value text-sm">
-                      {formatNumber(adv)} ({advPct}%)
+                      {advPct}%
                     </span>
                   </div>
                   <div className="w-full h-2 rounded-full bg-white/[0.08] overflow-hidden mt-2.5">
@@ -437,10 +437,10 @@ export default function AdminDashboardPage() {
               <span>تفضيل بيئة الفريق:</span>
               <div className="flex items-center gap-2 font-mono">
                 <span className="px-2.5 py-1 rounded-lg bg-white/[0.04] border border-white/[0.08]">
-                  مشتركة (<span className="numeric-value">{formatNumber(stats.by_team_env?.comfortable || 0)}</span>)
+                  مشتركة <span className="numeric-value">{total > 0 ? Math.round(((stats.by_team_env?.comfortable || 0) / total) * 100) : 0}%</span>
                 </span>
                 <span className="px-2.5 py-1 rounded-lg bg-white/[0.04] border border-white/[0.08]">
-                  نفس الجنس (<span className="numeric-value">{formatNumber(stats.by_team_env?.same_gender_only || 0)}</span>)
+                  نفس الجنس <span className="numeric-value">{total > 0 ? Math.round(((stats.by_team_env?.same_gender_only || 0) / total) * 100) : 0}%</span>
                 </span>
               </div>
             </div>
@@ -465,45 +465,6 @@ export default function AdminDashboardPage() {
                   </span>
                 )}
               </div>
-
-              {/* Progress stats */}
-              <div className="grid grid-cols-2 gap-3 mb-4">
-                <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.06] text-right space-y-1">
-                  <span className="text-xs text-slate-400 block">تم تقييمها</span>
-                  <span className="text-2xl font-black font-mono text-emerald-400 block numeric-value">
-                    {formatNumber(total - unreviewedCount)}
-                  </span>
-                  <span className="text-xs text-slate-400 block numeric-value">
-                    {total > 0 ? Math.round(((total - unreviewedCount) / total) * 100) : 0}% مكتملة
-                  </span>
-                </div>
-
-                <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.06] text-right space-y-1">
-                  <span className="text-xs text-slate-400 block">بانتظار التقييم</span>
-                  <span className="text-2xl font-black font-mono text-yellow-400 block numeric-value">
-                    {formatNumber(unreviewedCount)}
-                  </span>
-                  <span className="text-xs text-slate-400 block">تحتاج مراجعة</span>
-                </div>
-              </div>
-
-              {/* Progress bar */}
-              <div className="w-full h-2 rounded-full bg-white/[0.08] overflow-hidden">
-                <div
-                  className="h-full rounded-full bg-emerald-400 transition-all duration-700"
-                  style={{ width: `${total > 0 ? Math.round(((total - unreviewedCount) / total) * 100) : 0}%` }}
-                />
-              </div>
-            </div>
-
-            <div className="pt-3.5 border-t border-white/[0.08] flex items-center justify-between">
-              <Link
-                href="/admin/applications?status=submitted"
-                className="text-xs font-semibold text-[#c3f937] hover:underline flex items-center gap-1"
-              >
-                <span>بدء مراجعة الطلبات غير المكتملة</span>
-                <ChevronLeft className="w-3.5 h-3.5" aria-hidden="true" />
-              </Link>
             </div>
           </div>
 
@@ -521,28 +482,6 @@ export default function AdminDashboardPage() {
               </div>
 
               <div className="space-y-3 mb-4">
-                {unreviewedCount > 0 && (
-                  <Link
-                    href="/admin/applications?status=submitted"
-                    className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-between hover:bg-amber-500/15 transition-all text-right"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
-                        <FileText className="w-4 h-4" />
-                      </div>
-                      <div>
-                        <span className="text-xs font-bold text-white block">
-                          <span className="numeric-value">{formatNumber(unreviewedCount)}</span> طلب جديد بانتظار التقييم
-                        </span>
-                        <span className="text-[11px] text-amber-300/80 block mt-0.5">
-                          يرجى توزيعها على المحكمين أو بدء المراجعة
-                        </span>
-                      </div>
-                    </div>
-                    <ChevronLeft className="w-4 h-4 text-amber-400" />
-                  </Link>
-                )}
-
                 {advancedNeedVideoReview > 0 && (
                   <Link
                     href="/admin/applications?level=advanced"
@@ -565,7 +504,7 @@ export default function AdminDashboardPage() {
                   </Link>
                 )}
 
-                {unreviewedCount === 0 && advancedNeedVideoReview === 0 && (
+                {advancedNeedVideoReview === 0 && (
                   <div className="p-6 text-center text-xs text-slate-400 bg-white/[0.02] rounded-2xl border border-white/[0.06]">
                     <CheckCircle2 className="w-7 h-7 text-emerald-400 mx-auto mb-2" />
                     <span>لا توجد تنبيهات عاجلة حاليًا. جميع الطلبات محدثة.</span>
@@ -598,11 +537,7 @@ export default function AdminDashboardPage() {
                     نسب المتقدمين حسب الجنس
                   </p>
                 </div>
-                {total > 0 && (
-                  <span className="text-xs font-semibold text-slate-400 bg-white/[0.04] px-3 py-1.5 rounded-xl border border-white/[0.08] numeric-value">
-                    إجمالي {formatNumber(total)}
-                  </span>
-                )}
+                {/* Total badge hidden — percentages only */}
               </div>
 
               {total === 0 ? (
@@ -646,7 +581,6 @@ export default function AdminDashboardPage() {
                           <span>ذكر</span>
                         </div>
                         <div className="flex items-center gap-3 text-xs font-mono">
-                          <span className="font-bold text-white text-sm numeric-value">{formatNumber(maleCount)}</span>
                           <span className="text-sky-300 font-bold bg-sky-500/10 px-2.5 py-0.5 rounded-lg border border-sky-500/20 numeric-value">{malePct}%</span>
                         </div>
                       </div>
@@ -660,7 +594,6 @@ export default function AdminDashboardPage() {
                           <span>أنثى</span>
                         </div>
                         <div className="flex items-center gap-3 text-xs font-mono">
-                          <span className="font-bold text-white text-sm numeric-value">{formatNumber(femaleCount)}</span>
                           <span className="text-purple-300 font-bold bg-purple-500/10 px-2.5 py-0.5 rounded-lg border border-purple-500/20 numeric-value">{femalePct}%</span>
                         </div>
                       </div>
@@ -675,7 +608,6 @@ export default function AdminDashboardPage() {
                             <span>غير محدد (طلبات قديمة)</span>
                           </div>
                           <div className="flex items-center gap-3 text-xs font-mono">
-                            <span className="font-bold text-slate-300 text-sm numeric-value">{formatNumber(unspecifiedCount)}</span>
                             <span className="text-slate-400 font-bold bg-slate-500/10 px-2.5 py-0.5 rounded-lg border border-slate-500/20 numeric-value">{unspecifiedPct}%</span>
                           </div>
                         </div>
@@ -686,12 +618,7 @@ export default function AdminDashboardPage() {
               )}
             </div>
 
-            <div className="pt-3.5 border-t border-white/[0.08] text-xs text-slate-400 flex items-center justify-between">
-              <span>إجمالي المسجلين:</span>
-              <span className="text-slate-300 font-mono numeric-value">
-                {total > 0 ? `${formatNumber(total)} طلب` : "بانتظار التسجيل"}
-              </span>
-            </div>
+            {/* Total registrants footer hidden — percentages only */}
           </div>
 
           {/* Top Cities (6 cols) */}
@@ -717,7 +644,7 @@ export default function AdminDashboardPage() {
                         <span className="text-base font-bold text-white">{stats.top_cities[0].city}</span>
                       </div>
                       <span className="font-mono font-bold text-[#c3f937] text-lg numeric-value">
-                        {formatNumber(stats.top_cities[0].count)}
+                        {total > 0 ? Math.round((stats.top_cities[0].count / total) * 100) : 0}%
                       </span>
                     </div>
                   ) : (
@@ -731,7 +658,7 @@ export default function AdminDashboardPage() {
                               <span>{c.city}</span>
                             </span>
                             <span className="font-mono text-slate-300 text-sm numeric-value">
-                              {formatNumber(c.count)} ({pct}%)
+                              {pct}%
                             </span>
                           </div>
                           <div className="w-full h-1.5 rounded-full bg-white/[0.08] overflow-hidden mt-2">

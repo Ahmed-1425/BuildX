@@ -40,7 +40,7 @@ export async function GET(req: NextRequest) {
     if (status) query = query.eq("application_status", status);
     if (gender && gender !== "all") {
       if (gender === "unspecified") {
-        query = query.is("gender", null);
+        query = query.or("gender.is.null,gender.eq.");
       } else {
         query = query.eq("gender", gender);
       }

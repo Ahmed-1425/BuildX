@@ -1,0 +1,207 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//BUILDx//BUILDx 2026 Calendar//AR
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:برنامج BUILDx 2026
+X-WR-TIMEZONE:Asia/Riyadh
+X-WR-CALDESC:مواعيد وفعاليات معسكر BUILDx 2026 بالرياض
+BEGIN:VTIMEZONE
+TZID:Asia/Riyadh
+X-LIC-LOCATION:Asia/Riyadh
+BEGIN:STANDARD
+TZOFFSETFROM:+0300
+TZOFFSETTO:+0300
+TZNAME:+03
+DTSTART:19700101T000000
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+UID:buildx-2026-day1@buildx.tiqanah.org
+DTSTAMP:20260925T160000Z
+DTSTART;TZID=Asia/Riyadh:20260927T170000
+DTEND;TZID=Asia/Riyadh:20260927T210000
+SUMMARY:BUILDx — اليوم الأول: الانطلاقة وأساسيات Vibe Coding
+DESCRIPTION:التعرف على مفهوم Vibe Coding، أدواته، وطريقة تحويل الفكرة الأولى إلى نموذج رقمي قابل للتجربة.\n\nhttps://buildx.tiqanah.org
+LOCATION:Zid — زد، الرياض
+URL:https://maps.app.goo.gl/CvWvjuE1xJ1R7abAA
+STATUS:CONFIRMED
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:تذكير: الانطلاقة وأساسيات Vibe Coding — غدًا
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:تذكير: الانطلاقة وأساسيات Vibe Coding — بعد ساعة
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:buildx-2026-day2@buildx.tiqanah.org
+DTSTAMP:20260925T160000Z
+DTSTART;TZID=Asia/Riyadh:20260928T170000
+DTEND;TZID=Asia/Riyadh:20260928T210000
+SUMMARY:BUILDx — اليوم الثاني: FIRST BUILD ≠ FINAL BUILD
+DESCRIPTION:نبدأ بالنموذج الأولي، نختبره ونكتشف مشكلاته، ثم نطوّر البرومبت والمنتج خطوة بعد خطوة حتى نصل إلى نسخة أكثر وضوحًا وجودة وجاهزية.\n\nhttps://buildx.tiqanah.org
+LOCATION:Zid — زد، الرياض
+URL:https://maps.app.goo.gl/CvWvjuE1xJ1R7abAA
+STATUS:CONFIRMED
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:تذكير: FIRST BUILD ≠ FINAL BUILD — غدًا
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:تذكير: FIRST BUILD ≠ FINAL BUILD — بعد ساعة
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:buildx-2026-day3@buildx.tiqanah.org
+DTSTAMP:20260925T160000Z
+DTSTART;TZID=Asia/Riyadh:20260929T170000
+DTEND;TZID=Asia/Riyadh:20260929T210000
+SUMMARY:BUILDx — اليوم الثالث: ربط المنتج بقاعدة البيانات باستخدام Supabase
+DESCRIPTION:تحويل النموذج من واجهة ثابتة إلى منتج متصل بالبيانات، وإنشاء قاعدة البيانات وربطها بالواجهات باستخدام Supabase.\n\nhttps://buildx.tiqanah.org
+LOCATION:Zid — زد، الرياض
+URL:https://maps.app.goo.gl/CvWvjuE1xJ1R7abAA
+STATUS:CONFIRMED
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:تذكير: من واجهة ثابتة إلى منتج متصل — غدًا
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:تذكير: من واجهة ثابتة إلى منتج متصل — بعد ساعة
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:buildx-2026-day4@buildx.tiqanah.org
+DTSTAMP:20260925T160000Z
+DTSTART;TZID=Asia/Riyadh:20260930T170000
+DTEND;TZID=Asia/Riyadh:20260930T210000
+SUMMARY:BUILDx — اليوم الرابع: دمج الذكاء الاصطناعي ونشر المنتج
+DESCRIPTION:إضافة وظائف الذكاء الاصطناعي إلى المنتج، اختبارها، ثم تجهيز المشروع ونشره على Netlify ليصبح متاحًا عبر رابط فعلي.\n\nhttps://buildx.tiqanah.org
+LOCATION:Zid — زد، الرياض
+URL:https://maps.app.goo.gl/CvWvjuE1xJ1R7abAA
+STATUS:CONFIRMED
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:تذكير: MAKE IT SMART. MAKE IT LIVE. — غدًا
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:تذكير: MAKE IT SMART. MAKE IT LIVE. — بعد ساعة
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:buildx-2026-day5@buildx.tiqanah.org
+DTSTAMP:20260925T160000Z
+DTSTART;TZID=Asia/Riyadh:20261001T170000
+DTEND;TZID=Asia/Riyadh:20261001T210000
+SUMMARY:BUILDx — اليوم الخامس: من الفكرة إلى منتج قابل للتبني
+DESCRIPTION:ثلاث ورش عملية تساعد المشاركين على صناعة الفكرة، بناء نموذج العمل، وتقديم المنتج بقصة مقنعة، يليها شرح الهاكاثون ومعايير التحكيم.\n\nhttps://buildx.tiqanah.org
+LOCATION:Zid — زد، الرياض
+URL:https://maps.app.goo.gl/CvWvjuE1xJ1R7abAA
+STATUS:CONFIRMED
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:تذكير: من الفكرة إلى منتج قابل للتبني — غدًا
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:تذكير: من الفكرة إلى منتج قابل للتبني — بعد ساعة
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:buildx-2026-hack1@buildx.tiqanah.org
+DTSTAMP:20260925T160000Z
+DTSTART;TZID=Asia/Riyadh:20261004T170000
+DTEND;TZID=Asia/Riyadh:20261004T210000
+SUMMARY:BUILDx Hackathon — اليوم الأول: انطلاق التحدي الجماعي
+DESCRIPTION:إعلان التحديات، تكوين الفرق، اختيار المسارات، توزيع الأدوار وبدء بناء المنتجات الرقمية.\n\nhttps://buildx.tiqanah.org
+LOCATION:Zid — زد، الرياض
+URL:https://maps.app.goo.gl/CvWvjuE1xJ1R7abAA
+STATUS:CONFIRMED
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:تذكير: انطلاق التحدي الجماعي — غدًا
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:تذكير: انطلاق التحدي الجماعي — بعد ساعة
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:buildx-2026-hack2@buildx.tiqanah.org
+DTSTAMP:20260925T160000Z
+DTSTART;TZID=Asia/Riyadh:20261005T170000
+DTEND;TZID=Asia/Riyadh:20261005T210000
+SUMMARY:BUILDx Hackathon — اليوم الثاني: إكمال المنتج والاستعداد للعرض
+DESCRIPTION:استكمال المنتج الأولي، اختبار الحل، معالجة المشكلات، وتجهيز العرض النهائي أمام لجنة التحكيم.\n\nhttps://buildx.tiqanah.org
+LOCATION:Zid — زد، الرياض
+URL:https://maps.app.goo.gl/CvWvjuE1xJ1R7abAA
+STATUS:CONFIRMED
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:تذكير: إكمال المنتج والاستعداد للعرض — غدًا
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:تذكير: إكمال المنتج والاستعداد للعرض — بعد ساعة
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:buildx-2026-deadline@buildx.tiqanah.org
+DTSTAMP:20260925T160000Z
+DTSTART;TZID=Asia/Riyadh:20261006T090000
+DTEND;TZID=Asia/Riyadh:20261006T091500
+SUMMARY:BUILDx — الموعد النهائي لتسليم المشاريع
+DESCRIPTION:آخر موعد معتمد لتسليم النسخة النهائية من المشروع والمواد المطلوبة.\n\nhttps://buildx.tiqanah.org
+LOCATION:موعد نهائي لتسليم المشاريع
+STATUS:CONFIRMED
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:تذكير: الموعد النهائي لتسليم المشاريع — غدًا
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:تذكير: الموعد النهائي لتسليم المشاريع — بعد ساعة
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:buildx-2026-closing@buildx.tiqanah.org
+DTSTAMP:20260925T160000Z
+DTSTART;TZID=Asia/Riyadh:20261006T170000
+DTEND;TZID=Asia/Riyadh:20261006T222900
+SUMMARY:BUILDx — الحفل الختامي وعرض المشاريع وإعلان النتائج
+DESCRIPTION:الحفل الختامي لـBUILDx، ويشمل استقبال الضيوف، عرض المنتجات الرقمية، إعلان النتائج، تكريم المشاريع الفائزة، والصورة الجماعية الختامية.\n\nhttps://buildx.tiqanah.org
+LOCATION:T2 Business — تي تو بزنس، الرياض
+URL:https://maps.app.goo.gl/ttXkJJx1nrmr12g86?g_st=iw
+STATUS:CONFIRMED
+BEGIN:VALARM
+TRIGGER:-P1D
+ACTION:DISPLAY
+DESCRIPTION:تذكير: عرض المشاريع وإعلان النتائج — غدًا
+END:VALARM
+BEGIN:VALARM
+TRIGGER:-PT1H
+ACTION:DISPLAY
+DESCRIPTION:تذكير: عرض المشاريع وإعلان النتائج — بعد ساعة
+END:VALARM
+END:VEVENT
+END:VCALENDAR

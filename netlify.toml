@@ -4,3 +4,15 @@
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
+
+[[redirects]]
+  from = "https://bulidx.tiqanah.org/*"
+  to = "https://buildx.tiqanah.org/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "http://bulidx.tiqanah.org/*"
+  to = "https://buildx.tiqanah.org/:splat"
+  status = 301
+  force = true

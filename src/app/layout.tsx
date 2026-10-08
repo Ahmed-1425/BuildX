@@ -3,7 +3,7 @@ import "./globals.css";
 import { LanguageProvider } from "@/context/LanguageContext";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://bulidx.tiqanah.org"),
+  metadataBase: new URL("https://buildx.tiqanah.org"),
   title: "BUILDx | معسكر الـ Vibe Coding الأول — من برومبت يُقال إلى منتج فعّال",
   description:
     "معسكر تدريبي تطبيقي وهاكاثون مكثف في الرياض يحوّل أفكارك وبرومبتاتك إلى منتجات رقمية متكاملة بالذكاء الاصطناعي. التسجيل متاح الآن — انضم وابدأ رحلة البناء!",
@@ -26,14 +26,16 @@ export const metadata: Metadata = {
     title: "BUILDx | معسكر الـ Vibe Coding الأول — من برومبت يُقال إلى منتج فعّال",
     description:
       "معسكر تدريبي تطبيقي وهاكاثون مكثف في الرياض يحوّل أفكارك وبرومبتاتك إلى منتجات رقمية متكاملة بالذكاء الاصطناعي. التسجيل متاح الآن — انضم وابدأ رحلة البناء!",
-    url: "https://bulidx.tiqanah.org",
+    url: "https://buildx.tiqanah.org",
     siteName: "BUILDx",
     images: [
       {
         url: "/assets/og-image.png",
+        secureUrl: "https://buildx.tiqanah.org/assets/og-image.png",
         width: 1200,
         height: 630,
-        alt: "BUILDx - من برومبت يُقال... إلى منتج فعّال",
+        type: "image/png",
+        alt: "BUILDx",
       },
     ],
     type: "website",
@@ -45,11 +47,15 @@ export const metadata: Metadata = {
     title: "BUILDx | معسكر الـ Vibe Coding الأول — من برومبت يُقال إلى منتج فعّال",
     description:
       "معسكر تدريبي تطبيقي وهاكاثون مكثف في الرياض يحوّل أفكارك وبرومبتاتك إلى منتجات رقمية متكاملة بالذكاء الاصطناعي. التسجيل متاح الآن — انضم وابدأ رحلة البناء!",
-    images: ["/assets/og-image.png"],
+    images: ["https://buildx.tiqanah.org/assets/og-image.png"],
   },
   icons: {
-    icon: "/assets/characters/ready.png",
-    apple: "/assets/characters/ready.png",
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/assets/logos/buildx-black.png", type: "image/png" },
+    ],
+    apple: "/assets/logos/buildx-black.png",
+    shortcut: "/assets/logos/buildx-black.png",
   },
   other: {
     "theme-color": "#0c1018",

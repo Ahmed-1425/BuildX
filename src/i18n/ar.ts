@@ -19,6 +19,7 @@ export const ar = {
     home: "الرئيسية",
     aboutCamp: "عن المعسكر",
     team: "فريق العمل",
+    graduates: "الخريجون",
   },
   hero: {
     camp: "معسكر BUILDx",
@@ -381,5 +382,58 @@ export const ar = {
     title: "فريق العمل | BUILDx",
     description:
       "تعرّف على فريق BUILDx في إدارة المشروع والتنفيذ والإعلام والعلاقات العامة والإرشاد والتيسير والتحكيم.",
+  },
+  graduatesPage: {
+    meta: {
+      title: "خريجو BUILDx | النسخة الأولى",
+      description:
+        "تعرّف على خريجي النسخة الأولى من BUILDx، الفرق المشاركة، الفائزين بالمراكز وجوائز الفئات.",
+    },
+    hero: {
+      kicker: "خريجو BUILDx",
+      headlineLead: "بنوا الفكرة…",
+      headlineHighlight: "واليوم يبدأ أثرهم",
+      description:
+        "تعرّف على خريجي BUILDx، فرق النسخة الأولى، والمشاريع التي صنعت حضورها وفازت في رحلة البناء.",
+      teamsCount: "فرق",
+      graduatesCount: "خريجًا",
+      awardsCount: "جوائز",
+    },
+    edition: {
+      title: "اختر نسخة BUILDx",
+      comingSoon: "قريبًا",
+      notice: "قريبًا — ما زلت تشاهد خريجي النسخة الأولى حتى يحين موعدها.",
+    },
+    tabs: {
+      winners: "شاهد الفائزين",
+      allGraduates: "كل الخريجين",
+    },
+    winners: {
+      eyebrow: "THE WINNERS",
+      titleLead: "شاهد",
+      titleHighlight: "فائزين BUILDx",
+      description: "مشاريع صنعت الفرق، وفرق تميزت في البناء والتقديم والأثر.",
+      meetTeam: "تعرّف على الفريق",
+      categoryAwardsTitle: "جوائز الفئات",
+      pedestalRanks: {
+        1: "الأول",
+        2: "الثاني",
+        3: "الثالث",
+      },
+    },
+    allGraduates: {
+      eyebrow: "ALL GRADUATES",
+      searchPlaceholder: "ابحث بالاسم أو التخصص أو الجامعة…",
+      clearSearch: "مسح البحث",
+      matchingCount: "خريجًا مطابقون للبحث",
+      noResults: "لا توجد نتائج مطابقة — جرّب كلمة أخرى.",
+      totalInTeams: "خريجًا في",
+      teamsLabel: "فرق",
+      teamLabel: "الفريق",
+      jumpToTeam: "الانتقال إلى الفريق",
+    },
+    closing: {
+      button: "اكتشف BUILDx",
+    },
   },
 };

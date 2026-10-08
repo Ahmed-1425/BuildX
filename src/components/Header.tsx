@@ -26,12 +26,19 @@ export default function Header() {
     if (typeof window !== "undefined" && window.location.pathname === "/team") {
       return "team";
     }
+    if (typeof window !== "undefined" && window.location.pathname === "/graduates") {
+      return "graduates";
+    }
     return "";
   });
 
   useEffect(() => {
     if (pathname === "/team") {
       setActiveSection("team");
+      return;
+    }
+    if (pathname === "/graduates") {
+      setActiveSection("graduates");
       return;
     }
 
@@ -348,6 +355,13 @@ export default function Header() {
               className={`nav-link ${activeSection === "team" ? "active" : ""}`}
             >
               {t.nav.team}
+            </Link>
+            <Link
+              href="/graduates"
+              className={`nav-link ${activeSection === "graduates" ? "active" : ""}`}
+              aria-current={activeSection === "graduates" ? "page" : undefined}
+            >
+              {t.nav.graduates}
             </Link>
           </nav>
 

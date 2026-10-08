@@ -175,6 +175,7 @@ export function MobileBottomNavigation() {
     if (typeof window !== "undefined") {
       if (window.location.pathname === "/register") return "register";
       if (window.location.pathname === "/team") return "team";
+      if (window.location.pathname === "/graduates") return "graduates";
     }
     return "home";
   });
@@ -186,6 +187,9 @@ export function MobileBottomNavigation() {
   useEffect(() => {
     if (pathname === "/team") {
       setActiveSection("team");
+      setNavMode("expanded");
+    } else if (pathname === "/graduates") {
+      setActiveSection("graduates");
       setNavMode("expanded");
     } else if (pathname === "/register") {
       setActiveSection("register");
@@ -221,6 +225,11 @@ export function MobileBottomNavigation() {
       // 1. If on /team, keep bottom nav always expanded and active
       if (pathname === "/team") {
         setActiveSection("team");
+        setNavMode("expanded");
+        return;
+      }
+      if (pathname === "/graduates") {
+        setActiveSection("graduates");
         setNavMode("expanded");
         return;
       }
@@ -322,7 +331,7 @@ export function MobileBottomNavigation() {
         setActiveSection("home");
         return;
       }
-      if (key !== "register" && key !== "team") {
+      if (key !== "register" && key !== "team" && key !== "graduates") {
         e.preventDefault();
         const targetEl = document.getElementById(key);
         if (targetEl) {
@@ -332,6 +341,11 @@ export function MobileBottomNavigation() {
       }
     } else {
       if (key === "team" && pathname === "/team") {
+        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        return;
+      }
+      if (key === "graduates" && pathname === "/graduates") {
         e.preventDefault();
         window.scrollTo({ top: 0, behavior: "smooth" });
         return;
@@ -467,6 +481,33 @@ export function MobileBottomNavigation() {
           />
           <path
             d="M16 3.13a4 4 0 0 1 0 7.75"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      ),
+    },
+    {
+      key: "graduates",
+      label: t.nav.graduates,
+      href: "/graduates",
+      icon: (
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4Z"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"
             stroke="currentColor"
             strokeWidth="2"
             strokeLinecap="round"

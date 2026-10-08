@@ -19,6 +19,7 @@ export const en = {
     home: "Home",
     aboutCamp: "About",
     team: "Team",
+    graduates: "Graduates",
   },
   hero: {
     camp: "BUILDx Camp",
@@ -382,5 +383,59 @@ export const en = {
     title: "BUILDx Team",
     description:
       "Meet the BUILDx team across project management, execution, media, public relations, mentorship, facilitation, and judging.",
+  },
+  graduatesPage: {
+    meta: {
+      title: "BUILDx Graduates | First Edition",
+      description:
+        "Meet the graduates of BUILDx Edition 1, participating teams, podium winners, and category award recipients.",
+    },
+    hero: {
+      kicker: "BUILDx Graduates",
+      headlineLead: "They built the idea…",
+      headlineHighlight: "and today their impact begins",
+      description:
+        "Meet BUILDx graduates, edition 1 teams, and the projects that made their mark and won throughout the building journey.",
+      teamsCount: "Teams",
+      graduatesCount: "Graduates",
+      awardsCount: "Awards",
+    },
+    edition: {
+      title: "Select BUILDx Edition",
+      comingSoon: "Coming Soon",
+      notice: "coming soon — you are currently viewing Edition 1 graduates.",
+    },
+    tabs: {
+      winners: "View Winners",
+      allGraduates: "All Graduates",
+    },
+    winners: {
+      eyebrow: "THE WINNERS",
+      titleLead: "Meet the",
+      titleHighlight: "BUILDx Winners",
+      description:
+        "Projects that made a difference, and teams that excelled in building, pitching, and impact.",
+      meetTeam: "Meet the Team",
+      categoryAwardsTitle: "Category Awards",
+      pedestalRanks: {
+        1: "1st",
+        2: "2nd",
+        3: "3rd",
+      },
+    },
+    allGraduates: {
+      eyebrow: "ALL GRADUATES",
+      searchPlaceholder: "Search by name, specialization, or university…",
+      clearSearch: "Clear Search",
+      matchingCount: "graduates match your search",
+      noResults: "No matching results found — try another search term.",
+      totalInTeams: "graduates across",
+      teamsLabel: "teams",
+      teamLabel: "Team",
+      jumpToTeam: "Jump to Team",
+    },
+    closing: {
+      button: "Discover BUILDx",
+    },
   },
 };

@@ -508,7 +508,7 @@ const edition1Teams: GraduateTeam[] = [
     members: [
       {
         id: "t70-noura",
-        name: "نوره سعود الدوسري",
+        name: "نوره سعد الدوسري",
         nameEn: "Nourah AlDosari",
         field: "علوم الحاسب",
         fieldEn: "Computer Science",

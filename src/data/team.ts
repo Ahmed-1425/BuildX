@@ -637,6 +637,14 @@ export const partners: Partner[] = [
     logoSrc: "/assets/partners/t2-business.png",
   },
   {
+    id: "al-bilad-press",
+    nameAr: "مطابع البلاد",
+    nameEn: "Al-Bilad Press",
+    typeAr: "شريك الطباعة",
+    typeEn: "Printing Partner",
+    logoSrc: "/assets/partners/al-bilad-press.png",
+  },
+  {
     id: "jal-alwadi",
     nameAr: "جال الوادي",
     nameEn: "Jal Alwadi",
